@@ -79,6 +79,7 @@ import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 
 import css from './ListingPage.module.css';
+import QuantityPriceBreaks from '../EditListingPage/EditListingWizard/QuantityPriceBreaks.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -351,22 +352,35 @@ export const ListingPageComponent = props => {
               const value =
                 scope === 'public' ? publicData[key] : scope === 'metadata' ? metadata[key] : null;
               const hasValue = value != null;
-              return isTargetListingType && config.schemaType === SCHEMA_TYPE_MULTI_ENUM
-                ? [
-                    ...pickedElements,
-                    <SectionMultiEnumMaybe
-                      key={key}
-                      heading={config?.showConfig?.label}
-                      options={createFilterOptions(enumOptions)}
-                      selectedOptions={value || []}
-                    />,
-                  ]
-                : isTargetListingType && hasValue && config.schemaType === SCHEMA_TYPE_TEXT
-                ? [
+
+              if (isTargetListingType && config.schemaType === SCHEMA_TYPE_MULTI_ENUM) {
+                return [
+                  ...pickedElements,
+                  <SectionMultiEnumMaybe
+                    key={key}
+                    heading={config?.showConfig?.label}
+                    options={createFilterOptions(enumOptions)}
+                    selectedOptions={value || []}
+                  />,
+                ];
+              } else if (
+                isTargetListingType &&
+                hasValue &&
+                config.schemaType === SCHEMA_TYPE_TEXT
+              ) {
+                if( key === 'quantityPriceBreaks'){
+                  return [
+                    null
+                  ];
+                } else {
+                  return [
                     ...pickedElements,
                     <SectionTextMaybe key={key} heading={config?.showConfig?.label} text={value} />,
-                  ]
-                : pickedElements;
+                  ];
+                }
+              }
+
+              return pickedElements;
             }, [])}
 
             <SectionMapMaybe

@@ -47,6 +47,7 @@ import {
 import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
 
 import css from './OrderPanel.module.css';
+import QuantityPriceBreaks from '../../containers/EditListingPage/EditListingWizard/QuantityPriceBreaks';
 
 const BookingTimeForm = loadable(() =>
   import(/* webpackChunkName: "BookingTimeForm" */ './BookingTimeForm/BookingTimeForm')
@@ -186,7 +187,7 @@ const OrderPanel = props => {
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
-  const { listingType, unitType, transactionProcessAlias = '' } = publicData || {};
+  const { listingType, unitType, transactionProcessAlias = '', minOrderQuantity, quantityPriceBreaks } = publicData || {};
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const lineItemUnitType = lineItemUnitTypeMaybe || `line-item/${unitType}`;
 
@@ -276,14 +277,15 @@ const OrderPanel = props => {
           {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
+        <QuantityPriceBreaks key={'quantityPriceBreaks-break'} quantityPriceBreaks={quantityPriceBreaks}/>
 
-        <PriceMaybe
+        {/* <PriceMaybe
           price={price}
           publicData={publicData}
           validListingTypes={validListingTypes}
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
-        />
+        /> */}
 
         <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
@@ -363,6 +365,7 @@ const OrderPanel = props => {
             fetchLineItemsInProgress={fetchLineItemsInProgress}
             fetchLineItemsError={fetchLineItemsError}
             payoutDetailsWarning={payoutDetailsWarning}
+            minOrderQuantity={minOrderQuantity}
           />
         ) : showInquiryForm ? (
           <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />

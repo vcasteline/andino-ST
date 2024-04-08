@@ -8,6 +8,41 @@ const {
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
 
+const resolveQuantityBasedPrice = (listing, quantity) => {
+  const quantityPriceBreaks = listing.attributes.publicData?.quantityPriceBreaks;
+  const basePrice = listing.attributes.price;
+  const currency = basePrice.currency;
+
+  if (quantityPriceBreaks) {
+    const priceBreaks = quantityPriceBreaks.split(',').map((breakItem) => {
+      const [range, price] = breakItem.trim().split(':');
+      const [minStr, maxStr] = range.split('-');
+
+      if (minStr.startsWith('>=')) {
+        const min = parseInt(minStr.slice(2), 10);
+        return { min, max: null, price: parseFloat(price) };
+      } else {
+        const min = parseInt(minStr, 10);
+        const max = maxStr ? parseInt(maxStr, 10) : min;
+        return { min, max, price: parseFloat(price) };
+      }
+    });
+
+    const priceBreak = priceBreaks.find((breakItem) => {
+      if (breakItem.max === null) {
+        return quantity >= breakItem.min;
+      } else {
+        return quantity >= breakItem.min && quantity <= breakItem.max;
+      }
+    });
+
+    if (priceBreak) {
+      return new Money(priceBreak.price, currency);
+    }
+  }
+
+  return basePrice;
+};
 /**
  * Get quantity and add extra line-items that are related to delivery method
  *
@@ -170,9 +205,9 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
    * By default OrderBreakdown prints line items inside LineItemUnknownItemsMaybe if the lineItem code is not recognized. */
 
   const order = {
-    code,
-    unitPrice,
-    quantity,
+    code: 'line-item/product',
+    unitPrice: resolveQuantityBasedPrice(listing, quantity),
+    quantity: quantity,
     includeFor: ['customer', 'provider'],
   };
 

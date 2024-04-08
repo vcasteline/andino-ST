@@ -708,9 +708,7 @@ const mergeListingConfig = (hostedConfig, defaultConfigs) => {
   const listingTypes = shouldMerge
     ? union(hostedListingTypes, defaultListingTypes, 'listingType')
     : hostedListingTypes;
-  const listingFields = shouldMerge
-    ? union(hostedListingFields, defaultListingFields, 'key')
-    : hostedListingFields;
+  const listingFields =  union(hostedListingFields, defaultListingFields, 'key');
 
   const listingTypesInUse = getListingTypeStringsInUse(listingTypes);
 

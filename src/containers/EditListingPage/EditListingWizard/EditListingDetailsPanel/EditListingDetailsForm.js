@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
+import QuantityPriceBreaks from '../QuantityPriceBreaks';
 
 // Import util modules
 import { intlShape, injectIntl, FormattedMessage } from '../../../../util/reactIntl';
@@ -117,7 +118,7 @@ const FieldSelectListingType = props => {
 
 // Add collect data for listing fields (both publicData and privateData) based on configuration
 const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, intl } = props;
+  const { listingType, listingFieldsConfig, intl, values } = props;
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
     const { key, includeForListingTypes, schemaType, scope } = fieldConfig || {};
     const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
@@ -127,19 +128,29 @@ const AddListingFields = props => {
       includeForListingTypes == null || includeForListingTypes.includes(listingType);
     const isProviderScope = ['public', 'private'].includes(scope);
 
-    return isKnownSchemaType && isTargetListingType && isProviderScope
-      ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-          />,
-        ]
-      : pickedFields;
+    if (isKnownSchemaType && isTargetListingType && isProviderScope) {
+      if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
+        pickedFields.push(
+          <QuantityPriceBreaks
+            key={`${namespacedKey}-breaks`}
+            quantityPriceBreaks={values[namespacedKey]}
+          />
+        );
+      }
+
+      pickedFields.push(
+        <CustomExtendedDataField
+          key={namespacedKey}
+          name={namespacedKey}
+          fieldConfig={fieldConfig}
+          defaultRequiredMessage={intl.formatMessage({
+            id: 'EditListingDetailsForm.defaultRequiredMessage',
+          })}
+        />
+      );
+    }
+
+    return pickedFields;
   }, []);
 
   return <>{fields}</>;
@@ -245,6 +256,7 @@ const EditListingDetailsFormComponent = props => (
             listingType={listingType}
             listingFieldsConfig={listingFieldsConfig}
             intl={intl}
+            values={values}
           />
 
           <Button
