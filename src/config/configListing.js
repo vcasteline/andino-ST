@@ -53,23 +53,31 @@
  *   - requiredMessage (optional):    Message for those fields, which are mandatory.
  */
 export const listingFields = [
+  {
+    key: 'minOrderQuantity',
+    scope: 'public',
+    schemaType: 'long',
+    showConfig: {
+      label: 'Minimum Order Quantity'
+    },
+    saveConfig: {
+      label: 'Minimum Order Quantity',
+      placeholderMessage: 'Enter the minimum order quantity',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'quantityPriceBreaks',
+    scope: 'public',
+    schemaType: 'text',
+    saveConfig: {
+      label: 'Quantity Price Breaks',
+      placeholderMessage: 'Enter quantity range price breaks separated by commas (e.g. 200-399:20, 400-599:18)',
+      isRequired: true,
+    },
+  },
   // {
-  //   "scope": "public",
-  //   "label": "Gears",
-  //   "key": "gears",
-  //   "schemaType": "long",
-  //   "numberConfig": {
-  //     "minimum": 1,
-  //     "maximum": 24
-  //   },
-  //   "filterConfig": {
-  //     "indexForSearch": true,
-  //     "group": "primary",
-  //     "label": "Gears"
-  //   }
-  // }
-  // {
-  //   key: 'bikeType',
+  //   key: 'category',
   //   scope: 'public',
   //   schemaType: 'enum',
   //   enumOptions: [
@@ -78,25 +86,21 @@ export const listingFields = [
   //     { option: 'mountain-bikes', label: 'Mountain bikes' },
   //     { option: 'childrens-bikes', label: "Children's bikes" },
   //   ],
-  //   categoryConfig: {
-  //     limitToCategoryIds: true,
-  //     categoryIds: ['cats'],
-  //   },
   //   filterConfig: {
   //     indexForSearch: true,
-  //     filterType: 'SelectMultipleFilter', //'SelectSingleFilter',
-  //     label: 'Bike type',
+  //     filterType: 'SelectMultipleFilter',
+  //     label: 'Category',
   //     group: 'primary',
   //   },
   //   showConfig: {
-  //     label: 'Bike type',
+  //     label: 'Category',
   //     isDetail: true,
   //   },
   //   saveConfig: {
-  //     label: 'Bike type',
+  //     label: 'Category',
   //     placeholderMessage: 'Select an option…',
   //     isRequired: true,
-  //     requiredMessage: 'You need to select a bike type.',
+  //     requiredMessage: 'You need to select a category.',
   //   },
   // },
   // {
@@ -183,6 +187,7 @@ export const listingFields = [
   //     isRequired: false,
   //   },
   // },
+
   // // An example of how to use transaction type specific custom fields and private data.
   // {
   //   key: 'note',

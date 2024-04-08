@@ -1,0 +1,21 @@
+.quantityPriceBreaks {
+    margin-bottom: 16px;
+    margin-top: 14px;
+  }
+  
+  .priceBreak {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .range {
+    /* font-weight: bold; */
+    font-size: small;
+  }
+  
+  .price {
+    color: #FB4400;
+    font-weight: bold;
+
+  }

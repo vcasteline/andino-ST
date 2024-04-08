@@ -133,6 +133,7 @@ const renderForm = formRenderProps => {
     payoutDetailsWarning,
     marketplaceName,
     values,
+    minOrderQuantity
   } = formRenderProps;
 
   // Note: don't add custom logic before useEffect
@@ -230,23 +231,35 @@ const renderForm = formRenderProps => {
           validate={numberAtLeast(quantityRequiredMsg, 1)}
         />
       ) : (
-        <FieldSelect
-          id={`${formId}.quantity`}
-          className={css.quantityField}
-          name="quantity"
-          disabled={!hasStock}
-          label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
-          validate={numberAtLeast(quantityRequiredMsg, 1)}
-        >
-          <option disabled value="">
-            {intl.formatMessage({ id: 'ProductOrderForm.selectQuantityOption' })}
-          </option>
-          {quantities.map(quantity => (
-            <option key={quantity} value={quantity}>
-              {intl.formatMessage({ id: 'ProductOrderForm.quantityOption' }, { quantity })}
-            </option>
-          ))}
-        </FieldSelect>
+        <FieldTextInput
+              className={css.quantityField}
+              id={`${formId}.stock`}
+              name="quantity"
+              label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
+              placeholder={intl.formatMessage({
+                id: 'ProductOrderForm.selectQuantity',
+              })}
+              type="number"
+              min={1}
+              validate={numberAtLeast('Select the min order quantity', minOrderQuantity)}
+            />
+        // <FieldSelect
+        //   id={`${formId}.quantity`}
+        //   className={css.quantityField}
+        //   name="quantity"
+        //   disabled={!hasStock}
+        //   label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
+        //   validate={numberAtLeast(quantityRequiredMsg, 1)}
+        // >
+        //   <option disabled value="">
+        //     {intl.formatMessage({ id: 'ProductOrderForm.selectQuantityOption' })}
+        //   </option>
+        //   {quantities.map(quantity => (
+        //     <option key={quantity} value={quantity}>
+        //       {intl.formatMessage({ id: 'ProductOrderForm.quantityOption' }, { quantity })}
+        //     </option>
+        //   ))}
+        // </FieldSelect>
       )}
 
       <DeliveryMethodMaybe

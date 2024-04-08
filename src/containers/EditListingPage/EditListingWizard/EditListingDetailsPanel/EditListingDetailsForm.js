@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
+import QuantityPriceBreaks from '../QuantityPriceBreaks';
 
 // Import util modules
 import { intlShape, injectIntl, FormattedMessage } from '../../../../util/reactIntl';
@@ -241,7 +242,7 @@ const FieldSelectCategory = props => {
 
 // Add collect data for listing fields (both publicData and privateData) based on configuration
 const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
+  const { listingType, listingFieldsConfig, selectedCategories, formId, intl, values } = props;
   const targetCategoryIds = Object.values(selectedCategories);
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
@@ -253,20 +254,44 @@ const AddListingFields = props => {
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
 
-    return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
-      ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />,
-        ]
-      : pickedFields;
+    // return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
+    //   ? [
+    //       ...pickedFields,
+    //       <CustomExtendedDataField
+    //         key={namespacedKey}
+    //         name={namespacedKey}
+    //         fieldConfig={fieldConfig}
+    //         defaultRequiredMessage={intl.formatMessage({
+    //           id: 'EditListingDetailsForm.defaultRequiredMessage',
+    //         })}
+    //         formId={formId}
+    //       />,
+    //     ]
+    //   : pickedFields;
+    if (isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory) {
+      if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
+        pickedFields.push(
+          <QuantityPriceBreaks
+            key={`${namespacedKey}-breaks`}
+            quantityPriceBreaks={values[namespacedKey]}
+          />
+        );
+      }
+
+      pickedFields.push(
+        <CustomExtendedDataField
+        key={namespacedKey}
+        name={namespacedKey}
+        fieldConfig={fieldConfig}
+        defaultRequiredMessage={intl.formatMessage({
+          id: 'EditListingDetailsForm.defaultRequiredMessage',
+        })}
+        formId={formId}
+        />
+      );
+    }
+
+    return pickedFields;
   }, []);
 
   return <>{fields}</>;
