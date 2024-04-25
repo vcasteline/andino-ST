@@ -108,6 +108,13 @@ class ProfileSettingsFormComponent extends Component {
             id: 'ProfileSettingsForm.bioPlaceholder',
           });
 
+          const companyLabel = intl.formatMessage({
+            id: 'ProfileSettingsForm.companyLabel',
+          });
+          const companyPlaceholder = intl.formatMessage({
+            id: 'ProfileSettingsForm.companyPlaceholder',
+          });
+
           const uploadingOverlay =
             uploadInProgress || this.state.uploadDelay ? (
               <div className={css.uploadingImageOverlay}>
@@ -293,6 +300,14 @@ class ProfileSettingsFormComponent extends Component {
                 <H4 as="h2" className={css.sectionTitle}>
                   <FormattedMessage id="ProfileSettingsForm.bioHeading" />
                 </H4>
+                <FieldTextInput
+                  type="text"
+                  className={css.inputCompany}
+                  id="companyName"
+                  name="companyName"
+                  label={companyLabel}
+                  placeholder={companyPlaceholder}
+                />
                 <FieldTextInput
                   type="textarea"
                   id="bio"

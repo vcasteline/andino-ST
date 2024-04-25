@@ -4,7 +4,7 @@ import { Form as FinalForm, FormSpy } from 'react-final-form';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
-import { numberAtLeast, required } from '../../../util/validators';
+import { numberAtLeast, numberAtMost, required } from '../../../util/validators';
 import { PURCHASE_PROCESS_NAME } from '../../../transactions/transaction';
 
 import {
@@ -34,6 +34,7 @@ const handleFetchLineItems = ({
   isOwnListing,
   fetchLineItemsInProgress,
   onFetchTransactionLineItems,
+  selectedVariants,
 }) => {
   const stockReservationQuantity = Number.parseInt(quantity, 10);
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
@@ -45,7 +46,7 @@ const handleFetchLineItems = ({
     !fetchLineItemsInProgress
   ) {
     onFetchTransactionLineItems({
-      orderData: { stockReservationQuantity, ...deliveryMethodMaybe },
+      orderData: { stockReservationQuantity, ...deliveryMethodMaybe, selectedVariants },
       listingId,
       isOwnListing,
     });
@@ -133,7 +134,12 @@ const renderForm = formRenderProps => {
     payoutDetailsWarning,
     marketplaceName,
     values,
-    minOrderQuantity
+    minOrderQuantity,
+    totalQuantity,
+    listingType,
+    selectedVariants,
+    sampleLink,
+    maxOrderQuantity
   } = formRenderProps;
 
   // Note: don't add custom logic before useEffect
@@ -151,22 +157,30 @@ const renderForm = formRenderProps => {
         isOwnListing,
         fetchLineItemsInProgress,
         onFetchTransactionLineItems,
+        selectedVariants,
       });
     }
-  }, []);
+
+    if (listingType === 'sell-shirts') {
+      formApi.change('quantity', totalQuantity);
+    }
+  }, [totalQuantity]);
 
   // If form values change, update line-items for the order breakdown
   const handleOnChange = formValues => {
     const { quantity, deliveryMethod } = formValues.values;
     if (mounted) {
-      handleFetchLineItems({
-        quantity,
-        deliveryMethod,
-        listingId,
-        isOwnListing,
-        fetchLineItemsInProgress,
-        onFetchTransactionLineItems,
-      });
+      setTimeout(() => {
+        handleFetchLineItems({
+          quantity,
+          deliveryMethod,
+          listingId,
+          isOwnListing,
+          fetchLineItemsInProgress,
+          onFetchTransactionLineItems,
+          selectedVariants,
+        });
+      }, 500); // Ajusta el retraso según tus necesidades (en milisegundos)
     }
   };
 
@@ -230,36 +244,43 @@ const renderForm = formRenderProps => {
           type="hidden"
           validate={numberAtLeast(quantityRequiredMsg, 1)}
         />
+      ) : listingType == 'sell-shirts' ? (
+        <>
+          <FieldTextInput
+            id={`${formId}.quantity`}
+            name="quantity"
+            type="hidden"
+            value={totalQuantity}
+            validate={numberAtLeast('Add at least the min order quantity', minOrderQuantity)}
+          />
+        </>
+      ) : listingType == 'sell-samples' ? (
+        <FieldTextInput
+          className={css.quantityField}
+          id={`${formId}.stock`}
+          name="quantity"
+          label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
+          placeholder={intl.formatMessage({
+            id: 'ProductOrderForm.selectQuantity',
+          })}
+          type="number"
+          min={1}
+          validate={numberAtMost(`You can only buy a maximum of ${maxOrderQuantity} samples`, maxOrderQuantity)}
+          max={maxOrderQuantity}
+        />
       ) : (
         <FieldTextInput
-              className={css.quantityField}
-              id={`${formId}.stock`}
-              name="quantity"
-              label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
-              placeholder={intl.formatMessage({
-                id: 'ProductOrderForm.selectQuantity',
-              })}
-              type="number"
-              min={1}
-              validate={numberAtLeast('Select the min order quantity', minOrderQuantity)}
-            />
-        // <FieldSelect
-        //   id={`${formId}.quantity`}
-        //   className={css.quantityField}
-        //   name="quantity"
-        //   disabled={!hasStock}
-        //   label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
-        //   validate={numberAtLeast(quantityRequiredMsg, 1)}
-        // >
-        //   <option disabled value="">
-        //     {intl.formatMessage({ id: 'ProductOrderForm.selectQuantityOption' })}
-        //   </option>
-        //   {quantities.map(quantity => (
-        //     <option key={quantity} value={quantity}>
-        //       {intl.formatMessage({ id: 'ProductOrderForm.quantityOption' }, { quantity })}
-        //     </option>
-        //   ))}
-        // </FieldSelect>
+          className={css.quantityField}
+          id={`${formId}.stock`}
+          name="quantity"
+          label={intl.formatMessage({ id: 'ProductOrderForm.quantityLabel' })}
+          placeholder={intl.formatMessage({
+            id: 'ProductOrderForm.selectQuantity',
+          })}
+          type="number"
+          min={1}
+          validate={numberAtLeast('Select the min order quantity', minOrderQuantity)}
+        />
       )}
 
       <DeliveryMethodMaybe
@@ -283,12 +304,23 @@ const renderForm = formRenderProps => {
             currency={price.currency}
             marketplaceName={marketplaceName}
             processName={PURCHASE_PROCESS_NAME}
+            variants={selectedVariants}
           />
         </div>
       ) : null}
 
       <div className={css.submitButton}>
-        <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+        {sampleLink && (
+          <a className={css.buttonLinkSecondary} href={sampleLink}>
+            Not sure? Order Samples
+          </a>
+        )}
+        <PrimaryButton
+          data-action="submit"
+          type="submit"
+          inProgress={submitInProgress}
+          disabled={submitDisabled}
+        >
           {hasStock ? (
             <FormattedMessage id="ProductOrderForm.ctaButton" />
           ) : (
@@ -320,6 +352,7 @@ const ProductOrderForm = props => {
     shippingEnabled,
     displayDeliveryMethod,
     allowOrdersOfMultipleItems,
+    selectedVariants,
   } = props;
 
   // Should not happen for listings that go through EditListingWizard.
@@ -344,7 +377,8 @@ const ProductOrderForm = props => {
       ? { deliveryMethod: 'none' }
       : {};
   const hasMultipleDeliveryMethods = pickupEnabled && shippingEnabled;
-  const initialValues = { ...quantityMaybe, ...deliveryMethodMaybe };
+  const variants = { selectedVariants: selectedVariants };
+  const initialValues = { ...quantityMaybe, ...deliveryMethodMaybe, ...variants };
 
   return (
     <FinalForm

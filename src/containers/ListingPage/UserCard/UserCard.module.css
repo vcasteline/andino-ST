@@ -117,7 +117,7 @@
 .headingRow {
   display: flex;
   flex-direction: column;
-
+  font-weight: 700;
   @media (--viewportMedium) {
     flex-direction: row;
     justify-content: space-between;

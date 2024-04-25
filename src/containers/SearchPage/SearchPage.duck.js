@@ -110,7 +110,8 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   const searchValidListingTypes = listingTypes => {
     return config.listing.enforceValidListingType
       ? {
-          pub_listingType: listingTypes.map(l => l.listingType),
+          pub_listingType: listingTypes
+            .map(l => l.listingType).filter(l => l !== 'sell-samples'),
           // pub_transactionProcessAlias: listingTypes.map(l => l.transactionType.alias),
           // pub_unitType: listingTypes.map(l => l.transactionType.unitType),
         }
@@ -269,7 +270,7 @@ export const loadData = (params, search, config) => {
         'publicData.pickupEnabled',
         'publicData.shippingEnabled',
       ],
-      'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
+      'fields.user': ['profile.displayName', 'profile.abbreviatedName', 'profile.publicData'],
       'fields.image': [
         'variants.scaled-small',
         'variants.scaled-medium',

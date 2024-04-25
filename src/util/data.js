@@ -354,8 +354,11 @@ export const ensurePaymentMethodCard = stripePaymentMethod => {
  */
 export const userDisplayNameAsString = (user, defaultUserDisplayName) => {
   const hasDisplayName = user?.attributes?.profile?.displayName;
+  const hasCompanyName = user?.attributes?.profile?.publicData?.companyName;
 
-  if (hasDisplayName) {
+  if (hasCompanyName) {
+    return user.attributes.profile.publicData.companyName;
+  } else if (hasDisplayName) {
     return user.attributes.profile.displayName;
   } else {
     return defaultUserDisplayName || '';

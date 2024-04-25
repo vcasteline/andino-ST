@@ -171,6 +171,7 @@ export const EditListingPricingAndStockFormComponent = props => (
             currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
             validate={priceValidators}
           />
+          <p>Add your base price here, meaning your most expensive price. This is only used as a backup.</p>
 
           <UpdateStockToInfinityCheckboxMaybe
             formId={formId}

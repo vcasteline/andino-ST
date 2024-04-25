@@ -7,7 +7,7 @@ import css from './ListingPage.module.css';
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 const SectionTextMaybe = props => {
-  const { text, heading, showAsIngress = false } = props;
+  const { text, heading, showAsIngress = false, showConfig } = props;
   const textClass = showAsIngress ? css.ingress : css.text;
   const content = richText(text, {
     longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
@@ -15,7 +15,7 @@ const SectionTextMaybe = props => {
     breakChars: '/',
   });
 
-  return text ? (
+  return text && showConfig?.isDetail ? (
     <section className={css.sectionText}>
       {heading ? (
         <Heading as="h2" rootClassName={css.sectionHeading}>

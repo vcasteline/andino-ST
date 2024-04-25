@@ -130,7 +130,7 @@ const SignupFormComponent = props => (
                     id: 'SignupForm.lastNameRequired',
                   })
                 )}
-              />
+              />  
             </div>
             <FieldTextInput
               className={css.password}

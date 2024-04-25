@@ -368,16 +368,10 @@ export const ListingPageComponent = props => {
                 hasValue &&
                 config.schemaType === SCHEMA_TYPE_TEXT
               ) {
-                if( key === 'quantityPriceBreaks'){
-                  return [
-                    null
-                  ];
-                } else {
                   return [
                     ...pickedElements,
-                    <SectionTextMaybe key={key} heading={config?.showConfig?.label} text={value} />,
+                    <SectionTextMaybe key={key} showConfig={config?.showConfig} heading={config?.showConfig?.label} text={value} />,
                   ];
-                }
               }
 
               return pickedElements;

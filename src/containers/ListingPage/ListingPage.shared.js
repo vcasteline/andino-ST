@@ -145,6 +145,7 @@ export const handleSubmit = parameters => values => {
   const listingId = new UUID(params.id);
   const listing = getListing(listingId);
 
+
   const {
     bookingDates,
     bookingStartTime,
@@ -153,8 +154,10 @@ export const handleSubmit = parameters => values => {
     bookingEndDate, // not relevant (omit)
     quantity: quantityRaw,
     deliveryMethod,
+    selectedVariants,
     ...otherOrderData
   } = values;
+
 
   const bookingMaybe = bookingDates
     ? {
@@ -182,6 +185,7 @@ export const handleSubmit = parameters => values => {
       ...quantityMaybe,
       ...deliveryMethodMaybe,
       ...otherOrderData,
+      selectedVariants
     },
     confirmPaymentError: null,
   };
