@@ -4,6 +4,22 @@
   letter-spacing: 1px;
   font-weight: var(--fontWeightMedium);
 }
+.breakdownButton{
+ margin-top: 20px;
+ 
+}
+.buttonLinkPrimary {
+  composes: buttonPrimary from global;
+ 
+}
+
+.buttonLinkSecondary {
+  composes: buttonSecondary from global;
+  border-color: #4E62AC;
+  color: #4E62AC;
+  border-style: solid;
+}
+
 
 .totalDivider {
   /* dimensions */
@@ -68,6 +84,9 @@
   @media (--viewportMedium) {
     padding: 0;
     margin-top: 72px;
+  }
+  button{
+    margin-top: 15px;
   }
 }
 

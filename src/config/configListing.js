@@ -57,6 +57,7 @@ export const listingFields = [
     key: 'minOrderQuantity',
     scope: 'public',
     schemaType: 'long',
+    includeForListingTypes: ['sell-shirts', 'sell-new-products'],
     showConfig: {
       label: 'Minimum Order Quantity'
     },
@@ -67,15 +68,50 @@ export const listingFields = [
     },
   },
   {
-    key: 'quantityPriceBreaks',
+    key: 'maxOrderQuantity',
     scope: 'public',
-    schemaType: 'text',
+    schemaType: 'long',
+    includeForListingTypes: ['sell-samples'],
+    showConfig: {
+      label: 'Maximum Order Quantity'
+    },
     saveConfig: {
-      label: 'Quantity Price Breaks',
-      placeholderMessage: 'Enter quantity range price breaks separated by commas (e.g. 200-399:20, 400-599:18)',
+      label: 'Maximum Order Quantity (MOQ)',
+      placeholderMessage: 'Enter the maximum order quantity for your samples.',
       isRequired: true,
     },
   },
+  {
+    key: 'sample_link',
+    scope: 'public',
+    schemaType: 'text',
+    includeForListingTypes: ['sell-shirts', 'sell-new-products'],
+    showConfig: {
+      label: 'Sample Link',
+      isDetail: false,
+    },
+    saveConfig: {
+      label: 'Sample Link',
+      placeholderMessage: 'Create a sample listing under "Sell Samples", then copy the link and paste it here. You can always add this later.',
+      isRequired: false,
+    },
+  },
+  {
+    key: 'quantityPriceBreaks',
+    scope: 'public',
+    schemaType: 'text',
+    includeForListingTypes: ['sell-shirts', 'sell-new-products'],
+    saveConfig: {
+      label: 'Quantity Price Breaks',
+      placeholderMessage: 'Enter quantity range price breaks separated by commas (e.g. 200-399:2000, 400-599:1800, >=600:1600). Start with you MOQ. Review the preview above to check for accuracy.',
+      isRequired: true,
+    },
+      showConfig: {
+      label: 'Price Breaks',
+      isDetail: false,
+    },
+  },
+
   // {
   //   key: 'category',
   //   scope: 'public',
@@ -340,4 +376,4 @@ export const listingTypes = [
 //
 // Read More:
 // https://www.sharetribe.com/docs/how-to/manage-search-schemas-with-flex-cli/#adding-listing-search-schemas
-export const enforceValidListingType = false;
+export const enforceValidListingType = true;

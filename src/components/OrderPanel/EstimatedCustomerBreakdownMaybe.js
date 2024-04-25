@@ -90,7 +90,8 @@ const estimatedCustomerTransaction = (
   timeZone,
   process,
   processName,
-  marketplaceCurrency
+  marketplaceCurrency,
+  variants
 ) => {
   const transitions = process?.transitions;
   const now = new Date();
@@ -114,6 +115,7 @@ const estimatedCustomerTransaction = (
       lastTransition: transitions.REQUEST_PAYMENT,
       payinTotal,
       payoutTotal,
+      variants,
       lineItems: customerLineItems,
       transitions: [
         {
@@ -128,7 +130,7 @@ const estimatedCustomerTransaction = (
 };
 
 const EstimatedCustomerBreakdownMaybe = props => {
-  const { breakdownData = {}, lineItems, timeZone, currency, marketplaceName, processName } = props;
+  const { breakdownData = {}, lineItems, timeZone, currency, marketplaceName, processName, variants } = props;
   const { startDate, endDate } = breakdownData;
 
   let process = null;
@@ -160,7 +162,8 @@ const EstimatedCustomerBreakdownMaybe = props => {
           timeZone,
           process,
           processName,
-          currency
+          currency,
+          variants
         )
       : null;
 

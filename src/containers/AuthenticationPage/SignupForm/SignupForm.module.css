@@ -36,6 +36,10 @@
   width: calc(66% - 9px);
 }
 
+.companyNameRoot {
+  padding-top: 1rem;
+}
+
 .password {
   composes: marketplaceModalPasswordMargins from global;
 }

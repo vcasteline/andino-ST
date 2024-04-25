@@ -14,7 +14,7 @@ const resolveQuantityBasedPrice = (listing, quantity) => {
   const currency = basePrice.currency;
 
   if (quantityPriceBreaks) {
-    const priceBreaks = quantityPriceBreaks.split(',').map((breakItem) => {
+    const priceBreaks = quantityPriceBreaks.split(',').map(breakItem => {
       const [range, price] = breakItem.trim().split(':');
       const [minStr, maxStr] = range.split('-');
 
@@ -28,7 +28,7 @@ const resolveQuantityBasedPrice = (listing, quantity) => {
       }
     });
 
-    const priceBreak = priceBreaks.find((breakItem) => {
+    const priceBreak = priceBreaks.find(breakItem => {
       if (breakItem.max === null) {
         return quantity >= breakItem.min;
       } else {
@@ -60,14 +60,13 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
     publicData || {};
 
   // Calculate shipping fee if applicable
-  const shippingFee = isShipping
-    ? calculateShippingFee(
-        shippingPriceInSubunitsOneItem,
-        shippingPriceInSubunitsAdditionalItems,
-        currency,
-        quantity
-      )
-    : null;
+  const shippingFee = isShipping ? calculateShippingFee(
+    shippingPriceInSubunitsOneItem,
+    shippingPriceInSubunitsAdditionalItems,
+    currency,
+    quantity
+  ): null;
+
 
   // Add line-item for given delivery method.
   // Note: by default, pickup considered as free.
@@ -153,6 +152,7 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   const publicData = listing.attributes.publicData;
   const unitPrice = listing.attributes.price;
   const currency = unitPrice.currency;
+  //console.log("order data lineitems!:", orderData)
 
   /**
    * Pricing starts with order's base price:

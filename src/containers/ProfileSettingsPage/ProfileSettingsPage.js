@@ -43,13 +43,13 @@ export const ProfileSettingsPageComponent = props => {
   } = props;
 
   const { userFields } = config.user;
-
-  const handleSubmit = (values, userType) => {
-    const { firstName, lastName, bio: rawBio, ...rest } = values;
+  const handleSubmit = values => {
+    const { firstName, lastName, bio: rawBio, companyName, ...rest  } = values;
 
     // Ensure that the optional bio is a string
     const bio = rawBio || '';
-
+    //currentUser.attributes.profile.publicData = 
+    const publicData = {companyName: companyName}
     const profile = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
@@ -85,6 +85,7 @@ export const ProfileSettingsPageComponent = props => {
     privateData,
   } = user?.attributes.profile;
   const { userType } = publicData || {};
+  const { companyName } = publicData || {};
   const profileImageId = user.profileImage ? user.profileImage.id : null;
   const profileImage = image || { imageId: profileImageId };
 
@@ -97,6 +98,7 @@ export const ProfileSettingsPageComponent = props => {
         lastName,
         bio,
         profileImage: user.profileImage,
+        companyName,
         ...initialValuesForUserFields(publicData, 'public', userType, userFields),
         ...initialValuesForUserFields(protectedData, 'protected', userType, userFields),
         ...initialValuesForUserFields(privateData, 'private', userType, userFields),

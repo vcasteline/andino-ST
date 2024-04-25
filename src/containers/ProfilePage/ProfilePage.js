@@ -254,11 +254,12 @@ export const ProfilePageComponent = props => {
   const { scrollingDisabled, currentUser, userShowError, user, intl, ...rest } = props;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const profileUser = ensureUser(user);
+  const companyName = profileUser.attributes.profile.publicData.companyName;
   const isCurrentUser =
     ensuredCurrentUser.id && profileUser.id && ensuredCurrentUser.id.uuid === profileUser.id.uuid;
   const { bio, displayName, publicData, metadata } = profileUser?.attributes?.profile || {};
   const { userFields } = config.user;
-
+  const displayedName = companyName? companyName : displayName;
   const schemaTitleVars = { name: displayName, marketplaceName: config.marketplaceName };
   const schemaTitle = intl.formatMessage({ id: 'ProfilePage.schemaTitle' }, schemaTitleVars);
 
@@ -285,12 +286,12 @@ export const ProfilePageComponent = props => {
       >
         <MainContent
           bio={bio}
-          displayName={displayName}
           userShowError={userShowError}
           publicData={publicData}
           metadata={metadata}
           userFieldConfig={userFields}
           intl={intl}
+          displayName={displayedName}
           {...rest}
         />
       </LayoutSideNavigation>

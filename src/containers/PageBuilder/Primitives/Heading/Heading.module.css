@@ -30,7 +30,7 @@
   text-wrap: balance;
 
   @media (--viewportMedium) {
-    font-size: 48px;
+    font-size: 65px;
   }
 
   /* If ´& + *´ if used, margin-top needs !important to overwrite */

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 import {
@@ -44,10 +44,19 @@ import {
   resolveLatestProcessName,
 } from '../../transactions/transaction';
 
-import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
+import {
+  ModalInMobile,
+  PrimaryButton,
+  AvatarSmall,
+  H1,
+  H2,
+  FieldTextInput,
+  Button,
+} from '../../components';
 
 import css from './OrderPanel.module.css';
 import QuantityPriceBreaks from '../../containers/EditListingPage/EditListingWizard/QuantityPriceBreaks';
+import { InlineTextButton } from '../../components';
 
 const BookingTimeForm = loadable(() =>
   import(/* webpackChunkName: "BookingTimeForm" */ './BookingTimeForm/BookingTimeForm')
@@ -187,7 +196,17 @@ const OrderPanel = props => {
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
-  const { listingType, unitType, transactionProcessAlias = '', minOrderQuantity, quantityPriceBreaks } = publicData || {};
+  const {
+    listingType,
+    unitType,
+    transactionProcessAlias = '',
+    minOrderQuantity,
+    quantityPriceBreaks,
+    sizes,
+    colors,
+    sample_link,
+    maxOrderQuantity
+  } = publicData || {};
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const lineItemUnitType = lineItemUnitTypeMaybe || `line-item/${unitType}`;
 
@@ -257,7 +276,56 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
+  const [selectedVariants, setSelectedVariants] = useState([]);
+  const [totalQuantity, setTotalQuantity] = useState(0);
 
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+  const handleRemoveVariant = index => {
+    setSelectedVariants(prevVariants => {
+      const updatedVariants = [...prevVariants];
+      updatedVariants.splice(index, 1);
+
+      const newTotalQuantity = updatedVariants.reduce(
+        (sum, variant) => sum + (variant.quantity || 0),
+        0
+      );
+
+      setTotalQuantity(newTotalQuantity);
+
+      return updatedVariants;
+    });
+  };
+  const handleVariantChange = (field, value, index) => {
+    setSelectedVariants(prevVariants => {
+      const updatedVariants = [...prevVariants];
+      if (index >= 0 && index < updatedVariants.length) {
+        updatedVariants[index] = {
+          ...updatedVariants[index],
+          [field]: value,
+        };
+      } else {
+        updatedVariants.push({
+          color: '',
+          size: '',
+          quantity: '',
+          ...{ [field]: value },
+        });
+      }
+
+      const newTotalQuantity = updatedVariants.reduce(
+        (sum, variant) => sum + (variant.quantity || 0),
+        0
+      );
+
+      setTotalQuantity(newTotalQuantity);
+
+      return updatedVariants;
+    });
+  };
   return (
     <div className={classes}>
       <ModalInMobile
@@ -277,7 +345,10 @@ const OrderPanel = props => {
           {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
-        <QuantityPriceBreaks key={'quantityPriceBreaks-break'} quantityPriceBreaks={quantityPriceBreaks}/>
+        <QuantityPriceBreaks
+          key={'quantityPriceBreaks-break'}
+          quantityPriceBreaks={quantityPriceBreaks}
+        />
 
         {/* <PriceMaybe
           price={price}
@@ -295,7 +366,71 @@ const OrderPanel = props => {
           <span className={css.providerNamePlain}>
             <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
           </span>
+          <span className={css.linkSeparator}>&nbsp;•&nbsp;</span>
+          <span>
+            <InlineTextButton onClick={onContactUser}>Chat</InlineTextButton>
+          </span>
         </div>
+
+        {sizes?.length > 0 && (
+          <div>
+            <label htmlFor="size-variant-select">
+              <FormattedMessage id="OrderPanel.sizeVariantLabel" />
+            </label>
+            {selectedVariants.map((variant, index) => (
+              <div key={index} className={css.variantRow}>
+                <select
+                  className={css.variantField}
+                  value={variant.size}
+                  onChange={e => handleVariantChange('size', e.target.value, index)}
+                >
+                  <option value="">Select size</option>
+                  {sizes.map(size => (
+                    <option key={size} value={size}>
+                      {toTitleCase(size)}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className={css.variantField}
+                  value={variant.color}
+                  onChange={e => handleVariantChange('color', e.target.value, index)}
+                >
+                  <option value="">Select color</option>
+                  {colors.map(color => (
+                    <option key={color} value={color}>
+                      {toTitleCase(color)}
+                    </option>
+                  ))}
+                </select>
+                <div className={css.inputClose}>
+                  <input
+                    className={css.quantityField}
+                    type="number"
+                    min={1}
+                    value={variant.quantity}
+                    onChange={e => handleVariantChange('quantity', parseInt(e.target.value), index)}
+                    disabled={!variant.size || !variant.color}
+                    required
+                  />
+                  <button
+                    className={css.removeVariantButton}
+                    onClick={() => handleRemoveVariant(index)}
+                  >
+                   X Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+            <Button
+              className={css.addVariantButton}
+              onClick={() => handleVariantChange('size', '', selectedVariants.length)}
+              disabled={selectedVariants.some(variant => !variant.size || !variant.color)}
+            >
+              Add Variant
+            </Button>
+          </div>
+        )}
 
         {showPriceMissing ? (
           <PriceMissing />
@@ -366,6 +501,11 @@ const OrderPanel = props => {
             fetchLineItemsError={fetchLineItemsError}
             payoutDetailsWarning={payoutDetailsWarning}
             minOrderQuantity={minOrderQuantity}
+            totalQuantity={totalQuantity}
+            listingType={listingType}
+            selectedVariants={selectedVariants}
+            sampleLink={sample_link}
+            maxOrderQuantity={maxOrderQuantity}
           />
         ) : showInquiryForm ? (
           <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />

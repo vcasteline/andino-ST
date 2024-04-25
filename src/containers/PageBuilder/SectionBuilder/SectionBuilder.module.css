@@ -164,7 +164,7 @@
   color: var(--colorWhite);
 
   &::selection {
-    background-color: cyan;
+    background-color: #3c5095;
     color: unset;
   }
 }
@@ -175,7 +175,7 @@
   color: rgba(255, 255, 255, 0.85);
 
   &::selection {
-    background-color: cyan;
+    background-color: #3c5095;
     color: unset;
   }
 }

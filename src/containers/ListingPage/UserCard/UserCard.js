@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../util/reactIntl';
 import { richText } from '../../../util/richText';
-import { ensureUser, ensureCurrentUser } from '../../../util/data';
+import { ensureUser, ensureCurrentUser, userDisplayNameAsString } from '../../../util/data';
 import { propTypes } from '../../../util/types';
 
 import { AvatarLarge, NamedLink, InlineTextButton } from '../../../components';
@@ -80,7 +80,7 @@ const UserCard = props => {
   const isCurrentUser =
     ensuredUser.id && ensuredCurrentUser.id && ensuredUser.id.uuid === ensuredCurrentUser.id.uuid;
   const { displayName, bio } = ensuredUser.attributes.profile;
-
+  const displayedName = userDisplayNameAsString(ensuredUser, '');
   const handleContactUserClick = () => {
     onContactUser(user);
   };
@@ -135,7 +135,7 @@ const UserCard = props => {
         <AvatarLarge className={css.avatar} user={user} />
         <div className={css.info}>
           <div className={css.headingRow}>
-            <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
+            <FormattedMessage id="UserCard.heading" values={{ name: displayedName }} />
             {editProfileDesktop}
           </div>
           {hasBio ? <ExpandableBio className={css.desktopBio} bio={bio} /> : null}

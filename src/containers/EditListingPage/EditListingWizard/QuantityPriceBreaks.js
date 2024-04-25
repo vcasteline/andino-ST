@@ -11,7 +11,7 @@ const QuantityPriceBreaks = ({ quantityPriceBreaks }) => {
 
       if (minStr.startsWith('>=')|| minStr.startsWith('＞=')) {
         const min = parseInt(minStr.slice(2), 10);
-        console.log("min en el if", min)
+
         return { min, max: null, price: parseFloat(price) };
        
       } else {
