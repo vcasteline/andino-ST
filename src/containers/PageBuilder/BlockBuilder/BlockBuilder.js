@@ -42,7 +42,6 @@ const BlockBuilder = props => {
   return (
     <>
       {blocks.map((block, index) => {
-        console.log(block);
         const config = components[block.blockType];
         const Block = config?.component;
         const blockId = block.blockId || `${sectionId}-block-${index + 1}`;
