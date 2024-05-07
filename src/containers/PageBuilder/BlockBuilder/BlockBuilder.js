@@ -5,6 +5,7 @@ import { arrayOf, func, node, oneOf, shape, string } from 'prop-types';
 import BlockDefault from './BlockDefault';
 import BlockFooter from './BlockFooter';
 import BlockSocialMediaLink from './BlockSocialMediaLink';
+import { VideoHero } from '../../LandingPage/VideoHero';
 
 ///////////////////////////////////////////
 // Mapping of block types and components //
@@ -41,25 +42,33 @@ const BlockBuilder = props => {
   return (
     <>
       {blocks.map((block, index) => {
+        console.log(block);
         const config = components[block.blockType];
         const Block = config?.component;
         const blockId = block.blockId || `${sectionId}-block-${index + 1}`;
-
-        if (Block) {
+        if(block.blockId == 'my-video'){
           return (
-            <Block
-              key={`${blockId}_i${index}`}
-              {...block}
-              blockId={blockId}
-              {...blockOptionsMaybe}
-              {...otherProps}
-            />
-          );
-        } else {
-          // If the block type is unknown, the app can't know what to render
-          console.warn(`Unknown block type (${block.blockType}) detected inside (${sectionId}).`);
-          return null;
+            <VideoHero />
+          )
         }
+        else{
+          if (Block) {
+            return (
+              <Block
+                key={`${blockId}_i${index}`}
+                {...block}
+                blockId={blockId}
+                {...blockOptionsMaybe}
+                {...otherProps}
+              />
+            );
+          } else {
+            // If the block type is unknown, the app can't know what to render
+            console.warn(`Unknown block type (${block.blockType}) detected inside (${sectionId}).`);
+            return null;
+          }
+        }
+       
       })}
     </>
   );

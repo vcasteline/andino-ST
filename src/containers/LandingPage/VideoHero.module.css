@@ -1,0 +1,105 @@
+  .heroSection {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: rgb(0, 0, 0);
+   border-radius: 30px;
+   border-style: solid;
+    height: calc(100vh - var(--topbarHeight));
+    overflow: hidden;
+  
+    @media (--viewportMedium) {
+      height: calc(100vh - var(--topbarHeightDesktop));
+    }
+  
+  }
+  
+  .heroVideo {
+    height: calc(100vh - var(--topbarHeight));
+   
+    @media (min-aspect-ratio: 16/9) {
+      width: 100vw;
+      height: unset;
+    }
+  }
+  .buttonLink {
+    composes: buttonDefault from global;
+    text-decoration: none!important;
+    width: fit-content;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+  }
+ 
+  
+  
+  .heroContentWrapper {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+  
+    height: calc(100vh - var(--topbarHeight));
+    /* @media (min-width: 601px){
+        height: calc(100vh - var(--topbarHeightDesktop));
+    } */
+    /* @media (--viewportMedium) {
+      height: calc(100vh - var(--topbarHeightDesktop));
+    } */
+  }
+  .heroContentOne{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 960px;
+  }
+  .heroContent {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    max-width: 960px;
+  
+    h1 {
+      font-size: 40px;
+      line-height: 1.2;
+      color: var(--colorWhite);
+      margin-bottom: 0;
+      font-weight: 800;
+      
+        @media (min-width: 601px){
+            font-size: 46px;
+            padding: 0 54px;
+        }
+      /* @media (--viewportMedium) {
+        font-size: 66px;
+        margin-bottom: 96px;
+      } */
+    }
+    h3 {
+        font-size: 18px;
+        padding: 0 34px;
+        line-height: 1.4;
+        font-weight: 600;
+        margin-bottom: 46px;
+        @media (min-width: 601px){
+            /* font-size: 46px; */
+            padding: 0 94px;
+        }
+    }
+  }
+  
+  .heroActionButton {
+    width: fit-content;
+    padding: 0 48px;
+  }
