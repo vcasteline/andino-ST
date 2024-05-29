@@ -9,7 +9,13 @@ import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 // Utils
 import { FormattedMessage, intlShape, useIntl } from '../../util/reactIntl';
-import { LISTING_STATE_PENDING_APPROVAL, LISTING_STATE_CLOSED, propTypes } from '../../util/types';
+import {
+  LISTING_STATE_PENDING_APPROVAL,
+  LISTING_STATE_CLOSED,
+  SCHEMA_TYPE_MULTI_ENUM,
+  SCHEMA_TYPE_TEXT,
+  propTypes,
+} from '../../util/types';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
@@ -70,6 +76,8 @@ import {
 } from './ListingPage.shared';
 import ActionBarMaybe from './ActionBarMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
+import SectionDetailsMaybe from './SectionDetailsMaybe';
+import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
 import SectionReviews from './SectionReviews';
 import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
@@ -82,6 +90,8 @@ import QuantityPriceBreaks from '../EditListingPage/EditListingWizard/QuantityPr
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 const { UUID } = sdkTypes;
+
+const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
@@ -339,27 +349,26 @@ export const ListingPageComponent = props => {
               </H4>
             </div>
             <SectionTextMaybe text={description} showAsIngress />
-
-            <CustomListingFields
+            <SectionDetailsMaybe
               publicData={publicData}
               metadata={metadata}
-              listingFieldConfigs={listingConfig.listingFields}
-              categoryConfiguration={config.categoryConfiguration}
+              listingConfig={listingConfig}
               intl={intl}
             />
+
             {listingConfig.listingFields.reduce((pickedElements, config) => {
               const { key, enumOptions, includeForListingTypes, scope = 'public' } = config;
               const listingType = publicData?.listingType;
               const isTargetListingType =
                 includeForListingTypes == null || includeForListingTypes.includes(listingType);
-
+             
               const value =
                 scope === 'public' ? publicData[key] : scope === 'metadata' ? metadata[key] : null;
               const hasValue = value != null;
-
+              const nonEmptyFields = pickedElements.filter((p)=> (p?.props?.selectedOptions?.length !==0) )
               if (isTargetListingType && config.schemaType === SCHEMA_TYPE_MULTI_ENUM) {
                 return [
-                  ...pickedElements,
+                  ...nonEmptyFields,
                   <SectionMultiEnumMaybe
                     key={key}
                     heading={config?.showConfig?.label}
@@ -372,13 +381,17 @@ export const ListingPageComponent = props => {
                 hasValue &&
                 config.schemaType === SCHEMA_TYPE_TEXT
               ) {
-                  return [
-                    ...pickedElements,
-                    <SectionTextMaybe key={key} showConfig={config?.showConfig} heading={config?.showConfig?.label} text={value} />,
-                  ];
+                return [
+                  ...nonEmptyFields,
+                  <SectionTextMaybe
+                    key={key}
+                    showConfig={config?.showConfig}
+                    heading={config?.showConfig?.label}
+                    text={value}
+                  />,
+                ];
               }
-
-              return pickedElements;
+              return nonEmptyFields;
             }, [])}
 
             <SectionMapMaybe
@@ -445,7 +458,6 @@ export const ListingPageComponent = props => {
     </Page>
   );
 };
-
 ListingPageComponent.defaultProps = {
   currentUser: null,
   inquiryModalOpenForListingId: null,
@@ -457,7 +469,6 @@ ListingPageComponent.defaultProps = {
   lineItems: null,
   fetchLineItemsError: null,
 };
-
 ListingPageComponent.propTypes = {
   // from useHistory
   history: shape({
@@ -467,21 +478,17 @@ ListingPageComponent.propTypes = {
   location: shape({
     search: string,
   }).isRequired,
-
   // from useIntl
   intl: intlShape.isRequired,
-
   // from useConfiguration
   config: object.isRequired,
   // from useRouteConfiguration
   routeConfiguration: arrayOf(propTypes.route).isRequired,
-
   params: shape({
     id: string.isRequired,
     slug: string,
     variant: oneOf([LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT]),
   }).isRequired,
-
   isAuthenticated: bool.isRequired,
   currentUser: propTypes.currentUser,
   getListing: func.isRequired,
@@ -546,19 +553,16 @@ const mapStateToProps = state => {
     inquiryModalOpenForListingId,
   } = state.ListingPage;
   const { currentUser } = state.user;
-
   const getListing = id => {
     const ref = { id, type: 'listing' };
     const listings = getMarketplaceEntities(state, [ref]);
     return listings.length === 1 ? listings[0] : null;
   };
-
   const getOwnListing = id => {
     const ref = { id, type: 'ownListing' };
     const listings = getMarketplaceEntities(state, [ref]);
     return listings.length === 1 ? listings[0] : null;
   };
-
   return {
     isAuthenticated,
     currentUser,
@@ -577,7 +581,6 @@ const mapStateToProps = state => {
     sendInquiryError,
   };
 };
-
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
@@ -589,8 +592,7 @@ const mapDispatchToProps = dispatch => ({
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
 });
-
-// Note: it is important that the withRouter HOC is **outside** the
+// Note: it is important that the withRouter HOC is outside the
 // connect HOC, otherwise React Router won't rerender any Route
 // components since connect implements a shouldComponentUpdate
 // lifecycle hook.
@@ -602,5 +604,4 @@ const ListingPage = compose(
     mapDispatchToProps
   )
 )(EnhancedListingPage);
-
 export default ListingPage;

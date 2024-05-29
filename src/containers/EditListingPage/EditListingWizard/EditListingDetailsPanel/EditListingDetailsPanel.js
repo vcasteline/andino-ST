@@ -324,6 +324,7 @@ const EditListingDetailsPanel = props => {
               listingType,
               transactionProcessAlias,
               unitType,
+              selectedVariantFields,
               ...rest
             } = values;
 
@@ -355,6 +356,7 @@ const EditListingDetailsPanel = props => {
                 listingType,
                 transactionProcessAlias,
                 unitType,
+                selectedVariantFields,
                 ...cleanedNestedCategories,
                 ...publicListingFields,
               },

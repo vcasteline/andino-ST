@@ -46,8 +46,8 @@ export const OrderBreakdownComponent = props => {
   const isCustomer = userRole === 'customer';
   const isProvider = userRole === 'provider';
   const allLineItems = transaction.attributes.lineItems || [];
-  //console.log(transaction);
   const selectedVariants = transaction.attributes.protectedData?.selectedVariants || [];
+  // const selectedVariantFields = transaction.attributes.protectedData?.selectedVariantFields || [];
   // We'll show only line-items that are specific for the current userRole (customer vs provider)
   const lineItems = allLineItems.filter(lineItem => lineItem.includeFor.includes(userRole));
   const unitLineItem = lineItems.find(
@@ -61,7 +61,11 @@ export const OrderBreakdownComponent = props => {
     const hasProviderCommission = isProvider && item.code === LINE_ITEM_PROVIDER_COMMISSION;
     return (hasCustomerCommission || hasProviderCommission) && !item.reversal;
   });
-
+  function toTitleCase(str) {
+    return str?.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
   const classes = classNames(rootClassName || css.root, className);
   const SelectedVariantsMaybe = ({ selectedVariants }) => {
     if (!selectedVariants || selectedVariants.length === 0) {
@@ -70,28 +74,26 @@ export const OrderBreakdownComponent = props => {
   
     return (
       <div>
-        <hr className={css.totalDivider} />
-        <p className={css.title}>Product Breakdown</p>
-        <div className={css.variants}>
-          <div>
-            {selectedVariants.map((variant, index) => (
-              <div className={css.lineItemV} key={index}>
+      <hr className={css.totalDivider} />
+      <p className={css.title}>Product Breakdown</p>
+      <div className={css.variants}>
+        {selectedVariants.map((variant, index) => (
+          <div className={css.lineItemV} key={index}>
+            {Object.entries(variant).map(([key, value]) => (
+              key !== 'quantity' &&
+              <div key={key}>
                 <span className={css.itemLabelV}>
-                  <b>Size:&nbsp;</b>
-                  {variant.size}
+                  <b>{toTitleCase(key)}</b> 
+                  : {toTitleCase(value)}
                 </span>
-                <span className={css.itemLabelV}>
-                  <b>Color:&nbsp;</b>
-                  {variant.color}
-                </span>
-                <span className={css.quantity}>
-                  x&nbsp;{variant.quantity}
-                </span>
+         
               </div>
             ))}
+            <span className={css.quantity}>x&nbsp;{variant.quantity}</span>
           </div>
-        </div>
+        ))}
       </div>
+    </div>
     );
   };
   /**

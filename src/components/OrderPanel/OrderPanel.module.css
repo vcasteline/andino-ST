@@ -23,6 +23,86 @@
     margin-bottom: 0;
   }
 }
+/* .variantRow{
+  border-color: #CDCDCD;
+  border-width: 1px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 8px;
+  border-style: solid;
+  border-radius: 20px;
+  margin-bottom: 5px;
+} */
+
+.variantRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.variantFields {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.variantField {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.variantLabel {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.variantValue {
+  color: #555;
+}
+
+.variantQuantity {
+  /* display: flex;
+  align-items: center;
+  justify-content: flex-start; */
+  margin-right: 20px;
+}
+
+.quantityLabel {
+  font-weight: smaller;
+  margin-right: 5px;
+}
+
+.quantityValue {
+  color: #555;
+  /* font-weight: bold; */
+}
+
+.removeVariantButton {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: absolute;
+  top: 4px;
+  right: 10px;
+}
+
+/* .removeVariantButton:hover {
+  background-color: red;
+  color: #f0f0f0;
+} */
 .sizeVariants{
   display: flex;
   justify-content: space-between;

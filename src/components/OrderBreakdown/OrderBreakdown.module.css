@@ -22,10 +22,6 @@
   flex-direction: row;
   justify-content: space-between;
 }
-.variants{
-  display: flex;
-  justify-content: end;
-}
 .bookingPeriod {
   flex: 1 1;
   display: flex;
@@ -106,16 +102,16 @@
 }
 
 .variants {
-  display: flex;
+  /* display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-end; */
   margin-left: 20px;
 }
 
 .lineItemV {
-  display: flex;
+  /* display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; */
   margin-bottom: 8px;
   composes: marketplaceSmallFontStyles from global;
 

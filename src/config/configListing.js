@@ -53,13 +53,27 @@
  *   - requiredMessage (optional):    Message for those fields, which are mandatory.
  */
 export const listingFields = [
+  // {
+  //   key: 'selectedListingVariants',
+  //   scope: 'public',
+  //   schemaType: 'multi-enum',
+  //   //includeForListingTypes: ['sell-shirts', 'sell-new-products'],
+  //   showConfig: {
+  //     label: 'selectedListingVariants',
+  //   },
+  //   saveConfig: {
+  //     label: 'selectedListingVariants',
+  //     placeholderMessage: 'Enter the minimum order quantity',
+  //     isRequired: false,
+  //   },
+  // },
   {
     key: 'minOrderQuantity',
     scope: 'public',
     schemaType: 'long',
     includeForListingTypes: ['sell-shirts', 'sell-new-products'],
     showConfig: {
-      label: 'Minimum Order Quantity'
+      label: 'Minimum Order Quantity',
     },
     saveConfig: {
       label: 'Minimum Order Quantity',
@@ -73,7 +87,7 @@ export const listingFields = [
     schemaType: 'long',
     includeForListingTypes: ['sell-samples'],
     showConfig: {
-      label: 'Maximum Order Quantity'
+      label: 'Maximum Order Quantity',
     },
     saveConfig: {
       label: 'Maximum Order Quantity (MOQ)',
@@ -85,14 +99,15 @@ export const listingFields = [
     key: 'sample_link',
     scope: 'public',
     schemaType: 'text',
-    includeForListingTypes: ['sell-shirts', 'sell-new-products'],
+    //includeForListingTypes: ['sell-shirts', 'sell-new-products'],
     showConfig: {
       label: 'Sample Link',
       isDetail: false,
     },
     saveConfig: {
       label: 'Sample Link',
-      placeholderMessage: 'Create a sample listing under "Sell Samples", then copy the link and paste it here. You can always add this later.',
+      placeholderMessage:
+        'Create a sample listing under "Sell Samples", then copy the link and paste it here. You can always add this later.',
       isRequired: false,
     },
   },
@@ -100,27 +115,28 @@ export const listingFields = [
     key: 'quantityPriceBreaks',
     scope: 'public',
     schemaType: 'text',
-    includeForListingTypes: ['sell-shirts', 'sell-new-products'],
+    //includeForListingTypes: ['sell-shirts', 'sell-new-products'],
     saveConfig: {
       label: 'Quantity Price Breaks',
-      placeholderMessage: 'Enter quantity range price breaks separated by commas (e.g. 200-399:2000, 400-599:1800, >=600:1600). Start with you MOQ. Review the preview above to check for accuracy.',
+      placeholderMessage:
+        'Enter quantity range price breaks separated by commas (e.g. 200-399:2000, 400-599:1800, >=600:1600). Start with you MOQ. Review the preview above to check for accuracy.',
       isRequired: true,
     },
-      showConfig: {
+    showConfig: {
       label: 'Price Breaks',
       isDetail: false,
     },
   },
 
   // {
-  //   key: 'category',
+  //   key: 'box-size',
   //   scope: 'public',
   //   schemaType: 'enum',
   //   enumOptions: [
-  //     { option: 'city-bikes', label: 'City bikes' },
-  //     { option: 'electric-bikes', label: 'Electric bikes' },
-  //     { option: 'mountain-bikes', label: 'Mountain bikes' },
-  //     { option: 'childrens-bikes', label: "Children's bikes" },
+  //     { option: '30 x 40 inches', label: '30 x 40 inches' },
+  //     { option: '40 x 50 inches', label: '30 x 40 inches' },
+  //     { option: '50 x 60 inches', label: '30 x 40 inches' },
+  //     { option: '60 x 70 inches', label: "30 x 40 inches" },
   //   ],
   //   filterConfig: {
   //     indexForSearch: true,
@@ -138,6 +154,33 @@ export const listingFields = [
   //     isRequired: true,
   //     requiredMessage: 'You need to select a category.',
   //   },
+  //   variantCategories: ['boxes'],
+  // },
+  // {
+  //   key: 'metal',
+  //   scope: 'public',
+  //   schemaType: 'enum',
+  //   enumOptions: [
+  //     { option: 'gold', label: 'Gold' },
+  //     { option: 'silver', label: 'Silver' },
+  //   ],
+  //   filterConfig: {
+  //     indexForSearch: true,
+  //     filterType: 'SelectMultipleFilter',
+  //     label: 'Category',
+  //     group: 'primary',
+  //   },
+  //   showConfig: {
+  //     label: 'Category',
+  //     isDetail: true,
+  //   },
+  //   saveConfig: {
+  //     label: 'Category',
+  //     placeholderMessage: 'Select an option…',
+  //     isRequired: true,
+  //     requiredMessage: 'You need to select a category.',
+  //   },
+  //   variantCategories: ['t-shirts'],
   // },
   // {
   //   key: 'tire',

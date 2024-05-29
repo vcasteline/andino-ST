@@ -205,7 +205,11 @@ const OrderPanel = props => {
     sizes,
     colors,
     sample_link,
-    maxOrderQuantity
+    maxOrderQuantity,
+    categoryLevel1,
+    categoryLevel2,
+    categoryLevel3,
+    selectedVariantFields,
   } = publicData || {};
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const lineItemUnitType = lineItemUnitTypeMaybe || `line-item/${unitType}`;
@@ -276,56 +280,48 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
+
   const [selectedVariants, setSelectedVariants] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
+  const [currentVariant, setCurrentVariant] = useState(
+    selectedVariantFields?.reduce((obj, field) => ({ ...obj, [field]: '' }), {
+      quantity: '',
+    })
+  );
 
   function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt) {
+    return str?.replace(/\w\S*/g, function(txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
+
   const handleRemoveVariant = index => {
     setSelectedVariants(prevVariants => {
       const updatedVariants = [...prevVariants];
-      updatedVariants.splice(index, 1);
-
-      const newTotalQuantity = updatedVariants.reduce(
-        (sum, variant) => sum + (variant.quantity || 0),
-        0
-      );
-
+      const removedVariant = updatedVariants.splice(index, 1)[0];
+      const newTotalQuantity = totalQuantity - (removedVariant.quantity || 0);
       setTotalQuantity(newTotalQuantity);
-
       return updatedVariants;
     });
   };
-  const handleVariantChange = (field, value, index) => {
-    setSelectedVariants(prevVariants => {
-      const updatedVariants = [...prevVariants];
-      if (index >= 0 && index < updatedVariants.length) {
-        updatedVariants[index] = {
-          ...updatedVariants[index],
-          [field]: value,
-        };
-      } else {
-        updatedVariants.push({
-          color: '',
-          size: '',
-          quantity: '',
-          ...{ [field]: value },
-        });
-      }
 
-      const newTotalQuantity = updatedVariants.reduce(
-        (sum, variant) => sum + (variant.quantity || 0),
-        0
-      );
-
-      setTotalQuantity(newTotalQuantity);
-
-      return updatedVariants;
-    });
+  const handleVariantChange = (field, value) => {
+    setCurrentVariant(prevVariant => ({
+      ...prevVariant,
+      [field]: value,
+    }));
   };
+
+  const handleAddVariant = () => {
+    setSelectedVariants(prevVariants => [...prevVariants, currentVariant]);
+    setTotalQuantity(prevTotal => prevTotal + (currentVariant.quantity || 0));
+    setCurrentVariant(
+      selectedVariantFields.reduce((obj, field) => ({ ...obj, [field]: '' }), {
+        quantity: '',
+      })
+    );
+  };
+
   return (
     <div className={classes}>
       <ModalInMobile
@@ -350,14 +346,6 @@ const OrderPanel = props => {
           quantityPriceBreaks={quantityPriceBreaks}
         />
 
-        {/* <PriceMaybe
-          price={price}
-          publicData={publicData}
-          validListingTypes={validListingTypes}
-          intl={intl}
-          marketplaceCurrency={marketplaceCurrency}
-        /> */}
-
         <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>
@@ -372,65 +360,72 @@ const OrderPanel = props => {
           </span>
         </div>
 
-        {sizes?.length > 0 && (
+        {
           <div>
-            <label htmlFor="size-variant-select">
-              <FormattedMessage id="OrderPanel.sizeVariantLabel" />
-            </label>
-            {selectedVariants.map((variant, index) => (
+            {selectedVariants?.map((variant, index) => (
               <div key={index} className={css.variantRow}>
-                <select
-                  className={css.variantField}
-                  value={variant.size}
-                  onChange={e => handleVariantChange('size', e.target.value, index)}
-                >
-                  <option value="">Select size</option>
-                  {sizes.map(size => (
-                    <option key={size} value={size}>
-                      {toTitleCase(size)}
-                    </option>
+                <div className={css.variantFields}>
+                  {selectedVariantFields?.map(field => (
+                    <div key={field} className={css.variantField}>
+                      <span className={css.variantLabel}>{toTitleCase(field)}:</span>
+                      <span className={css.variantValue}>{toTitleCase(variant[field])}</span>
+                    </div>
                   ))}
-                </select>
-                <select
-                  className={css.variantField}
-                  value={variant.color}
-                  onChange={e => handleVariantChange('color', e.target.value, index)}
-                >
-                  <option value="">Select color</option>
-                  {colors.map(color => (
-                    <option key={color} value={color}>
-                      {toTitleCase(color)}
-                    </option>
-                  ))}
-                </select>
-                <div className={css.inputClose}>
-                  <input
-                    className={css.quantityField}
-                    type="number"
-                    min={1}
-                    value={variant.quantity}
-                    onChange={e => handleVariantChange('quantity', parseInt(e.target.value), index)}
-                    disabled={!variant.size || !variant.color}
-                    required
-                  />
-                  <button
-                    className={css.removeVariantButton}
-                    onClick={() => handleRemoveVariant(index)}
-                  >
-                   X Remove
-                  </button>
                 </div>
+                <div className={css.variantQuantity}>
+                  <span className={css.variantField}>Quantity:</span>
+                  <span className={css.quantityValue}>{variant?.quantity}</span>
+                </div>
+                <button
+                  className={css.removeVariantButton}
+                  onClick={() => handleRemoveVariant(index)}
+                >
+                  x
+                </button>
               </div>
             ))}
-            <Button
-              className={css.addVariantButton}
-              onClick={() => handleVariantChange('size', '', selectedVariants.length)}
-              disabled={selectedVariants.some(variant => !variant.size || !variant.color)}
-            >
-              Add Variant
-            </Button>
+            <div>
+              {selectedVariantFields?.map(field => (
+                <div key={field}>
+                  <select
+                    id={`variant-${field}`}
+                    value={currentVariant[field]}
+                    onChange={e => handleVariantChange(field, e.target.value)}
+                  >
+                    <option value="">Select {field}</option>
+                    {publicData[field].map(option => (
+                      <option key={option} value={option}>
+                        {toTitleCase(option)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+              {selectedVariantFields?.length !== 0 && 
+              <>
+              <div className={css.inputClose}>
+                <input
+                  className={css.quantityField}
+                  type="number"
+                  min={1}
+                  value={currentVariant?.quantity}
+                  onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
+                  required
+                />
+              </div>
+              <Button
+                className={css.addVariantButton}
+                onClick={handleAddVariant}
+                disabled={selectedVariantFields?.some(field => !currentVariant[field])}
+              >
+                Add Variant
+              </Button>
+              </>
+              }
+              
+            </div>
           </div>
-        )}
+        }
 
         {showPriceMissing ? (
           <PriceMissing />
@@ -506,6 +501,11 @@ const OrderPanel = props => {
             selectedVariants={selectedVariants}
             sampleLink={sample_link}
             maxOrderQuantity={maxOrderQuantity}
+            categoryLevel1={categoryLevel1}
+            categoryLevel2={categoryLevel2}
+            categoryLevel3={categoryLevel3}
+            selectedVariantFields={selectedVariantFields}
+            publicData={publicData}
           />
         ) : showInquiryForm ? (
           <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />

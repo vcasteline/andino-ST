@@ -20,6 +20,7 @@ import {
   FieldTextInput,
   Heading,
   CustomExtendedDataField,
+  FieldCheckboxGroup,
 } from '../../../../components';
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
@@ -242,9 +243,18 @@ const FieldSelectCategory = props => {
 
 // Add collect data for listing fields (both publicData and privateData) based on configuration
 const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, selectedCategories, formId, intl, values } = props;
+  const {
+    listingType,
+    listingFieldsConfig,
+    selectedCategories,
+    formId,
+    intl,
+    values,
+    selectedVariantFields,
+    handleVariantFieldChange,
+    getSelectedVariantFields
+  } = props;
   const targetCategoryIds = Object.values(selectedCategories);
-
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
     const { key, schemaType, scope } = fieldConfig || {};
     const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
@@ -253,22 +263,16 @@ const AddListingFields = props => {
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
-
-    // return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
-    //   ? [
-    //       ...pickedFields,
-    //       <CustomExtendedDataField
-    //         key={namespacedKey}
-    //         name={namespacedKey}
-    //         fieldConfig={fieldConfig}
-    //         defaultRequiredMessage={intl.formatMessage({
-    //           id: 'EditListingDetailsForm.defaultRequiredMessage',
-    //         })}
-    //         formId={formId}
-    //       />,
-    //     ]
-    //   : pickedFields;
-    if (isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory) {
+    const isMandatory =
+      key == 'quantityPriceBreaks' || key == 'minOrderQuantity' || key == 'lead_times';
+    
+    if (
+      isKnownSchemaType &&
+      isProviderScope &&
+      isTargetListingType &&
+      isTargetCategory &&
+      (selectedVariantFields.includes(fieldConfig.key) || isMandatory)
+    ) {
       if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
         pickedFields.push(
           <QuantityPriceBreaks
@@ -280,21 +284,49 @@ const AddListingFields = props => {
 
       pickedFields.push(
         <CustomExtendedDataField
-        key={namespacedKey}
-        name={namespacedKey}
-        fieldConfig={fieldConfig}
-        defaultRequiredMessage={intl.formatMessage({
-          id: 'EditListingDetailsForm.defaultRequiredMessage',
-        })}
-        formId={formId}
+          key={namespacedKey}
+          name={namespacedKey}
+          fieldConfig={fieldConfig}
+          defaultRequiredMessage={intl.formatMessage({
+            id: 'EditListingDetailsForm.defaultRequiredMessage',
+          })}
+          formId={formId}
         />
       );
     }
-
     return pickedFields;
   }, []);
 
-  return <>{fields}</>;
+  return (
+    <>
+      <h4>Select what you offer</h4>
+      {listingFieldsConfig.map(field => {
+        const isTargetListingType = isFieldForListingType(listingType, field);
+        const isTargetCategory = isFieldForCategory(targetCategoryIds, field);
+        const isMandatory =
+          field.key == 'quantityPriceBreaks' ||
+          field.key == 'minOrderQuantity' ||
+          field.key == 'lead_times';
+        if (isTargetCategory && isTargetListingType && !isMandatory) {
+          return (
+            <div key={field.key} className={css.variantField}>
+              <label className={css.variantLabel}>
+                <span className={css.variantLabelText}>Offer {field.saveConfig.label}</span>
+                <input
+                  type="checkbox"
+                  className={css.variantCheckbox}
+                  checked={selectedVariantFields.includes(field.key)}
+                  onChange={() => handleVariantFieldChange(field.key)}
+                />
+              </label>
+            </div>
+          );
+        }
+        return null;
+      })}
+      <div style={{ marginTop: 20 }}>{fields}</div>
+    </>
+  );
 };
 
 // Form that asks title, description, transaction process and unit type for pricing
@@ -328,9 +360,36 @@ const EditListingDetailsFormComponent = props => (
         listingFieldsConfig,
         values,
       } = formRenderProps;
-
+      // const { form } = formRenderProps;
+      const getSelectedVariantFields = Object.entries(values)
+        .filter(([key, value]) => {
+          return (
+            key.startsWith('pub_') &&
+            value !== null &&
+            !['pub_minOrderQuantity', 'pub_lead_times', 'pub_quantityPriceBreaks'].includes(key)
+          );
+        })
+        .map(([key, value]) => key.slice(4));
       const { listingType, transactionProcessAlias, unitType } = values;
       const [allCategoriesChosen, setAllCategoriesChosen] = useState(false);
+      const [selectedVariantFields, setSelectedVariantFields] = useState(getSelectedVariantFields);
+      const handleVariantFieldChange = fieldKey => {
+        setSelectedVariantFields(prevState => {
+          if (prevState.includes(fieldKey)) {
+            // If fieldKey is already in the array, remove it and clear the corresponding field value
+            const updatedFields = prevState.filter(field => field !== fieldKey);
+            formApi.change(`pub_${fieldKey}`, null); // Clear the field value
+            return updatedFields;
+          } else {
+            // If fieldKey is not in the array, add it
+            return [...prevState, fieldKey];
+          }
+        });
+      };
+
+      useEffect(() => {
+        formApi.change('selectedVariantFields', selectedVariantFields);
+      }, [selectedVariantFields]);
 
       const titleRequiredMessage = intl.formatMessage({
         id: 'EditListingDetailsForm.titleRequired',
@@ -360,7 +419,12 @@ const EditListingDetailsFormComponent = props => (
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <ErrorMessage fetchErrors={fetchErrors} />
-
+          {/* <Field name="selectedVariantFields" component="input" type="hidden" /> */}
+          <FieldHidden
+            id={`${formId}selectedVariantFields`}
+            name="selectedVariantFields"
+            values={values}
+          />
           <FieldSelectListingType
             name="listingType"
             listingTypes={selectableListingTypes}
@@ -422,6 +486,10 @@ const EditListingDetailsFormComponent = props => (
               selectedCategories={pickSelectedCategories(values)}
               formId={formId}
               intl={intl}
+              values={values}
+              selectedVariantFields={selectedVariantFields}
+              handleVariantFieldChange={handleVariantFieldChange}
+              getSelectedVariantFields={getSelectedVariantFields}
             />
           ) : null}
 
