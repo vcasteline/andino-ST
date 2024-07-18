@@ -44,9 +44,11 @@ const Item = props => {
       <span className={css.iconWrapper}>
         <IconCheck isVisible={isSelected} />
       </span>
-      <div className={css.labelWrapper}>
-        <span className={labelClass}>{label}</span>
-      </div>
+      {isSelected && (
+        <div className={css.labelWrapper}>
+          <span className={labelClass}>{label}</span>
+        </div>
+      )}
     </li>
   );
 };
@@ -60,9 +62,12 @@ const PropertyGroup = props => {
 
   return (
     <ul className={listClasses}>
-      {checked.map(option => (
-        <Item key={`${id}.${option.key}`} label={option.label} isSelected={option.isSelected} />
-      ))}
+      {checked
+        .filter(option => option.isSelected) // Filter only by selected options
+        .map(option => (
+          <Item key={`${id}.${option.key}`} label={option.label} isSelected={option.isSelected} />
+        ))
+      }
     </ul>
   );
 };

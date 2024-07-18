@@ -79,7 +79,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
       ...getTransactionTypeData(listingType, unitType, config),
       ...deliveryMethodMaybe,
       ...shippingDetails,
-      selectedVariants
+      selectedVariants,
     },
   };
 
@@ -215,7 +215,7 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
     speculatedTransaction,
     stripe,
     card,
-    billingDetails: getBillingDetails(formValues),
+    billingDetails: getBillingDetails(formValues, currentUser),
     message,
     paymentIntent,
     hasPaymentIntentUserActionsDone,
@@ -303,6 +303,7 @@ export const CheckoutPageWithPayment = props => {
     scrollingDisabled,
     speculateTransactionError,
     speculatedTransaction: speculatedTransactionMaybe,
+    isClockInSync,
     initiateOrderError,
     confirmPaymentError,
     intl,
@@ -364,7 +365,7 @@ export const CheckoutPageWithPayment = props => {
 
   const process = processName ? getProcess(processName) : null;
   const transitions = process.transitions;
-  const isPaymentExpired = hasPaymentExpired(existingTransaction, process);
+  const isPaymentExpired = hasPaymentExpired(existingTransaction, process, isClockInSync);
 
   // Allow showing page when currentUser is still being downloaded,
   // but show payment form only when user info is loaded.

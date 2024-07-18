@@ -4,6 +4,7 @@ import truncate from 'lodash/truncate';
 import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../util/reactIntl';
+import { richText } from '../../../util/richText';
 import { ensureUser, ensureCurrentUser, userDisplayNameAsString } from '../../../util/data';
 import { propTypes } from '../../../util/types';
 
@@ -14,11 +15,11 @@ import css from './UserCard.module.css';
 // Approximated collapsed size so that there are ~three lines of text
 // in the desktop layout in the author section of the ListingPage.
 const BIO_COLLAPSED_LENGTH = 170;
+const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 const truncated = s => {
   return truncate(s, {
     length: BIO_COLLAPSED_LENGTH,
-
     // Allow truncated text end only in specific characters. This will
     // make the truncated text shorter than the length if the original
     // text has to be shortened and the substring ends in a separator.
@@ -33,7 +34,17 @@ const truncated = s => {
 const ExpandableBio = props => {
   const [expand, setExpand] = useState(false);
   const { className, bio } = props;
-  const truncatedBio = truncated(bio);
+  const bioWithLinks = richText(bio, {
+    linkify: true,
+    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+    longWordClass: css.longWord,
+  });
+  const truncatedBio = richText(truncated(bio), {
+    linkify: true,
+    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+    longWordClass: css.longWord,
+    breakChars: '/',
+  });
 
   const handleShowMoreClick = () => {
     setExpand(true);
@@ -45,8 +56,8 @@ const ExpandableBio = props => {
   );
   return (
     <p className={className}>
-      {expand ? bio : truncatedBio}
-      {bio !== truncatedBio && !expand ? showMore : null}
+      {expand ? bioWithLinks : truncatedBio}
+      {bio.length >= BIO_COLLAPSED_LENGTH && !expand ? showMore : null}
     </p>
   );
 };
