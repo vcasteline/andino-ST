@@ -21,6 +21,16 @@ const createUserWithIdp = require('./api/auth/createUserWithIdp');
 const { authenticateFacebook, authenticateFacebookCallback } = require('./api/auth/facebook');
 const { authenticateGoogle, authenticateGoogleCallback } = require('./api/auth/google');
 
+//azure blob storage
+const multer = require('multer');
+const inMemoryStorage = multer.memoryStorage();
+
+const azureUpload = require('./api/azure/azureUpload');
+const azureDownload = require('./api/azure/azureDownload');
+const azureDelete = require('./api/azure/azureDelete');
+const azureStream = require('./api/azure/azureStream');
+const uploadStrategy = multer({ storage: inMemoryStorage }).single('image');
+
 const router = express.Router();
 
 // ================ API router middleware: ================ //
@@ -79,5 +89,11 @@ router.get('/auth/google', authenticateGoogle);
 // with Google. In this route a Passport.js custom callback is used for calling
 // loginWithIdp endpoint in Sharetribe Auth API to authenticate user to the marketplace
 router.get('/auth/google/callback', authenticateGoogleCallback);
+
+// azure
+router.post('/azure-upload', uploadStrategy, azureUpload);
+router.get('/azure-download', azureDownload);
+router.get('/azure-delete', azureDelete);
+router.get('/azure-stream', azureStream);
 
 module.exports = router;

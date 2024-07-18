@@ -41,6 +41,7 @@ import css from './ProfilePage.module.css';
 import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
+import AzureImageDisplay from '../../components/AzureImageDisplay/AzureImageDisplay';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
@@ -195,6 +196,8 @@ export const MainContent = props => {
   } = props;
 
   const hasListings = listings.length > 0;
+  const certifications = publicData?.certifications;
+
   const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
   const hasBio = !!bio;
   const bioWithLinks = richText(bio, {
@@ -214,6 +217,10 @@ export const MainContent = props => {
       </p>
     );
   }
+
+  const options = { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' };
+  const formatDate = date => new Intl.DateTimeFormat('en-US', options).format(new Date(date));
+
   return (
     <div>
       <H2 as="h1" className={css.desktopHeading}>
@@ -226,6 +233,38 @@ export const MainContent = props => {
         userFieldConfig={userFieldConfig}
         intl={intl}
       />
+
+      {certifications &&
+        <div className={css.listingsContainer}>
+          <H4 as="h2" className={css.listingsTitle}>
+            <FormattedMessage id="ProfilePage.certificationsTitle" values={{ count: certifications.length }} />
+          </H4>
+
+          <div className={css.certificatesContainer}>
+            {certifications?.map((certification, index) => (
+              <div className={css.certificateContainer}>
+
+                <div className={css.certificateInfo}>
+                  <p className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.certificationName" values={{ value: certification.name }} />
+                  </p>
+
+                  <p className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.certificationDate" values={{ value: formatDate(certification.date) }} />
+                  </p>
+                </div>
+
+                <AzureImageDisplay
+                  className={css.image}
+                  value={certification.image} />
+
+              </div>
+            ))}
+          </div>
+
+        </div>
+      }
+
       {hasListings ? (
         <div className={listingsContainerClasses}>
           <H4 as="h2" className={css.listingsTitle}>
@@ -254,12 +293,12 @@ export const ProfilePageComponent = props => {
   const { scrollingDisabled, currentUser, userShowError, user, intl, ...rest } = props;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const profileUser = ensureUser(user);
-  const companyName = profileUser.attributes.profile.publicData.companyName;
+  const companyName = profileUser?.attributes?.profile?.publicData?.companyName;
   const isCurrentUser =
     ensuredCurrentUser.id && profileUser.id && ensuredCurrentUser.id.uuid === profileUser.id.uuid;
   const { bio, displayName, publicData, metadata } = profileUser?.attributes?.profile || {};
   const { userFields } = config.user;
-  const displayedName = companyName? companyName : displayName;
+  const displayedName = companyName ? companyName : displayName;
   const schemaTitleVars = { name: displayName, marketplaceName: config.marketplaceName };
   const schemaTitle = intl.formatMessage({ id: 'ProfilePage.schemaTitle' }, schemaTitleVars);
 

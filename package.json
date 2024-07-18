@@ -4,6 +4,10 @@
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
+    "@azure/storage-blob": "^12.17.0",
+    "into-stream": "5.1.1",
+    "js-file-download": "^0.4.12",
+    "multer": "^1.4.5-lts.1",
     "@babel/runtime": "^7.17.9",
     "@loadable/component": "^5.15.2",
     "@loadable/server": "^5.15.2",

@@ -1,0 +1,90 @@
+.hiddenFileInput {
+    position: fixed;
+    visibility: hidden;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.addFileContainer {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0;
+
+    /* Colors */
+    background-color: var(--colorWhite);
+
+    @media (--viewportLarge) {
+        background-color: var(--colorGrey50);
+    }
+
+    border-style: dashed;
+    border-color: var(--colorGrey100);
+    border-width: 2px;
+    border-radius: 2px;
+
+    /* Behaviour */
+    cursor: pointer;
+    transition: var(--transitionStyleButton);
+
+    &:hover {
+        border-color: var(--colorGrey300);
+    }
+}
+
+.addFileContainerRounded {
+    composes: addFileContainer;
+    border-radius: 50%;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.imageRounded {
+    composes: image;
+    border-radius: 50%;
+}
+
+.removeImage {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 33px;
+    height: 33px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+
+    & svg {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 10px;
+        height: 10px;
+        fill: var(--colorGrey300);
+        stroke: var(--colorGrey300);
+    }
+
+    &:hover svg {
+        fill: var(--colorWhite);
+        stroke: var(--colorWhite);
+    }
+}

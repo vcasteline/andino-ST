@@ -1,0 +1,75 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  margin-top: 24px;
+
+  @media (--viewportMedium) {
+    margin-top: 32px;
+  }
+}
+
+.certificationsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.certificationContainer {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+  background-color: rgb(243, 243, 243);
+  padding: 20px;
+}
+
+.imageContainer {
+  display: flex;
+  position: relative;
+  width: 200px;
+  height: 300px;
+}
+
+.addButton {
+  max-width: 200px;
+  align-self: center;
+}
+
+.remove {
+  color: var(--colorFail);
+  align-self: flex-end;
+  margin: 0;
+  padding: 0;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.imageAndRemoveContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.submitButton {
+  margin-top: 24px;
+  margin-bottom: 56px;
+  background-color: var(--marketplaceColor);
+}
+
+
+.inputsContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.info {
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+}
+
+.halfInput {
+  width: 50%;
+}

@@ -6,6 +6,7 @@
   @media (--viewportMedium) {
     margin-top: 4px;
   }
+
   @media (--viewportLarge) {
     margin-top: 3px;
   }
@@ -302,4 +303,29 @@
 .detailLabel {
   font-weight: var(--fontWeightSemiBold);
   letter-spacing: -0.09px;
+  margin: 0;
+  padding: 0;
+}
+
+.certificatesContainer {
+  display: grid;
+
+  grid-template-columns: auto;
+
+  @media (--viewportMedium) {
+    gap: 20px;
+    grid-template-columns: auto auto auto;
+  }
+}
+
+
+.certificateContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.certificateInfo {
+  display: flex;
+  flex-direction: column;
+  min-height: 70px;
 }

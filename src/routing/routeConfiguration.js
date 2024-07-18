@@ -30,6 +30,7 @@ const PaymentMethodsPage = loadable(() => import(/* webpackChunkName: "PaymentMe
 const PrivacyPolicyPage = loadable(() => import(/* webpackChunkName: "PrivacyPolicyPage" */ '../containers/PrivacyPolicyPage/PrivacyPolicyPage'));
 const ProfilePage = loadable(() => import(/* webpackChunkName: "ProfilePage" */ '../containers/ProfilePage/ProfilePage'));
 const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileSettingsPage" */ '../containers/ProfileSettingsPage/ProfileSettingsPage'));
+const ProfileCertificationsPage = loadable(() => import(/* webpackChunkName: "ProfileCertificationsPage" */ '../containers/ProfileCertificationsPage/ProfileCertificationsPage'));
 const SearchPageWithMap = loadable(() => import(/* webpackChunkName: "SearchPageWithMap" */ /* webpackPrefetch: true */  '../containers/SearchPage/SearchPageWithMap'));
 const SearchPageWithGrid = loadable(() => import(/* webpackChunkName: "SearchPageWithGrid" */ /* webpackPrefetch: true */  '../containers/SearchPage/SearchPageWithGrid'));
 const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayoutPage" */ '../containers/StripePayoutPage/StripePayoutPage'));
@@ -61,13 +62,13 @@ const RedirectToLandingPage = () => <NamedRedirect name="LandingPage" />;
 // Our routes are exact by default.
 // See behaviour from Routes.js where Route is created.
 const routeConfiguration = (layoutConfig) => {
-  const SearchPage = layoutConfig.searchPage?.variantType === 'map' 
-    ? SearchPageWithMap 
+  const SearchPage = layoutConfig.searchPage?.variantType === 'map'
+    ? SearchPageWithMap
     : SearchPageWithGrid;
-  const ListingPage = layoutConfig.listingPage?.variantType === 'carousel' 
-    ? ListingPageCarousel 
+  const ListingPage = layoutConfig.listingPage?.variantType === 'carousel'
+    ? ListingPageCarousel
     : ListingPageCoverPhoto;
-  
+
   return [
     {
       path: '/',
@@ -164,6 +165,13 @@ const routeConfiguration = (layoutConfig) => {
       auth: true,
       authPage: 'LoginPage',
       component: ProfileSettingsPage,
+    },
+    {
+      path: '/profile-certifications',
+      name: 'ProfileCertificationsPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: ProfileCertificationsPage,
     },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
@@ -347,7 +355,7 @@ const routeConfiguration = (layoutConfig) => {
     {
       path: '/reset-password',
       name: 'PasswordResetPage',
-      component: PasswordResetPage ,
+      component: PasswordResetPage,
     },
 
     // Do not change this path!
@@ -367,7 +375,7 @@ const routeConfiguration = (layoutConfig) => {
     {
       path: '/preview',
       name: 'PreviewResolverPage',
-      component: PreviewResolverPage ,
+      component: PreviewResolverPage,
     },
   ];
 };
