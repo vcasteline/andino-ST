@@ -137,7 +137,7 @@ const FieldTable = (props) => {
                                     name={`${fields.name}[${tableIndex}].data[${rowIndex}][${colIndex}]`}
                                     component="input"
                                     type="text"
-                                    style={{ width: '100px', height: '30px', marginRight: '5px', marginBottom: '5px' }}
+                                    style={{ width: '160px', height: '40px', marginRight: '5px', marginBottom: '5px' }}
                                 />
                             ))}
                         </div>
