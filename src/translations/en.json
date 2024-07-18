@@ -647,6 +647,8 @@
   "ProfileSettingsForm.bioLabel": "Bio",
   "ProfileSettingsForm.companyPlaceholder": "Add your company name",
   "ProfileSettingsForm.companyLabel": "Company",
+  "ProfileSettingsForm.videoPlaceholder": "Add Youtube video to showcase your processes or factory",
+  "ProfileSettingsForm.videoLabel": "Presentation video",
   "ProfileSettingsForm.bioPlaceholder": "Tell us a little bit about yourself…",
   "ProfileSettingsForm.changeAvatar": "Change",
   "ProfileSettingsForm.fileInfo": ".JPG or .PNG. Max. 20 MB",

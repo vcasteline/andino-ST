@@ -42,6 +42,7 @@ import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
 import AzureImageDisplay from '../../components/AzureImageDisplay/AzureImageDisplay';
+import { transformToEmbedUrl } from '../../util/transformToEmbedUrl';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
@@ -221,12 +222,26 @@ export const MainContent = props => {
   const options = { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' };
   const formatDate = date => new Intl.DateTimeFormat('en-US', options).format(new Date(date));
 
+  const videoUrl = publicData?.videoUrl;
+
   return (
     <div>
       <H2 as="h1" className={css.desktopHeading}>
         <FormattedMessage id="ProfilePage.desktopHeading" values={{ name: displayName }} />
       </H2>
       {hasBio ? <p className={css.bio}>{bioWithLinks}</p> : null}
+
+      {videoUrl &&
+        <iframe
+          style={{ borderRadius: "var(--borderRadiusFull)" }}
+          width="100%"
+          height={400}
+          src={transformToEmbedUrl(videoUrl)}
+          title="video"
+          frameBorder={0}
+          allowFullScreen
+        />
+      }
       <CustomUserFields
         publicData={publicData}
         metadata={metadata}
