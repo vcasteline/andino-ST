@@ -23,33 +23,101 @@
     margin-bottom: 0;
   }
 }
-.sizeVariants{
+
+.variantRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.variantFields {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.variantField {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.variantLabel {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.variantValue {
+  color: #555;
+}
+
+.variantQuantity {
+  margin-right: 20px;
+}
+
+.quantityLabel {
+  font-weight: smaller;
+  margin-right: 5px;
+}
+
+.quantityValue {
+  color: #555;
+}
+
+.removeVariantButton {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: absolute;
+  top: 4px;
+  right: 10px;
+}
+
+.sizeVariants {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
-.variant{
+
+.variant {
   margin-right: 20px;
 }
-.variantField{
+
+.variantField {
   margin-top: 10px;
   height: 32px;
   font-size: smaller;
   padding-top: 0;
 }
-.variantField option{
+
+.variantField option {
   font-size: smaller;
 }
-.quantityField{
+
+.quantityField {
   margin-top: 10px;
   margin-bottom: 18px;
   width: 160px;
   height: 40px;
 }
-.inputClose{
+
+.inputClose {
   display: flex;
 }
+
 .colorButton {
   padding: 8px 16px;
   border: 1px solid #ccc;
@@ -57,22 +125,16 @@
   background-color: #fff;
   cursor: pointer;
 }
-.removeVariantButton {
-  background: none;
-  border: none;
-  color: red;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 15px;
-}
 
 .selectedColorButton {
   border-color: #000;
   background-color: #f0f0f0;
 }
-.addVariantButton{
+
+.addVariantButton {
   width: 50%;
 }
+
 .modalHeading {
   margin-top: 89px;
   margin-bottom: 0px;
@@ -95,6 +157,7 @@
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 5px;
@@ -269,6 +332,7 @@
     padding: 0;
   }
 }
+
 .priceContainerInCTA {
   flex-direction: column;
   align-items: center;
@@ -283,6 +347,7 @@
 
   margin-top: 0;
   margin-bottom: 0px;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 0;
@@ -329,6 +394,7 @@
     padding: 0;
   }
 }
+
 .errorSidebar {
   color: var(--colorFail);
   padding: 0 24px;

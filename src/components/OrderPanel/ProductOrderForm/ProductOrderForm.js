@@ -139,7 +139,11 @@ const renderForm = formRenderProps => {
     listingType,
     selectedVariants,
     sampleLink,
-    maxOrderQuantity
+    maxOrderQuantity,
+    categoryLevel2,
+    categoryLevel3,
+    selectedVariantFields,
+    publicData
   } = formRenderProps;
 
   // Note: don't add custom logic before useEffect
@@ -161,7 +165,7 @@ const renderForm = formRenderProps => {
       });
     }
 
-    if (listingType === 'sell-shirts') {
+    if (selectedVariantFields?.length !== 0) {
       formApi.change('quantity', totalQuantity);
     }
   }, [totalQuantity]);
@@ -232,7 +236,6 @@ const renderForm = formRenderProps => {
 
   const submitInProgress = fetchLineItemsInProgress;
   const submitDisabled = !hasStock;
-
   return (
     <Form onSubmit={handleFormSubmit}>
       <FormSpy subscription={{ values: true }} onChange={handleOnChange} />
@@ -244,7 +247,7 @@ const renderForm = formRenderProps => {
           type="hidden"
           validate={numberAtLeast(quantityRequiredMsg, 1)}
         />
-      ) : listingType == 'sell-shirts' ? (
+      ) : selectedVariantFields?.length !== 0 ? (
         <>
           <FieldTextInput
             id={`${formId}.quantity`}
@@ -254,7 +257,7 @@ const renderForm = formRenderProps => {
             validate={numberAtLeast('Add at least the min order quantity', minOrderQuantity)}
           />
         </>
-      ) : listingType == 'sell-samples' ? (
+      ) : listingType === 'sell-samples' ? (
         <FieldTextInput
           className={css.quantityField}
           id={`${formId}.stock`}

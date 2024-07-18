@@ -20,7 +20,27 @@
 .error {
   color: var(--colorFail);
 }
+.variantField {
+  margin-bottom: 0px;
+}
 
+.variantLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.variantLabelText {
+  color: #FC5115;
+  margin-right: 8px;
+}
+
+.variantCheckbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
 .formMargins {
   margin-bottom: 24px;
 

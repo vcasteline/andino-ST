@@ -4,7 +4,8 @@ import { createUserWithIdp } from '../util/api';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
 
-const authenticated = authInfo => authInfo && authInfo.isAnonymous === false;
+const authenticated = authInfo => authInfo?.isAnonymous === false;
+const loggedInAs = authInfo => authInfo?.isLoggedInAs === true;
 
 // ================ Action types ================ //
 
@@ -35,6 +36,9 @@ export const USER_LOGOUT = 'app/USER_LOGOUT';
 
 const initialState = {
   isAuthenticated: false,
+
+  // is marketplace operator logged in as a marketplace user
+  isLoggedInAs: false,
 
   // scopes associated with current token
   authScopes: [],
@@ -69,6 +73,7 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         authInfoLoaded: true,
         isAuthenticated: authenticated(payload),
+        isLoggedInAs: loggedInAs(payload),
         authScopes: payload.scopes,
       };
 
@@ -88,7 +93,13 @@ export default function reducer(state = initialState, action = {}) {
     case LOGOUT_REQUEST:
       return { ...state, logoutInProgress: true, loginError: null, logoutError: null };
     case LOGOUT_SUCCESS:
-      return { ...state, logoutInProgress: false, isAuthenticated: false, authScopes: [] };
+      return {
+        ...state,
+        logoutInProgress: false,
+        isAuthenticated: false,
+        isLoggedInAs: false,
+        authScopes: [],
+      };
     case LOGOUT_ERROR:
       return { ...state, logoutInProgress: false, logoutError: payload };
 
@@ -199,11 +210,31 @@ export const signup = params => (dispatch, getState, sdk) => {
     return Promise.reject(new Error('Login or logout already in progress'));
   }
   dispatch(signupRequest());
-  const { email, password, firstName, lastName, ...rest } = params;
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    publicData,
+    protectedData,
+    privateData,
+    ...rest
+  } = params;
 
   const createUserParams = isEmpty(rest)
-    ? { email, password, firstName, lastName }
-    : { email, password, firstName, lastName, protectedData: { ...rest } };
+    ? { email, password, firstName, lastName, publicData, privateData, protectedData }
+    : {
+        email,
+        password,
+        firstName,
+        lastName,
+        publicData,
+        privateData,
+        protectedData: {
+          ...protectedData,
+          ...rest,
+        },
+      };
 
   // We must login the user if signup succeeds since the API doesn't
   // do that automatically.
