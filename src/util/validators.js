@@ -81,7 +81,7 @@ export const autocompleteSearchRequired = message => value => {
   return value && value.search ? VALID : message;
 };
 
-export const autocompletePlaceSelected = message => {
+export const autocompletePlaceSelected = message => value => {
   const selectedPlaceIsValid =
     value &&
     value.selectedPlace &&
@@ -130,10 +130,6 @@ export const numberAtLeast = (message, minNumber) => value => {
   return typeof valueNum === 'number' && valueNum >= minNumber ? VALID : message;
 };
 
-export const numberAtMost = (message, maxNumber) => value => {
-  const valueNum = parseNum(value);
-  return typeof valueNum === 'number' && valueNum <= maxNumber ? VALID : message;
-};
 
 export const validateInteger = (value, max, min, numberTooSmallMessage, numberTooBigMessage) => {
   const parsedValue = Number.parseInt(value, 10);
@@ -144,6 +140,10 @@ export const validateInteger = (value, max, min, numberTooSmallMessage, numberTo
     return numberTooSmallMessage;
   }
   return VALID;
+};
+export const numberAtMost = (message, maxNumber) => value => {
+  const valueNum = parseNum(value);
+  return typeof valueNum === 'number' && valueNum <= maxNumber ? VALID : message;
 };
 
 export const ageAtLeast = (message, minYears) => value => {
