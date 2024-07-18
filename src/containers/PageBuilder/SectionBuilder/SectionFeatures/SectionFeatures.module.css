@@ -36,3 +36,25 @@
   padding-left: 0;
   padding-right: 0;
 }
+.featuresSection {
+  position: relative;
+  overflow: hidden;
+  color: white; /* Esto establecerá el color del texto a blanco por defecto */
+}
+
+.featuresMain {
+  position: relative;
+  z-index: 2;
+}
+
+.sectionDetails {
+  color: white; /* Asegúrate de que esta clase también tenga color blanco */
+}
+
+.title {
+  color: white; /* Asegúrate de que el título sea blanco */
+}
+
+.description {
+  color: white; /* Asegúrate de que la descripción sea blanca */
+}
