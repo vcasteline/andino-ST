@@ -151,6 +151,7 @@ const TopbarDesktop = props => {
 
   const signupLinkMaybe = isAuthenticatedOrJustHydrated ? null : <SignupLink />;
   const loginLinkMaybe = isAuthenticatedOrJustHydrated ? null : <LoginLink />;
+  const location = useLocation();
 
   return (
     <nav className={classes}>
@@ -170,17 +171,19 @@ const TopbarDesktop = props => {
         /> :
         <></>
       }
-      <CustomLinksMenu
-        currentPage={currentPage}
-        customLinks={customLinks}
-        intl={intl}
-        hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
-      />
+      <div style={{ display: "flex", flexWrap: "nowrap" }}>
+        <CustomLinksMenu
+          currentPage={currentPage}
+          customLinks={customLinks}
+          intl={intl}
+          hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
+        />
 
-      {inboxLinkMaybe}
-      {profileMenuMaybe}
-      {signupLinkMaybe}
-      {loginLinkMaybe}
+        {inboxLinkMaybe}
+        {profileMenuMaybe}
+        {signupLinkMaybe}
+        {loginLinkMaybe}
+      </div>
     </nav>
   );
 };

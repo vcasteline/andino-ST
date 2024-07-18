@@ -38,6 +38,8 @@
     outline: none;
 }
 
-span {
-    
+@media (max-width: 1000px) {
+    span {
+        display: none;
+    }
 }
