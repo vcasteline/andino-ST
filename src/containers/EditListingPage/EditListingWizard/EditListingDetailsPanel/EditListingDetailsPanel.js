@@ -184,21 +184,21 @@ const setNoAvailabilityForUnbookableListings = processAlias => {
   return isBookingProcessAlias(processAlias)
     ? {}
     : {
-        availabilityPlan: {
-          type: 'availability-plan/time',
-          timezone: 'Etc/UTC',
-          entries: [
-            // Note: "no entries" is the same as seats=0 for every entry.
-            // { dayOfWeek: 'mon', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'tue', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'wed', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'thu', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'fri', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'sat', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'sun', startTime: '00:00', endTime: '00:00', seats: 0 },
-          ],
-        },
-      };
+      availabilityPlan: {
+        type: 'availability-plan/time',
+        timezone: 'Etc/UTC',
+        entries: [
+          // Note: "no entries" is the same as seats=0 for every entry.
+          // { dayOfWeek: 'mon', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'tue', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'wed', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'thu', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'fri', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'sat', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'sun', startTime: '00:00', endTime: '00:00', seats: 0 },
+        ],
+      },
+    };
 };
 
 /**
@@ -222,13 +222,14 @@ const getInitialValues = (
   categoryKey
 ) => {
   const { description, title, publicData, privateData } = props?.listing?.attributes || {};
-  const { listingType } = publicData;
+  const { listingType, descriptionTable } = publicData;
 
   const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
   // Initial values for the form
   return {
     title,
     description,
+    descriptionTable,
     ...nestedCategories,
     // Transaction type info: listingType, transactionProcessAlias, unitType
     ...getTransactionInfo(listingTypes, existingListingTypeInfo),
@@ -325,6 +326,7 @@ const EditListingDetailsPanel = props => {
               transactionProcessAlias,
               unitType,
               selectedVariantFields,
+              descriptionTable,
               ...rest
             } = values;
 
@@ -355,6 +357,7 @@ const EditListingDetailsPanel = props => {
               publicData: {
                 listingType,
                 transactionProcessAlias,
+                descriptionTable,
                 unitType,
                 selectedVariantFields,
                 ...cleanedNestedCategories,

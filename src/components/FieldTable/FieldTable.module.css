@@ -1,0 +1,24 @@
+.button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 10px;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
