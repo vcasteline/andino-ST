@@ -11,7 +11,9 @@ import { propTypes } from '../../../util/types';
 import * as validators from '../../../util/validators';
 import axios from 'axios';
 import {
-  Form, Button, FieldTextInput
+  Form, Button, FieldTextInput,
+  NamedLink,
+  H3
 } from '../../../components';
 
 import css from './ProfileCertificationsForm.module.css';
@@ -39,6 +41,7 @@ export const ProfileCertificationsFormComponent = props => {
           uploadInProgress,
           formId,
           form: formApi,
+          form,
           form: {
             mutators: { push }
           },
@@ -66,6 +69,37 @@ export const ProfileCertificationsFormComponent = props => {
               handleSubmit(e);
             }}
           >
+
+
+            <div className={css.headingContainer}>
+              <H3 as="h1" className={css.heading}>
+                <FormattedMessage id="ProfileCertificationsPage.heading" />
+              </H3>
+
+              {user.id ? (
+                <NamedLink
+                  className={css.profileLink}
+                  name="ProfilePage"
+                  params={{ id: user.id.uuid }}
+                >
+                  <FormattedMessage id="ProfileCertificationsPage.viewProfileLink" />
+                </NamedLink>
+              ) : null}
+
+              <Button
+                className={css.addButton}
+                onClick={(e) => {
+                  e.preventDefault();
+                  push('certifications', '')
+                  window.scrollTo(0, document.body.scrollHeight);
+                }}
+              >
+                <FormattedMessage id="ProfileCertificationsForm.addCertification" />
+              </Button>
+
+            </div>
+
+
 
             <div className={css.certificationsContainer}>
 
@@ -124,6 +158,7 @@ export const ProfileCertificationsFormComponent = props => {
                                 }
                               ).then(() => {
                                 fields.remove(index);
+                                form.submit();
                               }).catch(error => {
                                 console.log(error);
                               });
@@ -142,16 +177,6 @@ export const ProfileCertificationsFormComponent = props => {
                   ))
                 }
               </FieldArray>
-
-              <Button
-                className={css.addButton}
-                onClick={(e) => {
-                  e.preventDefault();
-                  push('certifications', '')
-                }}
-              >
-                <FormattedMessage id="ProfileCertificationsForm.addCertification" />
-              </Button>
             </div>
 
             {submitError}

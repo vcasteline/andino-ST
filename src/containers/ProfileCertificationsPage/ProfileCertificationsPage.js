@@ -90,20 +90,6 @@ export const ProfileCertificationsPageComponent = props => {
         footer={<FooterContainer />}
       >
         <div className={css.content}>
-          <div className={css.headingContainer}>
-            <H3 as="h1" className={css.heading}>
-              <FormattedMessage id="ProfileCertificationsPage.heading" />
-            </H3>
-            {user.id ? (
-              <NamedLink
-                className={css.profileLink}
-                name="ProfilePage"
-                params={{ id: user.id.uuid }}
-              >
-                <FormattedMessage id="ProfileCertificationsPage.viewProfileLink" />
-              </NamedLink>
-            ) : null}
-          </div>
           {profileCertificationsForm}
         </div>
       </LayoutSingleColumn>
