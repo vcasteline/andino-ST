@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { bool, func, object, number, string } from 'prop-types';
 import classNames from 'classnames';
+import { BrowserRouter as Router, Route, Switch, useLocation } from 'react-router-dom';
 
 import { FormattedMessage, intlShape } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
@@ -159,14 +160,16 @@ const TopbarDesktop = props => {
         alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
         linkToExternalSite={config?.topbar?.logoLink}
       />
-      <TopbarSearchForm
-        className={classNames(css.searchLink, { [css.takeAvailableSpace]: giveSpaceForSearch })}
-        desktopInputRoot={css.topbarSearchWithLeftPadding}
-        onSubmit={onSearchSubmit}
-        initialValues={initialSearchFormValues}
-        appConfig={config}
-      />
-
+      {location.search !== "" ?
+        <TopbarSearchForm
+          className={classNames(css.searchLink, { [css.takeAvailableSpace]: giveSpaceForSearch })}
+          desktopInputRoot={css.topbarSearchWithLeftPadding}
+          onSubmit={onSearchSubmit}
+          initialValues={initialSearchFormValues}
+          appConfig={config}
+        /> :
+        <></>
+      }
       <CustomLinksMenu
         currentPage={currentPage}
         customLinks={customLinks}
