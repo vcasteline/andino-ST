@@ -19,13 +19,12 @@ export const VideoHero = () => {
             Leveraging the power of the internet to connect producers from the Andean region within
             South America with buyers all across the U.S.
           </h3>
-          {/* <a className={css.buttonLink} href="/s"> */}
           <TabSearch />
-
+          {/* <a className={css.buttonLink} href="/s">
           Shop Now
-        </a>
+        </a> */}
+        </div>
       </div>
-    </div>
     </div >
   );
 };

@@ -11,11 +11,21 @@ export const TabSearch = () => {
             <input
                 placeholder="Find"
                 className="inputText"
-                onChange={(e) => setSearch(e.target.value)} />
-            <a className="containerButton" href={uri + "/s?keywords=" + search}>
-                <IconSearchDesktop />
+                onChange={(e) => setSearch(e.target.value)}
+                type="search" />
+            <div className="containerButton"
+                onClick={() => handleButtonClick(search)}>
+                <i class="fas fa-search fa-rotate-90" style={{ color: "#ffffff", fontSize: "30px" }}></i>
                 <span>Search</span>
-            </a>
+            </div>
         </div>
     )
+
+
+
 }
+const handleButtonClick = (search) => {
+    const url = uri + "/s?keywords=" + search;
+    // console.log(url)
+    window.location.href = url;
+};
