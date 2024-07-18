@@ -88,6 +88,9 @@ export const getStateData = (params, process) => {
     sendReviewInProgress,
     sendReviewError,
     onOpenReviewModal,
+    onOpenSendOfferModal,
+    onOpenSendCounterOfferModal,
+    onGoToCheckout,
   } = params;
   const isCustomer = transactionRole === 'customer';
   const processName = resolveLatestProcessName(transaction?.attributes?.processName);
@@ -119,6 +122,41 @@ export const getStateData = (params, process) => {
     actionButtonTranslationErrorId: 'TransactionPage.leaveReview.actionError',
   });
 
+ const getSendOfferProps = getActionButtonPropsMaybe({
+    processName,
+    transitionName: 'customer-offer',
+    transactionRole,
+    intl,
+    inProgress: transitionInProgress,
+    transitionError: transitionError,
+    onAction: onOpenSendOfferModal,
+    actionButtonTranslationId: 'TransactionPage.offer.actionButton',
+    actionButtonTranslationErrorId: 'TransactionPage.offer.actionError',
+  });
+
+  const getSendCounterOfferProps = getActionButtonPropsMaybe({
+    processName,
+    transitionName: 'provider-offer',
+    transactionRole,
+    intl,
+    inProgress: transitionInProgress,
+    transitionError: transitionError,
+    onAction: onOpenSendCounterOfferModal,
+    actionButtonTranslationId: 'TransactionPage.counterOffer.actionButton',
+    actionButtonTranslationErrorId: 'TransactionPage.counterOffer.actionError',
+  });
+
+  const getPayAfterOfferProps = getActionButtonPropsMaybe({
+    processName,
+    transitionName: 'transition/request-payment-after-offer',
+    transactionRole,
+    intl,
+    inProgress: transitionInProgress,
+    transitionError: transitionError,
+    onAction: onGoToCheckout,
+    actionButtonTranslationId: 'TransactionPage.pay.actionButton',
+    actionButtonTranslationErrorId: 'TransactionPage.pay.actionError',
+  });
   const processInfo = () => {
     const { getState, states, transitions } = process;
     const processState = getState(transaction);
@@ -130,6 +168,9 @@ export const getStateData = (params, process) => {
       isCustomer,
       actionButtonProps: getActionButtonProps,
       leaveReviewProps: getLeaveReviewProps,
+      sendOfferProps: getSendOfferProps,
+      sendCounterOfferProps: getSendCounterOfferProps,
+      payAfterOfferProps: getPayAfterOfferProps
     };
   };
 

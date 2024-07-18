@@ -13,6 +13,7 @@ const ActionButtonsMaybe = props => {
     showButtons,
     primaryButtonProps,
     secondaryButtonProps,
+thirdButtonProps,
     isListingDeleted,
     isProvider,
   } = props;
@@ -52,6 +53,20 @@ const ActionButtonsMaybe = props => {
     <p className={css.actionError}>{secondaryButtonProps?.errorText}</p>
   ) : null;
 
+const thirdButton = thirdButtonProps ? (
+    <SecondaryButton
+      inProgress={thirdButtonProps?.inProgress}
+      disabled={buttonsDisabled}
+      onClick={thirdButtonProps.onAction}
+    >
+      {thirdButtonProps.buttonText}
+    </SecondaryButton>
+  ) : null;
+
+  const thirdErrorMessage = thirdButtonProps?.error ? (
+    <p className={css.actionError}>{thirdButtonProps?.errorText}</p>
+  ) : null;
+
   const classes = classNames(rootClassName || css.actionButtons, className);
 
   return showButtons ? (
@@ -59,10 +74,13 @@ const ActionButtonsMaybe = props => {
       <div className={css.actionErrors}>
         {primaryErrorMessage}
         {secondaryErrorMessage}
+{thirdErrorMessage}
       </div>
       <div className={css.actionButtonWrapper}>
         {secondaryButton}
         {primaryButton}
+ <br />
+        {thirdButton}
       </div>
     </div>
   ) : null;

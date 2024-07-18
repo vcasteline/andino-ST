@@ -23,6 +23,157 @@
     {:name :action/stripe-create-payment-intent}],
    :from :state/inquiry,
    :to :state/pending-payment}
+   
+  ;negociations
+  ; since this is initial request, we need another one for customer-offer
+  {:name :transition/request,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/update-protected-data}],
+   :to :state/customer-made-offer
+   :privileged? true}
+
+  {:name :transition/request-after-inquiry,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/create-pending-stock-reservation}
+    {:name :action/privileged-set-line-items}
+    ],
+   :from :state/inquiry,
+   :to :state/customer-made-offer
+   :privileged? true}
+
+  {:name :transition/provider-accept
+   :actor :actor.role/provider
+   :actions []
+   :from :state/customer-made-offer
+   :to :state/offer-accepted} 
+  
+  {:name :transition/request-payment-after-offer,
+   :actor :actor.role/customer,
+   :privileged? true,
+   :actions
+   [{:name :action/create-pending-stock-reservation}
+    {:name :action/privileged-set-line-items}
+    {:name :action/stripe-create-payment-intent}
+    {:name :action/update-protected-data}
+    ],
+   :from :state/offer-accepted,
+   :to :state/pending-payment}
+
+  ; we don't need another transition for customer accept, we can just go to pending-payment
+  ; this is equivalent of customer accept
+  {:name :transition/request-payment-after-counter-offer,
+   :actor :actor.role/customer,
+   :privileged? true,
+   :actions
+   [{:name :action/create-pending-stock-reservation}
+    {:name :action/privileged-set-line-items}
+    {:name :action/stripe-create-payment-intent}
+    {:name :action/update-protected-data}
+    ],
+   :from :state/offer-accepted,
+   :to :state/pending-payment}
+  
+  {:name :transition/customer-offer,
+    :actor :actor.role/customer,
+    :actions
+    [{:name :action/update-protected-data}],
+    :from :state/provider-made-offer,
+    :to :state/customer-made-offer
+  }
+
+  {:name :transition/pay
+   :actor :actor.role/customer
+   :actions [{:name :action/stripe-create-payment-intent}]
+   :from :state/pending-payment ;;offer-accepted ;;
+   :to :state/pending-confirmation}
+  {:name :transition/confirm-capture-payment,
+   :actor :actor.role/customer,
+   :actions 
+   [{:name :action/stripe-confirm-payment-intent}
+    {:name :action/accept-stock-reservation},
+    {:name :action/stripe-capture-payment-intent}],
+   :from :state/pending-confirmation,
+   :to :state/accepted}
+  {:name :transition/expire-payment-from-offer,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/first-entered-state :state/pending-confirmation]}
+     {:fn/period ["PT55M"]}]},
+   :actions
+   [{:name :action/decline-stock-reservation}
+    {:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}],
+   :from :state/pending-confirmation,
+   :to :state/payment-expired}
+  {:name :transition/expire,
+   :at
+   {:fn/plus
+      [{:fn/timepoint [:time/first-entered-state :state/pending-payment]}
+       {:fn/period ["P6D"]}]}
+   :actions
+   [{:name :action/decline-stock-reservation}
+    {:name :action/calculate-full-refund}],
+   :from :state/pending-payment,
+   :to :state/declined}
+  
+  ;; provider has received an price offer and makes an counter offer
+  {:name :transition/provider-offer,
+   :actor :actor.role/provider,
+   :actions
+   [
+    {:name :action/update-protected-data}
+    ],
+   :from :state/customer-made-offer,
+   :to :state/provider-made-offer
+   }
+
+  {:name :transition/provider-decline,
+   :actor :actor.role/provider,
+   :actions
+   [],
+   :from :state/customer-made-offer,
+   :to :state/declined}
+
+  {:name :transition/customer-offer-expired,
+   :at
+   {:fn/plus
+      [{:fn/timepoint
+        [:time/first-entered-state :state/customer-made-offer]}
+       {:fn/period ["P6D"]}]},
+   :actions
+   [{:name :action/decline-stock-reservation}
+    {:name :action/calculate-full-refund}],
+   :from :state/customer-made-offer,
+   :to :state/declined}
+
+  {:name :transition/customer-accept
+   :actor :actor.role/customer
+   :actions []
+   :from :state/provider-made-offer
+   :to :state/offer-accepted}
+
+   
+  {:name :transition/customer-decline,
+   :actor :actor.role/customer,
+   :actions
+   [ ],
+   :from :state/provider-made-offer,
+   :to :state/declined}
+  {:name :transition/provider-offer-expired,
+   :at
+   {:fn/plus
+      [{:fn/timepoint
+        [:time/first-entered-state :state/customer-made-offer]}
+       {:fn/period ["P6D"]}]},
+   :actions
+   [{:name :action/decline-stock-reservation}
+    {:name :action/calculate-full-refund}],
+   :from :state/provider-made-offer,
+   :to :state/declined} 
+
+  ;; end negociation
   {:name :transition/confirm-payment,
    :actor :actor.role/customer,
    :actions
@@ -187,7 +338,8 @@
    :from :state/reviewed-by-provider,
    :to :state/reviewed}],
  :notifications
- [{:name :notification/order-receipt,
+ [
+  {:name :notification/order-receipt,
    :on :transition/confirm-payment,
    ;; This notification is delayed to give the customer a chance to verify their
    ;; email address, in case they are a new customer.
@@ -197,10 +349,12 @@
      {:fn/period ["PT15M"]}]},
    :to :actor.role/customer,
    :template :purchase-order-receipt}
+
   {:name :notification/purchase-new-order,
    :on :transition/confirm-payment,
    :to :actor.role/provider,
    :template :purchase-new-order}
+
   {:name :notification/shipping-reminder,
    :on :transition/confirm-payment,
    :at
@@ -322,4 +476,41 @@
   {:name :notification/review-by-customer-second,
    :on :transition/review-2-by-customer,
    :to :actor.role/provider,
-   :template :purchase-review-by-other-party-published}]}
+   :template :purchase-review-by-other-party-published}
+;;negociation related emails
+  {:name :notification/negociation-customer-made-offer,
+   :on :transition/request,
+   :to :actor.role/provider,
+   :template :negociation-customer-made-offer}   
+   
+{:name :notification/negociation-provider-accepted-offer,
+   :on :transition/provider-accept,
+   :to :actor.role/customer,
+   :template :negociation-provider-accepted-offer}   
+   
+   {:name :notification/negociation-provider-declined-offer,
+   :on :transition/provider-decline,
+   :to :actor.role/customer,
+   :template :negociation-provider-declined-offer}   
+
+{:name :notification/negociation-provider-made-offer,
+   :on :transition/provider-offer,
+   :to :actor.role/customer,
+   :template :negociation-provider-made-offer}   
+
+  {:name :notification/negociation-customer-made-counter-offer,
+   :on :transition/customer-offer,
+   :to :actor.role/provider,
+   :template :negociation-customer-made-offer}   
+
+  {:name :notification/negociation-customer-declined-offer,
+   :on :transition/customer-decline,
+   :to :actor.role/provider,
+   :template :negociation-customer-declined-offer}  
+
+    {:name :notification/negociation-customer-accepted-offer,
+   :on :transition/customer-accept,
+   :to :actor.role/provider,
+   :template :negociation-customer-accepted-offer} 
+
+   ]}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { arrayOf, bool, func, node, object, oneOf, string } from 'prop-types';
 import classNames from 'classnames';
 
@@ -9,7 +9,7 @@ import { userDisplayNameAsString } from '../../../util/data';
 import { isMobileSafari } from '../../../util/userAgent';
 import { createSlug } from '../../../util/urlHelpers';
 
-import { AvatarLarge, NamedLink, UserDisplayName } from '../../../components';
+import { AvatarLarge, Modal, NamedLink, PrimaryButton, UserDisplayName } from '../../../components';
 
 import { stateDataShape } from '../TransactionPage.stateData';
 import SendMessageForm from '../SendMessageForm/SendMessageForm';
@@ -27,6 +27,8 @@ import DiminishedActionButtonMaybe from './DiminishedActionButtonMaybe';
 import PanelHeading from './PanelHeading';
 
 import css from './TransactionPanel.module.css';
+import { formatMoney } from '../../../util/currency';
+import PriceFilterForm from '../../SearchPage/PriceFilterForm/PriceFilterForm';
 
 // Helper function to get display names for different roles
 const displayNames = (currentUser, provider, customer, intl) => {
@@ -61,6 +63,7 @@ export class TransactionPanelComponent extends Component {
     super(props);
     this.state = {
       sendMessageFormFocused: false,
+      showSendCounterOfferModal: false,
     };
     this.isMobSaf = false;
     this.sendMessageFormName = 'TransactionPanel.SendMessageForm';
@@ -141,6 +144,8 @@ export class TransactionPanelComponent extends Component {
       orderBreakdown,
       orderPanel,
       config,
+      onManageDisableScrolling,
+      offerPrice,
     } = this.props;
 
     const isCustomer = transactionRole === 'customer';
@@ -171,6 +176,7 @@ export class TransactionPanelComponent extends Component {
         showButtons={stateData.showActionButtons}
         primaryButtonProps={stateData?.primaryButtonProps}
         secondaryButtonProps={stateData?.secondaryButtonProps}
+        thirdButtonProps={stateData?.thirdButtonProps}
         isListingDeleted={listingDeleted}
         isProvider={isProvider}
       />
@@ -187,6 +193,29 @@ export class TransactionPanelComponent extends Component {
     const deliveryMethod = protectedData?.deliveryMethod || 'none';
 
     const classes = classNames(rootClassName || css.root, className);
+
+    const pendingOfferInfoMaybe = stateData.showPendingOfferInfo && offerPrice ?
+      <div className={css.pendingOfferWrapper}>
+        <h4>
+          <FormattedMessage id="TransactionPanel.pendingOffer" />
+        </h4>
+        <p className={css.inquiryPrice}>
+          {formatMoney(intl, offerPrice)}
+        </p>
+      </div>
+      : null;
+
+    const acceptedOfferInfoMaybe = stateData.showAcceptedOfferInfo && offerPrice ?
+      <div className={css.pendingOfferWrapper}>
+        <h4>
+          <FormattedMessage id="TransactionPanel.acceptedOffer" />
+        </h4>
+        <p className={css.inquiryPrice}>
+          {formatMoney(intl, offerPrice)}
+        </p>
+      </div>
+      : null;
+
 
     return (
       <div className={classes}>
@@ -230,6 +259,14 @@ export class TransactionPanelComponent extends Component {
               showInquiryMessage={isInquiryProcess}
               isCustomer={isCustomer}
             />
+
+
+            {stateData.showPendingOfferInfo ?
+              pendingOfferInfoMaybe
+              : null}
+
+            {stateData.showAcceptedOfferInfo ?
+              acceptedOfferInfoMaybe : null}
 
             {!isInquiryProcess ? (
               <div className={css.orderDetails}>

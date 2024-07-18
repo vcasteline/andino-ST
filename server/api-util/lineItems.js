@@ -8,7 +8,12 @@ const {
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
 
-const resolveQuantityBasedPrice = (listing, quantity) => {
+const resolveQuantityBasedPrice = (listing, quantity, offerPrice) => {
+
+  if (offerPrice) {
+    return offerPrice;
+  }
+
   const quantityPriceBreaks = listing.attributes.publicData?.quantityPriceBreaks;
   const basePrice = listing.attributes.price;
   const currency = basePrice.currency;
@@ -65,22 +70,22 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
     shippingPriceInSubunitsAdditionalItems,
     currency,
     quantity
-  ): null;
+  ) : null;
 
 
   // Add line-item for given delivery method.
   // Note: by default, pickup considered as free.
   const deliveryLineItem = !!shippingFee
     ? [
-        {
-          code: 'line-item/shipping-fee',
-          unitPrice: shippingFee,
-          quantity: 1,
-          includeFor: ['customer', 'provider'],
-        },
-      ]
+      {
+        code: 'line-item/shipping-fee',
+        unitPrice: shippingFee,
+        quantity: 1,
+        includeFor: ['customer', 'provider'],
+      },
+    ]
     : isPickup
-    ? [
+      ? [
         {
           code: 'line-item/pickup-fee',
           unitPrice: new Money(0, currency),
@@ -88,7 +93,7 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
           includeFor: ['customer', 'provider'],
         },
       ]
-    : [];
+      : [];
 
   return { quantity, extraLineItems: deliveryLineItem };
 };
@@ -150,6 +155,9 @@ const getDateRangeQuantityAndLineItems = (orderData, code) => {
  */
 exports.transactionLineItems = (listing, orderData, providerCommission, customerCommission) => {
   const publicData = listing.attributes.publicData;
+
+  const offerPrice = orderData.offerPrice;
+
   const unitPrice = listing.attributes.price;
   const currency = unitPrice.currency;
   //console.log("order data lineitems!:", orderData)
@@ -176,10 +184,10 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
     unitType === 'item'
       ? getItemQuantityAndLineItems(orderData, publicData, currency)
       : unitType === 'hour'
-      ? getHourQuantityAndLineItems(orderData)
-      : ['day', 'night'].includes(unitType)
-      ? getDateRangeQuantityAndLineItems(orderData, code)
-      : {};
+        ? getHourQuantityAndLineItems(orderData)
+        : ['day', 'night'].includes(unitType)
+          ? getDateRangeQuantityAndLineItems(orderData, code)
+          : {};
 
   const { quantity, extraLineItems } = quantityAndExtraLineItems;
 
@@ -206,7 +214,7 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
 
   const order = {
     code: 'line-item/product',
-    unitPrice: resolveQuantityBasedPrice(listing, quantity),
+    unitPrice: resolveQuantityBasedPrice(listing, quantity, offerPrice),
     quantity: quantity,
     includeFor: ['customer', 'provider'],
   };
@@ -225,13 +233,13 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   // orderPrice - providerCommission = providerPayout
   const providerCommissionMaybe = hasCommissionPercentage(providerCommission)
     ? [
-        {
-          code: 'line-item/provider-commission',
-          unitPrice: calculateTotalFromLineItems([order]),
-          percentage: getNegation(providerCommission.percentage),
-          includeFor: ['provider'],
-        },
-      ]
+      {
+        code: 'line-item/provider-commission',
+        unitPrice: calculateTotalFromLineItems([order]),
+        percentage: getNegation(providerCommission.percentage),
+        includeFor: ['provider'],
+      },
+    ]
     : [];
 
   // The customer commission is what the customer pays for the transaction, and
@@ -239,13 +247,13 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   // orderPrice + customerCommission = customerPayin
   const customerCommissionMaybe = hasCommissionPercentage(customerCommission)
     ? [
-        {
-          code: 'line-item/customer-commission',
-          unitPrice: calculateTotalFromLineItems([order]),
-          percentage: customerCommission.percentage,
-          includeFor: ['customer'],
-        },
-      ]
+      {
+        code: 'line-item/customer-commission',
+        unitPrice: calculateTotalFromLineItems([order]),
+        percentage: customerCommission.percentage,
+        includeFor: ['customer'],
+      },
+    ]
     : [];
 
   // Let's keep the base price (order) as first line item and provider and customer commissions as last.

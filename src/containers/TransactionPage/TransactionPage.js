@@ -62,6 +62,11 @@ import {
   fetchTransactionLineItems,
 } from './TransactionPage.duck';
 import css from './TransactionPage.module.css';
+import CounterOfferModal from './CounterOfferModal/CounterOfferModal.js';
+import OfferModal from './OfferModal/OfferModal.js';
+import { types as sdkTypes } from '../../util/sdkLoader';
+import { paymentMethods } from '../../ducks/index.js';
+const { Money } = sdkTypes;
 
 // Submit dispute and close the review modal
 const onDisputeOrder = (
@@ -88,6 +93,8 @@ export const TransactionPageComponent = props => {
   const [isReviewModalOpen, setReviewModalOpen] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
+  const [isCounterOfferModalOpen, setCounterOfferModalOpen] = useState(false);
+  const [isOfferModalOpen, setOfferModalOpen] = useState(false);
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration();
   const {
@@ -185,7 +192,9 @@ export const TransactionPageComponent = props => {
       transaction,
       // Original orderData content is not available,
       // but it is already saved since tx is in state: payment-pending.
-      orderData: {},
+      orderData: {
+        quantity: transaction?.attributes?.lineItems[0]?.quantity?.toNumber(),
+      },
     };
 
     redirectToCheckoutPageWithInitialValues(initialValues, listing);
@@ -204,19 +213,19 @@ export const TransactionPageComponent = props => {
 
     const bookingMaybe = bookingDates
       ? {
-          bookingDates: {
-            bookingStart: bookingDates.startDate,
-            bookingEnd: bookingDates.endDate,
-          },
-        }
+        bookingDates: {
+          bookingStart: bookingDates.startDate,
+          bookingEnd: bookingDates.endDate,
+        },
+      }
       : bookingStartTime && bookingEndTime
-      ? {
+        ? {
           bookingDates: {
             bookingStart: timestampToDate(bookingStartTime),
             bookingEnd: timestampToDate(bookingEndTime),
           },
         }
-      : {};
+        : {};
 
     const quantity = Number.parseInt(quantityRaw, 10);
     const quantityMaybe = Number.isInteger(quantity) ? { quantity } : {};
@@ -244,6 +253,13 @@ export const TransactionPageComponent = props => {
     setReviewModalOpen(true);
   };
 
+  const onOpenSendOfferModal = () => {
+    setOfferModalOpen(true);
+  }
+
+  const onOpenSendCounterOfferModal = () => {
+    setCounterOfferModalOpen(true);
+  }
   // Submit review and close the review modal
   const onSubmitReview = values => {
     const { reviewRating, reviewContent } = values;
@@ -252,19 +268,19 @@ export const TransactionPageComponent = props => {
     const transitionOptions =
       transactionRole === CUSTOMER
         ? {
-            reviewAsFirst: transitions.REVIEW_1_BY_CUSTOMER,
-            reviewAsSecond: transitions.REVIEW_2_BY_CUSTOMER,
-            hasOtherPartyReviewedFirst: process
-              .getTransitionsToStates([states.REVIEWED_BY_PROVIDER])
-              .includes(transaction.attributes.lastTransition),
-          }
+          reviewAsFirst: transitions.REVIEW_1_BY_CUSTOMER,
+          reviewAsSecond: transitions.REVIEW_2_BY_CUSTOMER,
+          hasOtherPartyReviewedFirst: process
+            .getTransitionsToStates([states.REVIEWED_BY_PROVIDER])
+            .includes(transaction.attributes.lastTransition),
+        }
         : {
-            reviewAsFirst: transitions.REVIEW_1_BY_PROVIDER,
-            reviewAsSecond: transitions.REVIEW_2_BY_PROVIDER,
-            hasOtherPartyReviewedFirst: process
-              .getTransitionsToStates([states.REVIEWED_BY_CUSTOMER])
-              .includes(transaction.attributes.lastTransition),
-          };
+          reviewAsFirst: transitions.REVIEW_1_BY_PROVIDER,
+          reviewAsSecond: transitions.REVIEW_2_BY_PROVIDER,
+          hasOtherPartyReviewedFirst: process
+            .getTransitionsToStates([states.REVIEWED_BY_CUSTOMER])
+            .includes(transaction.attributes.lastTransition),
+        };
     const params = { reviewRating: rating, reviewContent };
 
     onSendReview(transaction, transitionOptions, params, config)
@@ -276,6 +292,56 @@ export const TransactionPageComponent = props => {
         // Do nothing.
       });
   };
+
+  const onSubmitCounterOffer = values => {
+    const transitionName = process.transitions.PROVIDER_OFFER;
+
+    const params = {
+      protectedData: {
+        offerPrice: { amount: values.offerPrice.amount, currency: values.offerPrice.currency }
+      }
+    }
+
+    onTransition(transaction?.id, transitionName, params)
+      .then(r => {
+        setCounterOfferModalOpen(false);
+      })
+      .catch(e => {
+      });
+  }
+
+  const onSubmitOffer = values => {
+    const transitionName = process.transitions.CUSTOMER_OFFER;
+
+    const params = {
+      protectedData: {
+        offerPrice: { amount: values.offerPrice.amount, currency: values.offerPrice.currency }
+      }
+    }
+
+    onTransition(transaction?.id, transitionName, params)
+      .then(r => {
+        setOfferModalOpen(false);
+      })
+      .catch(e => {
+      });
+  }
+
+  const onGoToCheckout = () => {
+    const initialValues = {
+      listing: listing,
+      transaction,
+      orderData: {
+        deliveryMethod: "shipping",
+        offerPrice: offerPrice,
+        quantity: 1,
+        selectedVariants: [],
+      },
+      confirmPaymentError: null,
+    };
+
+    redirectToCheckoutPageWithInitialValues(initialValues, listing);
+  }
 
   // Open dispute modal
   const onOpenDisputeModal = () => {
@@ -350,27 +416,34 @@ export const TransactionPageComponent = props => {
 
   const stateData = isDataAvailable
     ? getStateData(
-        {
-          transaction,
-          transactionRole,
-          nextTransitions,
-          transitionInProgress,
-          transitionError,
-          sendReviewInProgress,
-          sendReviewError,
-          onTransition,
-          onOpenReviewModal,
-          intl,
-        },
-        process
-      )
+      {
+        transaction,
+        transactionRole,
+        nextTransitions,
+        transitionInProgress,
+        transitionError,
+        sendReviewInProgress,
+        sendReviewError,
+        onTransition,
+        onOpenReviewModal,
+        onOpenSendOfferModal,
+        onOpenSendCounterOfferModal,
+        onGoToCheckout,
+        intl,
+      },
+      process
+    )
     : {};
 
+  // console.log({ stateData })
+  // console.log({ transaction })
+
+  const offerPrice = transaction?.attributes?.protectedData.offerPrice ? new Money(transaction?.attributes?.protectedData.offerPrice.amount, transaction?.attributes?.protectedData.offerPrice.currency) : null;
   const hasLineItems = transaction?.attributes?.lineItems?.length > 0;
   const unitLineItem = hasLineItems
     ? transaction.attributes?.lineItems?.find(
-        item => LISTING_UNIT_TYPES.includes(item.code) && !item.reversal
-      )
+      item => LISTING_UNIT_TYPES.includes(item.code) && !item.reversal
+    )
     : null;
 
   const formatLineItemUnitType = (transaction, listing) => {
@@ -385,8 +458,8 @@ export const TransactionPageComponent = props => {
   const lineItemUnitType = unitLineItem
     ? unitLineItem.code
     : isDataAvailable
-    ? formatLineItemUnitType(transaction, listing)
-    : null;
+      ? formatLineItemUnitType(transaction, listing)
+      : null;
 
   const timeZone = listing?.attributes?.availabilityPlan?.timezone;
   const dateType = lineItemUnitType === LINE_ITEM_HOUR ? DATE_TYPE_DATETIME : DATE_TYPE_DATE;
@@ -394,17 +467,17 @@ export const TransactionPageComponent = props => {
   const txBookingMaybe = booking?.id ? { booking, dateType, timeZone } : {};
   const orderBreakdownMaybe = hasLineItems
     ? {
-        orderBreakdown: (
-          <OrderBreakdown
-            className={css.breakdown}
-            userRole={transactionRole}
-            transaction={transaction}
-            {...txBookingMaybe}
-            currency={config.currency}
-            marketplaceName={config.marketplaceName}
-          />
-        ),
-      }
+      orderBreakdown: (
+        <OrderBreakdown
+          className={css.breakdown}
+          userRole={transactionRole}
+          transaction={transaction}
+          {...txBookingMaybe}
+          currency={config.currency}
+          marketplaceName={config.marketplaceName}
+        />
+      ),
+    }
     : {};
 
   // The location of the booking can be shown if fuzzy location
@@ -435,6 +508,8 @@ export const TransactionPageComponent = props => {
       stateData={stateData}
       transactionRole={transactionRole}
       showBookingLocation={showBookingLocation}
+      onManageDisableScrolling={onManageDisableScrolling}
+      offerPrice={offerPrice}
       activityFeed={
         <ActivityFeed
           messages={messages}
@@ -461,6 +536,9 @@ export const TransactionPageComponent = props => {
           isOwnListing={isOwnSale}
           lineItemUnitType={lineItemUnitType}
           title={listingTitle}
+
+          fromTransactionPage={true}
+          offerPrice={transaction?.attributes?.protectedData.offerPrice}
           titleDesktop={
             <H4 as="h2" className={css.orderPanelTitle}>
               {listingDeleted ? (
@@ -513,6 +591,30 @@ export const TransactionPageComponent = props => {
           sendReviewInProgress={sendReviewInProgress}
           sendReviewError={sendReviewError}
           marketplaceName={config.marketplaceName}
+        />
+
+        <OfferModal
+          id="OfferModal"
+          isOpen={isOfferModalOpen}
+          onCloseModal={() => setOfferModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onSubmitOffer={onSubmitOffer}
+          transitionInProgress={transitionInProgress}
+          transitionError={transitionError}
+          offerPrice={offerPrice}
+          marketplaceCurrency={config.currency}
+        />
+
+        <CounterOfferModal
+          id="CounterOfferModal"
+          isOpen={isCounterOfferModalOpen}
+          onCloseModal={() => setCounterOfferModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onSubmitCounterOffer={onSubmitCounterOffer}
+          transitionInProgress={transitionInProgress}
+          transitionError={transitionError}
+          offerPrice={offerPrice}
+          marketplaceCurrency={config.currency}
         />
         {process?.transitions?.DISPUTE ? (
           <DisputeModal

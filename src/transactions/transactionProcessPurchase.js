@@ -80,6 +80,27 @@ export const transitions = {
   EXPIRE_CUSTOMER_REVIEW_PERIOD: 'transition/expire-customer-review-period',
   EXPIRE_PROVIDER_REVIEW_PERIOD: 'transition/expire-provider-review-period',
   EXPIRE_REVIEW_PERIOD: 'transition/expire-review-period',
+
+// negociation
+  REQUEST: 'transition/request',
+  REQUEST_AFTER_INQUIRY: 'transition/request-after-inquiry',
+  PROVIDER_ACCEPT: 'transition/provider-accept',
+
+  REQUEST_PAYMENT_AFTER_OFFER: 'transition/request-payment-after-offer',
+  REQUEST_PAYMENT_AFTER_COUNTER_OFFER: 'transition/request-payment-after-counter-offer',
+
+  PAY: 'transition/pay',
+  CONFIRM_CAPTURE_PAYMENT: 'transition/confirm-capture-payment',
+  EXPIRE_PAYMENT_FROM_OFFER: 'transition/expire-payment-from-offer',
+  EXPIRE: 'transition/expire',
+  PROVIDER_OFFER: 'transition/provider-offer',
+  PROVIDER_DECLINE: 'transition/provider-decline',
+  CUSTOMER_OFFER_EXPIRED: 'transition/customer-offer-expired',
+  CUSTOMER_ACCEPT: 'transition/customer-accept',
+  CUSTOMER_OFFER: 'transition/customer-offer',
+  CUSTOMER_DECLINE: 'transition/customer-decline',
+  PROVIDER_OFFER_EXPIRED: 'transition/provider-offer-expired',
+
 };
 
 /**
@@ -106,6 +127,14 @@ export const states = {
   REVIEWED: 'reviewed',
   REVIEWED_BY_CUSTOMER: 'reviewed-by-customer',
   REVIEWED_BY_PROVIDER: 'reviewed-by-provider',
+
+  // negociation
+  OFFER_ACCEPTED: 'offer-accepted',
+  CUSTOMER_MADE_OFFER: 'customer-made-offer',
+  PENDING_CONFIRMATION: 'pending-confirmation',
+  ACCEPTED: 'accepted',
+  DECLINED: 'declined',
+  PROVIDER_MADE_OFFER: 'provider-made-offer',
 };
 
 /**
@@ -132,6 +161,7 @@ export const graph = {
       on: {
         [transitions.INQUIRE]: states.INQUIRY,
         [transitions.REQUEST_PAYMENT]: states.PENDING_PAYMENT,
+        [transitions.REQUEST]: states.CUSTOMER_MADE_OFFER, // negociation
       },
     },
     [states.INQUIRY]: {
@@ -140,10 +170,35 @@ export const graph = {
       },
     },
 
+ // negociation
+    [states.OFFER_ACCEPTED]: {
+      on: {
+        [transitions.REQUEST_PAYMENT_AFTER_OFFER]: states.PENDING_PAYMENT,
+      },
+    },
+    [states.CUSTOMER_MADE_OFFER]: {
+      on: {
+        [transitions.PROVIDER_ACCEPT]: states.OFFER_ACCEPTED, 
+        [transitions.PROVIDER_OFFER]: states.PROVIDER_MADE_OFFER,
+        [transitions.PROVIDER_DECLINE]: states.CANCELED,
+        [transitions.CUSTOMER_OFFER_EXPIRED]: states.CANCELED,
+      },
+    },
+    [states.PROVIDER_MADE_OFFER]: {
+      on: {
+        [transitions.CUSTOMER_ACCEPT]: states.OFFER_ACCEPTED,
+        [transitions.CUSTOMER_OFFER]: states.CUSTOMER_MADE_OFFER,
+        [transitions.CUSTOMER_DECLINE]: states.CANCELED,
+        [transitions.PROVIDER_OFFER_EXPIRED]: states.CANCELED,
+        [transitions.REQUEST_PAYMENT_AFTER_COUNTER_OFFER]: states.PENDING_PAYMENT,
+      },
+    },
+    // end negociation
     [states.PENDING_PAYMENT]: {
       on: {
         [transitions.EXPIRE_PAYMENT]: states.PAYMENT_EXPIRED,
         [transitions.CONFIRM_PAYMENT]: states.PURCHASED,
+        [transitions.PAY]: states.PENDING_CONFIRMATION, // negociation
       },
     },
 
@@ -243,7 +298,17 @@ export const isProviderReview = transition => {
 // should go through the local API endpoints, or if using JS SDK is
 // enough.
 export const isPrivileged = transition => {
-  return [transitions.REQUEST_PAYMENT, transitions.REQUEST_PAYMENT_AFTER_INQUIRY].includes(
+  return [transitions.REQUEST_PAYMENT, 
+   transitions.REQUEST_PAYMENT_AFTER_INQUIRY,
+   
+    // negociation
+    transitions.PROVIDER_ACCEPT,
+    transitions.CUSTOMER_ACCEPT,
+    transitions.PROVIDER_DECLINE,
+
+    transitions.REQUEST_PAYMENT_AFTER_OFFER,
+    transitions.REQUEST_PAYMENT_AFTER_COUNTER_OFFER,
+    ].includes(
     transition
   );
 };

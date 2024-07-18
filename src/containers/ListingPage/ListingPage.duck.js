@@ -7,14 +7,20 @@ import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities } from '../../util/data';
 import { findNextBoundary, getStartOf, monthIdString } from '../../util/dates';
+import { initiatePrivileged, transitionPrivileged } from '../../util/api';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
 } from '../../util/urlHelpers';
 import { getProcess, isBookingProcessAlias } from '../../transactions/transaction';
 import { fetchCurrentUser, fetchCurrentUserHasOrdersSuccess } from '../../ducks/user.duck';
+import { TRANSITION_REQUEST } from '../TransactionPage/TransactionPage.duck';
+import { moneySubUnitAmountAtLeast } from '../../util/validators';
 
-const { UUID } = sdkTypes;
+//TODO import proper transitions
+import { transitions } from '../../transactions/transactionProcessPurchase';
+
+const { UUID, Money } = sdkTypes;
 
 // ================ Action types ================ //
 
@@ -323,6 +329,56 @@ export const sendInquiry = (listing, message) => (dispatch, getState, sdk) => {
         dispatch(fetchCurrentUserHasOrdersSuccess(true));
         return transactionId;
       });
+    })
+    .catch(e => {
+      dispatch(sendInquiryError(storableError(e)));
+      throw e;
+    });
+};
+
+export const sendOffer = (listingId, processAlias, proposedPrice, currency) => (dispatch, getState, sdk) => {
+  dispatch(sendInquiryRequest());
+  //const transactionProcessAlias = listing?.attributes?.publicData?.transactionProcessAlias || '';
+
+  const queryParams = {
+    include: ['booking', 'provider'],
+    expand: true,
+  };
+
+  const bodyParams = {
+    transition: 'transition/request', // TODO get them from processAlias, transitions.REQUEST,
+    processAlias: processAlias, //'default-purchase/release-1', //TODO //config.bookingProcessAlias,
+    params: {
+      listingId,
+      //negotiatedTotal: new Money(proposedPrice, 'USD'),
+      stockReservationQuantity: 1,
+      protectedData: {
+        offerPrice: {
+          amount: proposedPrice,
+          currency: currency
+        },
+      }
+    },
+  };
+
+  const orderData = {
+    deliverMethod: 'shipping',
+    //stockReservationQuantity: 1, // mandatory but not here, missing-required-key error
+  };  //TODO
+
+  //return sdk.transactions
+  //.initiate(bodyParams)
+
+  return initiatePrivileged({ isSpeculative: false, orderData, bodyParams, queryParams })
+    .then(response => {
+      const transactionId = response.data.data.id;
+
+      // Send the message to the created transaction
+      // return sdk.messages.send({ transactionId, content: message }).then(() => {
+      dispatch(sendInquirySuccess());
+      dispatch(fetchCurrentUserHasOrdersSuccess(true));
+      return transactionId;
+      // });
     })
     .catch(e => {
       dispatch(sendInquiryError(storableError(e)));

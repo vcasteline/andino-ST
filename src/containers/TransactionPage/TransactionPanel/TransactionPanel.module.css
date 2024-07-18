@@ -185,6 +185,7 @@
 .inquiryPrice {
   composes: p from global;
   font-weight: var(--fontWeightBold);
+ font-size: 26px;
 }
 
 .transactionInfoMessage {
@@ -262,6 +263,13 @@
   }
 }
 
+.pendingOfferWrapper {
+  margin: 24px 24px 24px 24px;
+
+  @media (--viewportLarge) {
+    margin: 0;
+  }
+}
 .detailCardTitle {
   margin-top: 0;
   margin-bottom: 10px;
@@ -498,6 +506,7 @@
   width: 100%;
   display: flex;
   flex-direction: row;
+ gap: 4px;
 
   @media (--viewportLarge) {
     flex-direction: column;

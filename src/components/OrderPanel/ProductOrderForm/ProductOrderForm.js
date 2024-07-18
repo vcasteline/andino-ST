@@ -15,6 +15,7 @@ import {
   PrimaryButton,
   H3,
   H6,
+ SecondaryButton,
 } from '../../../components';
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
@@ -35,6 +36,7 @@ const handleFetchLineItems = ({
   fetchLineItemsInProgress,
   onFetchTransactionLineItems,
   selectedVariants,
+   offerPrice,
 }) => {
   const stockReservationQuantity = Number.parseInt(quantity, 10);
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
@@ -46,7 +48,7 @@ const handleFetchLineItems = ({
     !fetchLineItemsInProgress
   ) {
     onFetchTransactionLineItems({
-      orderData: { stockReservationQuantity, ...deliveryMethodMaybe, selectedVariants },
+      orderData: { stockReservationQuantity, ...deliveryMethodMaybe, selectedVariants, offerPrice },
       listingId,
       isOwnListing,
     });
@@ -143,7 +145,13 @@ const renderForm = formRenderProps => {
     categoryLevel2,
     categoryLevel3,
     selectedVariantFields,
-    publicData
+    publicData,
+     fromTransactionPage,
+    openOfferModal,
+    closeOrderModal,
+    history,
+    location,
+    counterOfferPrice,
   } = formRenderProps;
 
   // Note: don't add custom logic before useEffect
@@ -162,6 +170,7 @@ const renderForm = formRenderProps => {
         fetchLineItemsInProgress,
         onFetchTransactionLineItems,
         selectedVariants,
+        counterOfferPrice,
       });
     }
 
@@ -183,6 +192,7 @@ const renderForm = formRenderProps => {
           fetchLineItemsInProgress,
           onFetchTransactionLineItems,
           selectedVariants,
+           counterOfferPrice,
         });
       }, 500); // Ajusta el retraso según tus necesidades (en milisegundos)
     }
@@ -233,6 +243,8 @@ const renderForm = formRenderProps => {
   const selectableStock =
     currentStock > MAX_QUANTITY_FOR_DROPDOWN ? MAX_QUANTITY_FOR_DROPDOWN : currentStock;
   const quantities = hasStock ? [...Array(selectableStock).keys()].map(i => i + 1) : [];
+
+ const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
 
   const submitInProgress = fetchLineItemsInProgress;
   const submitDisabled = !hasStock;
@@ -330,6 +342,37 @@ const renderForm = formRenderProps => {
             <FormattedMessage id="ProductOrderForm.ctaButtonNoStock" />
           )}
         </PrimaryButton>
+        
+         <br />
+        {!fromTransactionPage ? (
+          <>
+            <SecondaryButton
+              type="button"
+              onClick={(e) => {
+                closeOrderModal(history, location)
+                openOfferModal(e);
+              }}
+              className={css.makeAnOfferButton}
+              disabled={isOwnListing}// || (!isUserEmailVerified && !isLocal)}
+            >
+              <FormattedMessage id="ProductOrderForm.makeOffer" />
+            </SecondaryButton>
+
+            <SecondaryButton
+              type="button"
+              onClick={
+                (e) => {
+                  closeOrderModal(history, location)
+                  onClickContactUser(e)
+                }
+              }
+              className={css.contactSellerButton}
+              disabled={isOwnListing}
+            >
+              <FormattedMessage id="ProductOrderForm.contactSeller" />
+            </SecondaryButton>
+          </>
+        ) : null}
       </div>
       <p className={css.finePrint}>
         {payoutDetailsWarning ? (
