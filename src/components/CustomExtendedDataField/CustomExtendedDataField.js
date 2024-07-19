@@ -86,17 +86,25 @@ const CustomFieldText = props => {
     : {};
   const placeholder =
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
+  // console.log("Aquí van las props de pruebas")
+  // console.log(props)
+  if (props.name === "pub_quantityPriceBreaks") console.log("Encontramos lo que buscaba")
 
   return (
-    <FieldTextInput
-      className={css.customField}
-      id={formId ? `${formId}.${name}` : name}
-      name={name}
-      type="textarea"
-      label={label}
-      placeholder={placeholder}
-      {...validateMaybe}
-    />
+    <>
+      {props.name === "pub_quantityPriceBreaks" ? <div>Aquí debe ir lo nuevo</div>
+        :
+        <FieldTextInput
+          className={css.customField}
+          id={formId ? `${formId}.${name}` : name}
+          name={name}
+          type="textarea"
+          label={label}
+          placeholder={placeholder}
+          {...validateMaybe}
+        />
+      }
+    </>
   );
 };
 
@@ -182,14 +190,14 @@ const CustomExtendedDataField = props => {
   return schemaType === SCHEMA_TYPE_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldEnum, props)
     : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
-    ? renderFieldComponent(CustomFieldMultiEnum, props)
-    : schemaType === SCHEMA_TYPE_TEXT
-    ? renderFieldComponent(CustomFieldText, props)
-    : schemaType === SCHEMA_TYPE_LONG
-    ? renderFieldComponent(CustomFieldLong, props)
-    : schemaType === SCHEMA_TYPE_BOOLEAN
-    ? renderFieldComponent(CustomFieldBoolean, props)
-    : null;
+      ? renderFieldComponent(CustomFieldMultiEnum, props)
+      : schemaType === SCHEMA_TYPE_TEXT
+        ? renderFieldComponent(CustomFieldText, props)
+        : schemaType === SCHEMA_TYPE_LONG
+          ? renderFieldComponent(CustomFieldLong, props)
+          : schemaType === SCHEMA_TYPE_BOOLEAN
+            ? renderFieldComponent(CustomFieldBoolean, props)
+            : null;
 };
 
 export default CustomExtendedDataField;
