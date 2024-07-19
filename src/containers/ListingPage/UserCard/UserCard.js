@@ -20,7 +20,6 @@ const MIN_LENGTH_FOR_LONG_WORDS = 20;
 const truncated = s => {
   return truncate(s, {
     length: BIO_COLLAPSED_LENGTH,
-
     // Allow truncated text end only in specific characters. This will
     // make the truncated text shorter than the length if the original
     // text has to be shortened and the substring ends in a separator.

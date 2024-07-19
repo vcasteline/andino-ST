@@ -44,12 +44,11 @@ export const ProfileSettingsPageComponent = props => {
 
   const { userFields } = config.user;
   const handleSubmit = values => {
-    const { firstName, lastName, bio: rawBio, companyName, ...rest  } = values;
+    const { firstName, lastName, bio: rawBio, companyName, ...rest } = values;
 
     // Ensure that the optional bio is a string
     const bio = rawBio || '';
-    //currentUser.attributes.profile.publicData = 
-    const publicData = {companyName: companyName}
+    const publicData = { companyName: companyName };
     const profile = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),

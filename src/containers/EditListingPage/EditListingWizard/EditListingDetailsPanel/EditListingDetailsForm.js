@@ -254,7 +254,9 @@ const AddListingFields = props => {
     handleVariantFieldChange,
     getSelectedVariantFields
   } = props;
+  
   const targetCategoryIds = Object.values(selectedCategories);
+
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
     const { key, schemaType, scope } = fieldConfig || {};
     const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
@@ -294,6 +296,7 @@ const AddListingFields = props => {
         />
       );
     }
+
     return pickedFields;
   }, []);
 

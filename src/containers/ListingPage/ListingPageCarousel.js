@@ -361,11 +361,12 @@ export const ListingPageComponent = props => {
               const listingType = publicData?.listingType;
               const isTargetListingType =
                 includeForListingTypes == null || includeForListingTypes.includes(listingType);
-             
+
               const value =
                 scope === 'public' ? publicData[key] : scope === 'metadata' ? metadata[key] : null;
               const hasValue = value != null;
-              const nonEmptyFields = pickedElements.filter((p)=> (p?.props?.selectedOptions?.length !==0) )
+
+              const nonEmptyFields = pickedElements.filter(p => p?.props?.selectedOptions?.length !== 0);
               if (isTargetListingType && config.schemaType === SCHEMA_TYPE_MULTI_ENUM) {
                 return [
                   ...nonEmptyFields,
@@ -458,6 +459,7 @@ export const ListingPageComponent = props => {
     </Page>
   );
 };
+
 ListingPageComponent.defaultProps = {
   currentUser: null,
   inquiryModalOpenForListingId: null,
@@ -469,6 +471,7 @@ ListingPageComponent.defaultProps = {
   lineItems: null,
   fetchLineItemsError: null,
 };
+
 ListingPageComponent.propTypes = {
   // from useHistory
   history: shape({
@@ -501,14 +504,6 @@ ListingPageComponent.propTypes = {
   reviews: arrayOf(propTypes.review),
   fetchReviewsError: propTypes.error,
   monthlyTimeSlots: object,
-  // monthlyTimeSlots could be something like:
-  // monthlyTimeSlots: {
-  //   '2019-11': {
-  //     timeSlots: [],
-  //     fetchTimeSlotsInProgress: false,
-  //     fetchTimeSlotsError: null,
-  //   }
-  // }
   sendInquiryInProgress: bool.isRequired,
   sendInquiryError: propTypes.error,
   onSendInquiry: func.isRequired,
@@ -581,6 +576,7 @@ const mapStateToProps = state => {
     sendInquiryError,
   };
 };
+
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
@@ -592,6 +588,7 @@ const mapDispatchToProps = dispatch => ({
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
 });
+
 // Note: it is important that the withRouter HOC is outside the
 // connect HOC, otherwise React Router won't rerender any Route
 // components since connect implements a shouldComponentUpdate
@@ -604,4 +601,5 @@ const ListingPage = compose(
     mapDispatchToProps
   )
 )(EnhancedListingPage);
+
 export default ListingPage;

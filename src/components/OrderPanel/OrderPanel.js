@@ -280,7 +280,6 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
-
   const [selectedVariants, setSelectedVariants] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [currentVariant, setCurrentVariant] = useState(
@@ -345,7 +344,6 @@ const OrderPanel = props => {
           key={'quantityPriceBreaks-break'}
           quantityPriceBreaks={quantityPriceBreaks}
         />
-
         <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>

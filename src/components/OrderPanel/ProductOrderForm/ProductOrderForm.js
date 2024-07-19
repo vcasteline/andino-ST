@@ -165,7 +165,7 @@ const renderForm = formRenderProps => {
       });
     }
 
-    if (selectedVariantFields?.length != 0 ) {
+    if (selectedVariantFields?.length !== 0) {
       formApi.change('quantity', totalQuantity);
     }
   }, [totalQuantity]);
@@ -247,7 +247,7 @@ const renderForm = formRenderProps => {
           type="hidden"
           validate={numberAtLeast(quantityRequiredMsg, 1)}
         />
-      ) : selectedVariantFields?.length != 0 ? (
+      ) : selectedVariantFields?.length !== 0 ? (
         <>
           <FieldTextInput
             id={`${formId}.quantity`}
@@ -257,7 +257,7 @@ const renderForm = formRenderProps => {
             validate={numberAtLeast('Add at least the min order quantity', minOrderQuantity)}
           />
         </>
-      ) : listingType == 'sell-samples' ? (
+      ) : listingType === 'sell-samples' ? (
         <FieldTextInput
           className={css.quantityField}
           id={`${formId}.stock`}

@@ -72,13 +72,14 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
   const deliveryMethod = pageData.orderData?.deliveryMethod;
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
   const selectedVariants = pageData.orderData?.selectedVariants;
+
   const { listingType, unitType } = pageData?.listing?.attributes?.publicData || {};
   const protectedDataMaybe = {
     protectedData: {
       ...getTransactionTypeData(listingType, unitType, config),
       ...deliveryMethodMaybe,
       ...shippingDetails,
-      selectedVariants
+      selectedVariants,
     },
   };
 

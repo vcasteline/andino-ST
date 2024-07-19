@@ -259,7 +259,7 @@ export const ProfilePageComponent = props => {
     ensuredCurrentUser.id && profileUser.id && ensuredCurrentUser.id.uuid === profileUser.id.uuid;
   const { bio, displayName, publicData, metadata } = profileUser?.attributes?.profile || {};
   const { userFields } = config.user;
-  const displayedName = companyName? companyName : displayName;
+  const displayedName = companyName ? companyName : displayName;
   const schemaTitleVars = { name: displayName, marketplaceName: config.marketplaceName };
   const schemaTitle = intl.formatMessage({ id: 'ProfilePage.schemaTitle' }, schemaTitleVars);
 
