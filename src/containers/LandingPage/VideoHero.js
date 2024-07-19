@@ -2,6 +2,7 @@ import { Button, NamedLink, PrimaryButton } from '../../components';
 import React from 'react';
 import { TabSearch } from '../../components/TabSearch/TabSearch';
 import css from './VideoHero.module.css';
+import { ListRedirect } from '../../components/ListRedirect/ListRedirect';
 
 export const VideoHero = () => {
   return (
@@ -23,8 +24,25 @@ export const VideoHero = () => {
           {/* <a className={css.buttonLink} href="/s">
           Shop Now
         </a> */}
+          <ListRedirect data={categories} />
+
         </div>
       </div>
     </div >
   );
 };
+
+const categories = [
+  {
+    name: "Clay Construction Products",
+    url: "clay-construction-products"
+  },
+  {
+    name: "Prima Cotton Profucts",
+    url: "pima-cotton-products"
+  },
+  {
+    name: "Floricultural Products",
+    url: "floricultural-products"
+  },
+]

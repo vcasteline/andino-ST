@@ -1,10 +1,11 @@
 import React from "react";
 const uri = process.env.REACT_APP_MARKETPLACE_ROOT_URL;
-import IconSearchDesktop from '../../containers/TopbarContainer/Topbar/TopbarSearchForm/IconSearchDesktop';
+// import { object } from 'prop-types';
 import "./TabSearch.css"
 import { useState } from "react";
 
 export const TabSearch = () => {
+    // console.log(object)
     const [search, setSearch] = useState("");
     return (
         <div className="container">
@@ -15,7 +16,7 @@ export const TabSearch = () => {
                 type="search" />
             <div className="containerButton"
                 onClick={() => handleButtonClick(search)}>
-                <i class="fas fa-search fa-rotate-90" style={{ color: "#ffffff", fontSize: "30px" }}></i>
+                <i className="fas fa-search fa-rotate-90" style={{ color: "#ffffff", fontSize: "30px" }}></i>
                 <span>Search</span>
             </div>
         </div>
@@ -27,5 +28,5 @@ export const TabSearch = () => {
 const handleButtonClick = (search) => {
     const url = uri + "/s?keywords=" + search;
     // console.log(url)
-    window.location.href = url;
+    if (search !== "") window.location.href = url;
 };
