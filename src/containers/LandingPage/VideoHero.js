@@ -34,15 +34,15 @@ export const VideoHero = () => {
 
 const categories = [
   {
-    name: "Clay Construction Products",
+    name: "Clay Pavers",
     url: "clay-construction-products"
   },
   {
-    name: "Prima Cotton Profucts",
+    name: "Pima Cotton Towels",
     url: "pima-cotton-products"
   },
   {
-    name: "Floricultural Products",
+    name: "Andean Roses",
     url: "floricultural-products"
   },
 ]

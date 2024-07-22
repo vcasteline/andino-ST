@@ -9,26 +9,26 @@
 
 .buttonRedirect {
     border-radius: 20px;
-    padding: 10px;
-    border: 1px solid var(--marketplaceColorDark);
+    padding: 8px 20px;
     background-color: var(--marketplaceColorLight);
-    font-size: 20px;
+    color:#efefef;
+    font-size: 13px;
+
 }
 
 .buttonRedirect:hover {
-    background-color: var(--marketplaceColorDark);
+    background-color: var(--marketplaceColor);
+    color: #efefef;
     border-radius: 20px;
     cursor: pointer;
-    padding: 10px;
-    border: 1px solid var(--marketplaceColorLight);
-    font-size: 20px;
+    padding: 8px 20px;
+    font-size: 13px;
 }
 
 @media (max-width: 1000px) {
     .buttonRedirect {
         border-radius: 15px;
-        padding: 5px;
-        border: 1px solid var(--marketplaceColorDark);
+        padding: 8px 26px;
         background-color: var(--marketplaceColorLight);
         font-size: 12px;
     }
@@ -38,7 +38,11 @@
         border-radius: 15px;
         cursor: pointer;
         padding: 5px;
-        border: 1px solid var(--marketplaceColorLight);
         font-size: 12px;
+    }
+
+    .containerRedirection {
+        display: flex;
+        justify-content: center;
     }
 }
