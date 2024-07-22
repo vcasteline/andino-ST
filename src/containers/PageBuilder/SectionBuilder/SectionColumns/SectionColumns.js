@@ -49,6 +49,7 @@ const SectionColumns = props => {
 
   const hasHeaderFields = hasDataInFields([title, description, callToAction], fieldOptions);
   const hasBlocks = blocks?.length > 0;
+  // console.log(props)
 
   return (
     <SectionContainer

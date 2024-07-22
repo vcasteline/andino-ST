@@ -249,8 +249,8 @@ export class SearchPageComponent extends Component {
       searchParamsAreInSync && hasPaginationInfo
         ? pagination.totalItems
         : pagination?.paginationUnsupported
-        ? listings.length
-        : 0;
+          ? listings.length
+          : 0;
     const listingsAreLoaded =
       !searchInProgress &&
       searchParamsAreInSync &&
@@ -309,12 +309,12 @@ export class SearchPageComponent extends Component {
       >
         <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
         <div className={css.layoutWrapperContainer}>
+          {/* <span>Hello Word</span> */}
           <aside className={css.layoutWrapperFilterColumn} data-testid="filterColumnAside">
             <div className={css.filterColumnContent}>
               {availableFilters.map(filterConfig => {
-                const key = `SearchFiltersDesktop.${filterConfig.scope || 'built-in'}.${
-                  filterConfig.key
-                }`;
+                const key = `SearchFiltersDesktop.${filterConfig.scope || 'built-in'}.${filterConfig.key
+                  }`;
                 return (
                   <FilterComponent
                     key={key}
@@ -359,9 +359,8 @@ export class SearchPageComponent extends Component {
                 noResultsInfo={noResultsInfo}
               >
                 {availableFilters.map(filterConfig => {
-                  const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
-                    filterConfig.key
-                  }`;
+                  const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${filterConfig.key
+                    }`;
 
                   return (
                     <FilterComponent

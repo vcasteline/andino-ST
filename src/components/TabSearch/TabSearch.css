@@ -1,0 +1,112 @@
+.container {
+    transform: translate3d(0,0,0);
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #ffffff;
+    background-color: #efefef;
+    color: #efefef;
+    border-radius: 40px;
+    margin-bottom: 15px;
+    gap: 5px;
+    width: 80%;
+    height: 8vh;
+}
+
+.containerButton {
+    position: absolute;
+    font-size: 14px;
+    display: flex;
+    flex-wrap: nowrap;
+    background-color: var(--colorPrimaryButton);
+    border-radius: 30px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding: 6px 22px;
+    gap: 5px;
+    align-items: center;
+    height: 8vh;
+    color: var(--marketplaceColor);
+}
+
+.containerButton:hover {
+    background-color: var(--colorPrimaryButtonDark);
+    cursor: pointer;
+}
+
+.searchMenuIcon {
+    stroke: var(--marketplaceColor)!important;
+    margin-right: 5px;
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+}
+
+.containerButton:hover .searchMenuIcon {
+    transform: rotate3d(0,0,1,-90deg);
+}
+
+.inputText {
+    border-width: 1.5px;
+    border: none;
+    outline: none;
+    color: var(--marketplaceColor);
+    text-align: left;
+    padding-left: 30px;
+    background-color: #ffffff00;
+    height: 100%;
+    width: 100%;
+    border-radius: 40px;    
+}
+.inputText:hover {
+    border: none;
+}
+
+.inputText::placeholder {
+    color: var(--marketplaceColorDark);
+    /* color: rgb(31, 31, 31); */
+    opacity: 0.7;
+    font-size: 15px;
+}
+
+.inputText:focus {
+    border: none;
+    outline: none;
+    background-color: #ffffff00;
+    height: 100%;
+    width: 100%;
+    border-radius: 40px;
+}
+
+
+@media (max-width: 1000px) {
+    span {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .container{
+        height: 6.5vh;
+        width: 90%
+    }
+    .containerButton {
+        height: 6.5vh;
+        border: none;
+        margin-right: 0px;
+    }
+    .container {
+        width: 100%;
+    }
+    
+}
+
+@media (max-width: 320px) {
+    .inputText::placeholder{
+        font-size: 12.5px;
+    }
+    
+
+}
