@@ -10,14 +10,15 @@
 .buttonRedirect {
     border-radius: 20px;
     padding: 8px 20px;
-    background-color: var(--marketplaceColorLight);
-    color:#efefef;
+    background-color: transparent;
+    color: #efefef;
+    border: var(--colorPrimaryButton) solid 1px;
     font-size: 13px;
 
 }
 
 .buttonRedirect:hover {
-    background-color: var(--marketplaceColor);
+    background-color: rgba(16, 19, 20, 0.9);
     color: #efefef;
     border-radius: 20px;
     cursor: pointer;
@@ -27,18 +28,12 @@
 
 @media (max-width: 1000px) {
     .buttonRedirect {
-        border-radius: 15px;
         padding: 8px 26px;
-        background-color: var(--marketplaceColorLight);
-        font-size: 12px;
     }
 
     .buttonRedirect:hover {
-        background-color: var(--marketplaceColorDark);
-        border-radius: 15px;
+        padding: 8px 26px;
         cursor: pointer;
-        padding: 5px;
-        font-size: 12px;
     }
 
     .containerRedirection {

@@ -1,4 +1,7 @@
 .container {
+    transform: translate3d(0,0,0);
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
     display: flex;
     flex-wrap: nowrap;
     justify-content: flex-end;
@@ -18,23 +21,31 @@
     font-size: 14px;
     display: flex;
     flex-wrap: nowrap;
-    background-color: var(--marketplaceColorLight);
+    background-color: var(--colorPrimaryButton);
     border-radius: 30px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-left-color: #efefef;
-    border-left-style: solid;
     padding: 6px 22px;
     gap: 5px;
     align-items: center;
-    margin-right: 1.5px;
-    height: 7.5vh;
-    color: #efefef;
+    height: 8vh;
+    color: var(--marketplaceColor);
 }
 
 .containerButton:hover {
-    background-color: var(--marketplaceColor);
+    background-color: var(--colorPrimaryButtonDark);
     cursor: pointer;
+}
+
+.searchMenuIcon {
+    stroke: var(--marketplaceColor)!important;
+    margin-right: 5px;
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+}
+
+.containerButton:hover .searchMenuIcon {
+    transform: rotate3d(0,0,1,-90deg);
 }
 
 .inputText {
@@ -50,7 +61,7 @@
     border-radius: 40px;    
 }
 .inputText:hover {
-    border-width: 2px;
+    border: none;
 }
 
 .inputText::placeholder {
@@ -69,10 +80,6 @@
     border-radius: 40px;
 }
 
-.searchMenuIcon {
-    stroke: #efefef!important;
-    margin-right: 5px;
-}
 
 @media (max-width: 1000px) {
     span {
