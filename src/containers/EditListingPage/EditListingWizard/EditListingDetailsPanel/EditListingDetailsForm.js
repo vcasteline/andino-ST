@@ -254,20 +254,19 @@ const AddListingFields = props => {
     handleVariantFieldChange,
     getSelectedVariantFields
   } = props;
-  
   const targetCategoryIds = Object.values(selectedCategories);
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
     const { key, schemaType, scope } = fieldConfig || {};
-    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
 
+    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
     const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
     const isMandatory =
       key == 'quantityPriceBreaks' || key == 'minOrderQuantity' || key == 'lead_times';
-    
+
     if (
       isKnownSchemaType &&
       isProviderScope &&
@@ -276,6 +275,9 @@ const AddListingFields = props => {
       (selectedVariantFields.includes(fieldConfig.key) || isMandatory)
     ) {
       if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
+        // console.log(values[namespacedKey])
+        // console.log("Si entra")
+
         pickedFields.push(
           <QuantityPriceBreaks
             key={`${namespacedKey}-breaks`}
@@ -283,6 +285,7 @@ const AddListingFields = props => {
           />
         );
       }
+      // console.log(namespacedKey)
 
       pickedFields.push(
         <CustomExtendedDataField
@@ -293,6 +296,7 @@ const AddListingFields = props => {
             id: 'EditListingDetailsForm.defaultRequiredMessage',
           })}
           formId={formId}
+          values={values}
         />
       );
     }

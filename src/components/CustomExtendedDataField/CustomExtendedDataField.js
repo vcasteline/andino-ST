@@ -14,6 +14,7 @@ import { required, nonEmptyArray, validateInteger } from '../../util/validators'
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '..';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
+import { FileQuantityPrice } from '../FileQuantityPrice/FileQuantityPrice';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
@@ -78,7 +79,7 @@ const CustomFieldMultiEnum = props => {
 };
 
 const CustomFieldText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, values } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig);
   const validateMaybe = isRequired
@@ -88,11 +89,20 @@ const CustomFieldText = props => {
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
   // console.log("Aquí van las props de pruebas")
   // console.log(props)
-  if (props.name === "pub_quantityPriceBreaks") console.log("Encontramos lo que buscaba")
+  // if (props.name === "pub_quantityPriceBreaks") console.log(props)
 
   return (
     <>
-      {props.name === "pub_quantityPriceBreaks" ? <div>Aquí debe ir lo nuevo</div>
+      {props.name === "pub_quantityPriceBreaks" ?
+        // Aquí debo agregar la nueva lógica y el componente
+        <FileQuantityPrice
+          id={formId ? `${formId}.${name}` : name}
+          name={name}
+          type="textarea"
+          label={label}
+          placeholder={placeholder}
+          values={values}
+        />
         :
         <FieldTextInput
           className={css.customField}
@@ -105,6 +115,15 @@ const CustomFieldText = props => {
         />
       }
     </>
+    // <FieldTextInput
+    //   className={css.customField}
+    //   id={formId ? `${formId}.${name}` : name}
+    //   name={name}
+    //   type="textarea"
+    //   label={label}
+    //   placeholder={placeholder}
+    //   {...validateMaybe}
+    // />
   );
 };
 
