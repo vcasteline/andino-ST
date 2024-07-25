@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 3vh;
+}
+
+.containerDimensions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+@media (max-width: 1000px) {
+    .container {
+        flex-wrap: wrap;
+    }
+
+}

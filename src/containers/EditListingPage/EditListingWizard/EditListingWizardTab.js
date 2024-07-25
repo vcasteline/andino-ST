@@ -104,7 +104,7 @@ const EditListingWizardTab = props => {
     config,
     routeConfiguration,
   } = props;
-
+  // console.log(props)
   const { type } = params;
   const isNewURI = type === LISTING_PAGE_PARAM_TYPE_NEW;
   const isDraftURI = type === LISTING_PAGE_PARAM_TYPE_DRAFT;
@@ -176,7 +176,7 @@ const EditListingWizardTab = props => {
       },
     };
   };
-
+  // console.log(props)
   // TODO: add missing cases for supported tabs
   switch (tab) {
     case DETAILS: {
@@ -208,7 +208,9 @@ const EditListingWizardTab = props => {
     }
     case DELIVERY: {
       return (
-        <EditListingDeliveryPanel {...panelProps(DELIVERY)} marketplaceCurrency={config.currency} />
+        <EditListingDeliveryPanel {...panelProps(DELIVERY)}
+          marketplaceCurrency={config.currency}
+          data={config.listing.listingFields} />
       );
     }
     case LOCATION: {

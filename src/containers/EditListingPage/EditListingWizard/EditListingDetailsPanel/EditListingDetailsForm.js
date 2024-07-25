@@ -254,7 +254,7 @@ const AddListingFields = props => {
     handleVariantFieldChange,
     getSelectedVariantFields
   } = props;
-  
+
   const targetCategoryIds = Object.values(selectedCategories);
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
@@ -267,7 +267,7 @@ const AddListingFields = props => {
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
     const isMandatory =
       key == 'quantityPriceBreaks' || key == 'minOrderQuantity' || key == 'lead_times';
-    
+
     if (
       isKnownSchemaType &&
       isProviderScope &&
@@ -276,6 +276,7 @@ const AddListingFields = props => {
       (selectedVariantFields.includes(fieldConfig.key) || isMandatory)
     ) {
       if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
+        // console.log(values)
         pickedFields.push(
           <QuantityPriceBreaks
             key={`${namespacedKey}-breaks`}
@@ -306,11 +307,19 @@ const AddListingFields = props => {
       {listingFieldsConfig.map(field => {
         const isTargetListingType = isFieldForListingType(listingType, field);
         const isTargetCategory = isFieldForCategory(targetCategoryIds, field);
+        // console.log(field.key)
+        // console.log(values)
         const isMandatory =
           field.key == 'quantityPriceBreaks' ||
           field.key == 'minOrderQuantity' ||
           field.key == 'lead_times';
-        if (isTargetCategory && isTargetListingType && !isMandatory) {
+        const isWeightDimensions =
+          field.key == 'weight' ||
+          field.key == 'width' ||
+          field.key == 'length' ||
+          field.key == 'height';
+        if (isWeightDimensions) field.saveConfig.isRequired = false
+        if (isTargetCategory && isTargetListingType && !isMandatory && !isWeightDimensions) {
           return (
             <div key={field.key} className={css.variantField}>
               <label className={css.variantLabel}>
@@ -364,6 +373,7 @@ const EditListingDetailsFormComponent = props => (
         values,
       } = formRenderProps;
       // const { form } = formRenderProps;
+      // console.log(values)
       const getSelectedVariantFields = Object.entries(values)
         .filter(([key, value]) => {
           return (

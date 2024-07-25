@@ -19,8 +19,7 @@ const { Money } = sdkTypes;
 
 const getInitialValues = props => {
   const { listing, listingTypes, marketplaceCurrency } = props;
-  const { geolocation, publicData, price } = listing?.attributes || {};
-
+  const { geolocation, publicData, price, description, title, privateData } = listing?.attributes || {};
   const listingType = listing?.attributes?.publicData?.listingType;
   const listingTypeConfig = listingTypes.find(conf => conf.listingType === listingType);
   const displayShipping = displayDeliveryShipping(listingTypeConfig);
@@ -59,12 +58,14 @@ const getInitialValues = props => {
 
   // Initial values for the form
   return {
+    title,
+    description,
     building,
     location: locationFieldsPresent
       ? {
-          search: address,
-          selectedPlace: { address, origin: geolocation },
-        }
+        search: address,
+        selectedPlace: { address, origin: geolocation },
+      }
       : { search: undefined, selectedPlace: undefined },
     deliveryOptions,
     shippingPriceInSubunitsOneItem: shippingOneItemAsMoney,
@@ -90,6 +91,7 @@ const EditListingDeliveryPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    data
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -98,7 +100,7 @@ const EditListingDeliveryPanel = props => {
   const listingType = listing?.attributes?.publicData?.listingType;
   const listingTypeConfig = listingTypes.find(conf => conf.listingType === listingType);
   const hasStockInUse = listingTypeConfig.stockType === STOCK_MULTIPLE_ITEMS;
-
+  console.log(state)
   return (
     <div className={classes}>
       <H3 as="h1">
@@ -107,11 +109,12 @@ const EditListingDeliveryPanel = props => {
             id="EditListingDeliveryPanel.title"
             values={{ listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> }}
           />
-        ) : (
+        ) : (<>
           <FormattedMessage
             id="EditListingDeliveryPanel.createListingTitle"
             values={{ lineBreak: <br /> }}
           />
+        </>
         )}
       </H3>
       {priceCurrencyValid ? (
@@ -120,6 +123,8 @@ const EditListingDeliveryPanel = props => {
           initialValues={state.initialValues}
           onSubmit={values => {
             const {
+              title,
+              description,
               building = '',
               location,
               shippingPriceInSubunitsOneItem,
@@ -138,16 +143,18 @@ const EditListingDeliveryPanel = props => {
             const shippingDataMaybe =
               shippingEnabled && shippingPriceInSubunitsOneItem != null
                 ? {
-                    // Note: we only save the "amount" because currency should not differ from listing's price.
-                    // Money is always dealt in subunits (e.g. cents) to avoid float calculations.
-                    shippingPriceInSubunitsOneItem: shippingPriceInSubunitsOneItem.amount,
-                    shippingPriceInSubunitsAdditionalItems:
-                      shippingPriceInSubunitsAdditionalItems?.amount,
-                  }
+                  // Note: we only save the "amount" because currency should not differ from listing's price.
+                  // Money is always dealt in subunits (e.g. cents) to avoid float calculations.
+                  shippingPriceInSubunitsOneItem: shippingPriceInSubunitsOneItem.amount,
+                  shippingPriceInSubunitsAdditionalItems:
+                    shippingPriceInSubunitsAdditionalItems?.amount,
+                }
                 : {};
 
             // New values for listing attributes
             const updateValues = {
+              title: title.trim(),
+              description,
               geolocation: origin,
               publicData: {
                 pickupEnabled,
@@ -181,6 +188,7 @@ const EditListingDeliveryPanel = props => {
           updateInProgress={updateInProgress}
           fetchErrors={errors}
           autoFocus
+          data={data}
         />
       ) : (
         <div className={css.priceCurrencyInvalid}>
