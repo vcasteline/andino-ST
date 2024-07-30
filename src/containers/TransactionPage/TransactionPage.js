@@ -13,9 +13,7 @@ import {
   DATE_TYPE_DATE,
   DATE_TYPE_DATETIME,
   LISTING_UNIT_TYPES,
-  LINE_ITEM_HOUR,
-  LINE_ITEM_ITEM,
-  propTypes,
+  LINE_ITEM_HOUR, propTypes
 } from '../../util/types';
 import { timestampToDate } from '../../util/dates';
 import { createSlug } from '../../util/urlHelpers';
@@ -62,10 +60,7 @@ import {
   fetchTransactionLineItems,
 } from './TransactionPage.duck';
 import css from './TransactionPage.module.css';
-import CounterOfferModal from './CounterOfferModal/CounterOfferModal.js';
-import OfferModal from './OfferModal/OfferModal.js';
 import { types as sdkTypes } from '../../util/sdkLoader';
-import { paymentMethods } from '../../ducks/index.js';
 import NegociationOfferModal from '../../components/NegociationOfferModal/NegociationOfferModal.js';
 import { getObjectFromMoney } from '../../util/priceHelpers.js';
 const { Money } = sdkTypes;

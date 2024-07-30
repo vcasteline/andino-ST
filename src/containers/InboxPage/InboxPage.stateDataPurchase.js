@@ -15,6 +15,26 @@ export const getStateDataForPurchaseProcess = (txInfo, processInfo) => {
     .cond([states.INQUIRY, _], () => {
       return { processName, processState, actionNeeded: true };
     })
+
+    .cond([states.CUSTOMER_MADE_OFFER, CUSTOMER], () => {
+      return { processName, processState, actionNeeded: false };
+    })
+    .cond([states.PROVIDER_MADE_OFFER, CUSTOMER], () => {
+      return { processName, processState, actionNeeded: true };
+    })
+    .cond([states.PROVIDER_MADE_OFFER, PROVIDER], () => {
+      return { processName, processState, actionNeeded: false };
+    })
+    .cond([states.CUSTOMER_MADE_OFFER, PROVIDER], () => {
+      return { processName, processState, actionNeeded: true };
+    })
+    .cond([states.OFFER_ACCEPTED, CUSTOMER], () => {
+      return { processName, processState, actionNeeded: true };
+    })
+    .cond([states.OFFER_ACCEPTED, PROVIDER], () => {
+      return { processName, processState, actionNeeded: true };
+    })
+
     .cond([states.PENDING_PAYMENT, CUSTOMER], () => {
       return { processName, processState, actionNeeded: true };
     })
