@@ -91,6 +91,7 @@ import CustomListingFields from './CustomListingFields';
 import css from './ListingPage.module.css';
 import QuantityPriceBreaks from '../EditListingPage/EditListingWizard/QuantityPriceBreaks.js';
 import SectionDetailsTableMaybe from './SectionDetailsTableMaybe.js';
+import SectionCertificationsMaybe from './SectionCertificationsMaybe.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -383,8 +384,6 @@ export const ListingPageComponent = props => {
               intl={intl}
             />
 
-
-
             {listingConfig.listingFields.reduce((pickedElements, config) => {
               const { key, enumOptions, includeForListingTypes, scope = 'public' } = config;
               const listingType = publicData?.listingType;
@@ -422,6 +421,9 @@ export const ListingPageComponent = props => {
               }
               return nonEmptyFields;
             }, [])}
+
+            <SectionCertificationsMaybe
+              currentAuthor={currentAuthor} onManageDisableScrolling={onManageDisableScrolling} />
 
             <SectionMapMaybe
               geolocation={geolocation}

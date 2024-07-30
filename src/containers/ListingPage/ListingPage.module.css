@@ -1,7 +1,6 @@
 @import '../../styles/customMediaQueries.css';
 
-.root {
-}
+.root {}
 
 .pageRoot {
   padding-bottom: 90px;
@@ -39,7 +38,8 @@
 
 .imageWrapperForSectionHero {
   composes: heroHeight;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorGrey100);
+  /* Loading BG color */
 
   /* Image carousel can be opened from the image, therefore we should show a pointer */
   cursor: pointer;
@@ -52,7 +52,8 @@
   width: 100%;
   color: var(--colorGrey100);
   background-color: var(--colorGrey700);
-  z-index: 1; /* bring on top of mobile image */
+  z-index: 1;
+  /* bring on top of mobile image */
 
   /* Action bar prevents the image click events going to the parent and
    should not show a pointer */
@@ -233,8 +234,8 @@
 }
 
 .mainColumnForProductLayout {
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     /* contentContainer's full width - (orderColumn + paddings + margin) */
     max-width: calc(100% - 360px);
@@ -245,8 +246,8 @@
 }
 
 .orderColumnForProductLayout {
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     display: block;
     margin-left: 48px;
@@ -297,8 +298,8 @@
 }
 
 .orderColumnForHeroLayout {
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     display: block;
     margin-top: 80px;
@@ -311,6 +312,7 @@
 }
 
 .orderPanel {
+
   /* Note: panel height might be too much on small viewport - hence min-height */
   @media (--viewportLarge) and (min-height: 950px) {
     position: sticky;
@@ -323,6 +325,7 @@
     display: block;
     margin-top: 24px;
   }
+
   /* Note: panel height might be too much on small viewport - hence min-height */
   @media (--viewportLarge) and (min-height: 950px) {
     position: sticky;
@@ -363,12 +366,14 @@
   display: flex;
 
   @media (--viewportMedium) {
-    display: none; /* Hide the medium avatar from the bigger screens */
+    display: none;
+    /* Hide the medium avatar from the bigger screens */
   }
 }
 
 .avatarDesktop {
-  display: none; /* Hide the large avatar from the smaller screens */
+  display: none;
+  /* Hide the large avatar from the smaller screens */
 
   @media (--viewportMedium) {
     display: flex;
@@ -430,6 +435,7 @@
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 2px;
@@ -587,6 +593,7 @@
     margin-top: 40px;
     scroll-margin-top: calc(var(--topbarHeightDesktop) + 24px);
   }
+
   @media (--viewportLarge) {
     padding: 8px 0;
   }
@@ -687,6 +694,7 @@
   @media (--viewportMedium) {
     margin: 24px 0 48px 0;
   }
+
   @media (--viewportLarge) {
     margin: 0 0 40px 0;
     padding-bottom: 4px;
@@ -707,13 +715,13 @@
 
 .productDesktopHeading {
   display: none;
+
   @media (--viewportLarge) {
     display: block;
   }
 }
 
-.productSideContent {
-}
+.productSideContent {}
 
 .productBookingPanel {
   @media (--viewportLarge) {
@@ -724,4 +732,17 @@
     flex-basis: 312px;
     flex-shrink: 0;
   }
+}
+
+.certificationsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  height: 160px;
+}
+
+.certificateContainer {
+  width: 120px;
+  height: 160px;
 }
