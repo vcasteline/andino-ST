@@ -132,6 +132,15 @@ export const ProfileCertificationsFormComponent = props => {
                         />
                       </div>
 
+                      <FieldTextInput
+                        className={css.input}
+                        type="textarea"
+                        id={`${name}description`}
+                        name={`${name}description`}
+                        label={intl.formatMessage({ id: 'ProfileCertificationsForm.description' })}
+                        placeholder={intl.formatMessage({ id: 'ProfileCertificationsForm.descriptionPlaceholder' })}
+                      />
+
                       <div style={{ marginTop: "20px" }}>
                         <label>
                           <FormattedMessage id="ProfileCertificationsForm.image" />

@@ -18,7 +18,7 @@ import { withViewport } from '../../util/uiHelpers';
 import { pickCustomFieldProps } from '../../util/fieldHelpers';
 import { richText } from '../../util/richText';
 
-import { isScrollingDisabled } from '../../ducks/ui.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import {
   Heading,
@@ -194,6 +194,7 @@ export const MainContent = props => {
     metadata,
     userFieldConfig,
     intl,
+    onManageDisableScrolling,
   } = props;
 
   const hasListings = listings.length > 0;
@@ -257,21 +258,36 @@ export const MainContent = props => {
 
           <div className={css.certificatesContainer}>
             {certifications?.map((certification, index) => (
-              <div className={css.certificateContainer}>
+              <div key={index} className={css.certificateContainer}>
 
                 <div className={css.certificateInfo}>
-                  <p className={css.detailLabel}>
-                    <FormattedMessage id="ProfilePage.certificationName" values={{ value: certification.name }} />
-                  </p>
+                  <span className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.certificationName" />
+                    <span className={css.detailInfo}>
+                      {certification.name}
+                    </span>
+                  </span>
 
-                  <p className={css.detailLabel}>
-                    <FormattedMessage id="ProfilePage.certificationDate" values={{ value: formatDate(certification.date) }} />
-                  </p>
+                  <span className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.certificationDate" />
+                    <span className={css.detailInfo}>
+                      {formatDate(certification.date)}
+                    </span>
+                  </span>
+
+                  <span className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.description" />
+                    <span className={css.detailInfo}>
+                      {certification.description}
+                    </span>
+                  </span>
+
                 </div>
 
                 <AzureImageDisplay
                   className={css.image}
-                  value={certification.image} />
+                  value={certification.image}
+                  onManageDisableScrolling={onManageDisableScrolling} />
 
               </div>
             ))}
@@ -305,7 +321,7 @@ export const MainContent = props => {
 
 export const ProfilePageComponent = props => {
   const config = useConfiguration();
-  const { scrollingDisabled, currentUser, userShowError, user, intl, ...rest } = props;
+  const { scrollingDisabled, currentUser, userShowError, user, intl, onManageDisableScrolling, ...rest } = props;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const profileUser = ensureUser(user);
   const companyName = profileUser?.attributes?.profile?.publicData?.companyName;
@@ -346,6 +362,7 @@ export const ProfilePageComponent = props => {
           userFieldConfig={userFields}
           intl={intl}
           displayName={displayedName}
+          onManageDisableScrolling={onManageDisableScrolling}
           {...rest}
         />
       </LayoutSideNavigation>
@@ -407,8 +424,13 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => ({
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+});
+
 const ProfilePage = compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withViewport,
   injectIntl
 )(ProfilePageComponent);
