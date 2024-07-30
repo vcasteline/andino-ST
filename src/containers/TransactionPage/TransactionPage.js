@@ -333,8 +333,8 @@ export const TransactionPageComponent = props => {
       transaction,
       orderData: {
         deliveryMethod: "shipping",
-        offerPrice: offerPrice,
-        quantity: 1,
+        offer: offer,
+        quantity: offer?.quantity || 1,
         selectedVariants: [],
       },
       confirmPaymentError: null,
@@ -438,7 +438,7 @@ export const TransactionPageComponent = props => {
   // console.log({ stateData })
   // console.log({ transaction })
 
-  const offerPrice = transaction?.attributes?.protectedData.offerPrice ? new Money(transaction?.attributes?.protectedData.offerPrice.amount, transaction?.attributes?.protectedData.offerPrice.currency) : null;
+  const offer = transaction?.attributes?.protectedData.offer;
   const hasLineItems = transaction?.attributes?.lineItems?.length > 0;
   const unitLineItem = hasLineItems
     ? transaction.attributes?.lineItems?.find(
@@ -509,7 +509,7 @@ export const TransactionPageComponent = props => {
       transactionRole={transactionRole}
       showBookingLocation={showBookingLocation}
       onManageDisableScrolling={onManageDisableScrolling}
-      offerPrice={offerPrice}
+      offer={offer}
       activityFeed={
         <ActivityFeed
           messages={messages}
@@ -536,9 +536,8 @@ export const TransactionPageComponent = props => {
           isOwnListing={isOwnSale}
           lineItemUnitType={lineItemUnitType}
           title={listingTitle}
-
           fromTransactionPage={true}
-          offerPrice={transaction?.attributes?.protectedData.offerPrice}
+          offer={offer}
           titleDesktop={
             <H4 as="h2" className={css.orderPanelTitle}>
               {listingDeleted ? (
@@ -593,7 +592,7 @@ export const TransactionPageComponent = props => {
           marketplaceName={config.marketplaceName}
         />
 
-        <OfferModal
+        {/* <OfferModal
           id="OfferModal"
           isOpen={isOfferModalOpen}
           onCloseModal={() => setOfferModalOpen(false)}
@@ -615,7 +614,7 @@ export const TransactionPageComponent = props => {
           transitionError={transitionError}
           offerPrice={offerPrice}
           marketplaceCurrency={config.currency}
-        />
+        /> */}
         {process?.transitions?.DISPUTE ? (
           <DisputeModal
             id="DisputeOrderModal"

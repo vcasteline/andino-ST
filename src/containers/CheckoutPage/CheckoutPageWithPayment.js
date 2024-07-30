@@ -72,7 +72,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
   const deliveryMethod = pageData.orderData?.deliveryMethod;
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
   const selectedVariants = pageData.orderData?.selectedVariants;
-  const offerPrice = pageData.orderData?.offerPrice ? pageData.orderData?.offerPrice : null;
+  const offer = pageData.orderData?.offer ? pageData.orderData?.offer : null;
 
   const { listingType, unitType } = pageData?.listing?.attributes?.publicData || {};
   const protectedDataMaybe = {
@@ -88,7 +88,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
   // which is either initiate-transition or initiate-transition-after-enquiry
   const orderParams = {
     listingId: pageData?.listing?.id,
-    offerPrice,
+    offer,
     ...deliveryMethodMaybe,
     ...quantityMaybe,
     ...bookingDatesMaybe(pageData.orderData?.bookingDates),
@@ -121,7 +121,7 @@ const fetchSpeculatedTransactionIfNeeded = (orderParams, pageData, fetchSpeculat
 
     let requestTransition;
 
-    if (pageData?.orderData?.offerPrice) {
+    if (pageData?.orderData?.offer) {
       requestTransition = process.transitions.REQUEST_PAYMENT_AFTER_OFFER;
     } else {
       requestTransition = isInquiryInPaymentProcess

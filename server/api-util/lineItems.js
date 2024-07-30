@@ -8,11 +8,7 @@ const {
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
 
-const resolveQuantityBasedPrice = (listing, quantity, offerPrice) => {
-
-  if (offerPrice) {
-    return offerPrice;
-  }
+const resolveQuantityBasedPrice = (listing, quantity) => {
 
   const quantityPriceBreaks = listing.attributes.publicData?.quantityPriceBreaks;
   const basePrice = listing.attributes.price;
@@ -64,6 +60,7 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
   const { shippingPriceInSubunitsOneItem, shippingPriceInSubunitsAdditionalItems } =
     publicData || {};
 
+
   // Calculate shipping fee if applicable
   const shippingFee = isShipping ? calculateShippingFee(
     shippingPriceInSubunitsOneItem,
@@ -71,7 +68,6 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
     currency,
     quantity
   ) : null;
-
 
   // Add line-item for given delivery method.
   // Note: by default, pickup considered as free.
@@ -156,7 +152,7 @@ const getDateRangeQuantityAndLineItems = (orderData, code) => {
 exports.transactionLineItems = (listing, orderData, providerCommission, customerCommission) => {
   const publicData = listing.attributes.publicData;
 
-  const offerPrice = orderData.offerPrice;
+  const offer = orderData.offer;
 
   const unitPrice = listing.attributes.price;
   const currency = unitPrice.currency;
@@ -189,6 +185,7 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
           ? getDateRangeQuantityAndLineItems(orderData, code)
           : {};
 
+
   const { quantity, extraLineItems } = quantityAndExtraLineItems;
 
   // Throw error if there is no quantity information given
@@ -212,12 +209,20 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
    *
    * By default OrderBreakdown prints line items inside LineItemUnknownItemsMaybe if the lineItem code is not recognized. */
 
-  const order = {
-    code: 'line-item/product',
-    unitPrice: resolveQuantityBasedPrice(listing, quantity, offerPrice),
-    quantity: quantity,
-    includeFor: ['customer', 'provider'],
-  };
+  const order = offer ?
+    {
+      code: 'line-item/product',
+      unitPrice: new Money(offer.proposedPrice.amount, offer.proposedPrice.currency),
+      quantity: offer.quantity,
+      includeFor: ['customer', 'provider'],
+    }
+    :
+    {
+      code: 'line-item/product',
+      unitPrice: resolveQuantityBasedPrice(listing, quantity),
+      quantity: quantity,
+      includeFor: ['customer', 'provider'],
+    };
 
   // Provider commission reduces the amount of money that is paid out to provider.
   // Therefore, the provider commission line-item should have negative effect to the payout total.

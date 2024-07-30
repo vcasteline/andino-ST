@@ -196,7 +196,7 @@ const OrderPanel = props => {
     payoutDetailsWarning,
     fromTransactionPage,
     openOfferModal,
-    offerPrice
+    offer
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -515,7 +515,7 @@ const OrderPanel = props => {
             location={location}
             fromTransactionPage={fromTransactionPage}
             openOfferModal={openOfferModal}
-            offerPrice={offerPrice}
+            offer={offer}
           />
         ) : showInquiryForm ? (
           <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />

@@ -285,3 +285,48 @@ export const formatCurrencyMajorUnit = (intl, currency, valueWithoutSubunits) =>
 
   return intl.formatNumber(valueAsNumber, numberFormatOptions);
 };
+
+export const convertDecimalJSToNumber = decimalValue => {
+  if (!isSafeNumber(decimalValue)) {
+    throw new Error(
+      `Cannot represent Decimal.js value ${decimalValue.toString()} safely as a number`
+    );
+  }
+
+  return decimalValue.toNumber();
+};
+
+/**
+ * Gets subunit amount from Money object and returns it as Decimal.
+ *
+ * @param {Money} value
+ *
+ * @return {Number} converted value
+ */
+export const getAmountAsDecimalJS = value => {
+  if (!(value instanceof Money)) {
+    throw new Error('Value must be a Money type');
+  }
+  let amount;
+
+  if (isGoogleMathLong(value.amount)) {
+    // TODO: temporarily also handle goog.math.Long values created by
+    // the Transit tooling in the Sharetribe JS SDK. This should be
+    // removed when the value.amount will be a proper Decimal type.
+
+    // eslint-disable-next-line no-console
+    console.warn('goog.math.Long value in money amount:', value.amount, value.amount.toString());
+
+    amount = new Decimal(value.amount.toString());
+  } else {
+    amount = new Decimal(value.amount);
+  }
+
+  if (!isSafeNumber(amount)) {
+    throw new Error(
+      `Cannot represent money minor unit value ${amount.toString()} safely as a number`
+    );
+  }
+
+  return amount;
+};

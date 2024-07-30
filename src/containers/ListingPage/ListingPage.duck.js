@@ -336,9 +336,8 @@ export const sendInquiry = (listing, message) => (dispatch, getState, sdk) => {
     });
 };
 
-export const sendOffer = (listingId, processAlias, proposedPrice, currency) => (dispatch, getState, sdk) => {
+export const sendOffer = (listingId, processAlias, offer, currency) => (dispatch, getState, sdk) => {
   dispatch(sendInquiryRequest());
-  //const transactionProcessAlias = listing?.attributes?.publicData?.transactionProcessAlias || '';
 
   const queryParams = {
     include: ['booking', 'provider'],
@@ -346,39 +345,28 @@ export const sendOffer = (listingId, processAlias, proposedPrice, currency) => (
   };
 
   const bodyParams = {
-    transition: 'transition/request', // TODO get them from processAlias, transitions.REQUEST,
-    processAlias: processAlias, //'default-purchase/release-1', //TODO //config.bookingProcessAlias,
+    transition: 'transition/request',
+    processAlias: processAlias,
     params: {
       listingId,
-      //negotiatedTotal: new Money(proposedPrice, 'USD'),
-      stockReservationQuantity: 1,
+      stockReservationQuantity: offer.quantity,
       protectedData: {
-        offerPrice: {
-          amount: proposedPrice,
-          currency: currency
-        },
+        offer
       }
     },
   };
 
   const orderData = {
     deliverMethod: 'shipping',
-    //stockReservationQuantity: 1, // mandatory but not here, missing-required-key error
-  };  //TODO
-
-  //return sdk.transactions
-  //.initiate(bodyParams)
+  };
 
   return initiatePrivileged({ isSpeculative: false, orderData, bodyParams, queryParams })
     .then(response => {
       const transactionId = response.data.data.id;
 
-      // Send the message to the created transaction
-      // return sdk.messages.send({ transactionId, content: message }).then(() => {
       dispatch(sendInquirySuccess());
       dispatch(fetchCurrentUserHasOrdersSuccess(true));
       return transactionId;
-      // });
     })
     .catch(e => {
       dispatch(sendInquiryError(storableError(e)));

@@ -92,6 +92,8 @@ import css from './ListingPage.module.css';
 import QuantityPriceBreaks from '../EditListingPage/EditListingWizard/QuantityPriceBreaks.js';
 import SectionDetailsTableMaybe from './SectionDetailsTableMaybe.js';
 import SectionCertificationsMaybe from './SectionCertificationsMaybe.js';
+import NegociationOfferModal from '../../components/NegociationOfferModal/NegociationOfferModal.js';
+import { getObjectFromMoney } from '../../util/priceHelpers.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -104,7 +106,7 @@ export const ListingPageComponent = props => {
     props.inquiryModalOpenForListingId === props.params.id
   );
 
-  const [offerModalOpen, setOfferModalOpen] = useState(false);
+  const [negociationOfferModalOpen, setNegociationOfferModalOpen] = useState(false);
   const [offerValue, setOfferValue] = useState();
   const {
     isAuthenticated,
@@ -311,9 +313,9 @@ export const ListingPageComponent = props => {
 
 
   const openOfferModal = () => {
-    setOfferModalOpen(true);
+    setNegociationOfferModalOpen(true);
     //this.setState({
-    //  offerModalOpen: true,
+    //  negociationOfferModalOpen: true,
     //});
 
   };
@@ -486,10 +488,55 @@ export const ListingPageComponent = props => {
             />
 
             {/* Make an offer modal */}
-            <Modal
-              isOpen={offerModalOpen}
+            {negociationOfferModalOpen &&
+              <NegociationOfferModal
+                id="NegociationOfferModal"
+                isOpen={negociationOfferModalOpen}
+                onCloseModal={() => setNegociationOfferModalOpen(false)}
+                onManageDisableScrolling={onManageDisableScrolling}
+                onSubmitOffer={(values) => {
+                  console.log(values)
+                  const { currentPriceTotal, quantity, offerTotal, proposedPrice, proposedPriceTotal, shippingCost } = values;
+
+                  const offer = {
+                    currentPriceTotal: getObjectFromMoney(currentPriceTotal),
+                    quantity: parseInt(quantity, 10), //quantity needs to be a number for lineitems 
+                    proposedPrice: getObjectFromMoney(proposedPrice),
+                    proposedPriceTotal: getObjectFromMoney(proposedPriceTotal),
+                    shippingCost: getObjectFromMoney(shippingCost),
+                    offerTotal: getObjectFromMoney(offerTotal)
+                  }
+
+                  onSendOffer(listingId, processAlias, offer, config.currency)
+                    .then(txId => {
+                      setNegociationOfferModalOpen(false);
+
+                      // Redirect to OrderDetailsPage
+                      history.push(
+                        createResourceLocatorString(
+                          'OrderDetailsPage',
+                          routeConfiguration,
+                          { id: txId.uuid },
+                          {}
+                        )
+                      );
+                    })
+                    .catch((e) => {
+                      // Ignore, error handling in duck file
+                      console.log(e);
+                    });
+                }}
+                sendInquiryInProgress={sendInquiryInProgress}
+                sendInquiryError={sendInquiryError}
+                marketplaceCurrency={config.currency}
+                listing={currentListing}
+              />
+            }
+
+            {/* <Modal
+              isOpen={negociationOfferModalOpen}
               onClose={() => {
-                setOfferModalOpen(false);
+                setNegociationOfferModalOpen(false);
               }}
               onManageDisableScrolling={onManageDisableScrolling}
               large={true}
@@ -531,7 +578,7 @@ export const ListingPageComponent = props => {
                       onClick={() => {
                         return onSendOffer(listingId, processAlias, Number(offerValue * 100), config.currency)
                           .then(txId => {
-                            setOfferModalOpen(false);
+                            setNegociationOfferModalOpen(false);
 
                             //const routes = routeConfiguration(); // is not a function!
                             // Redirect to OrderDetailsPage
@@ -556,7 +603,7 @@ export const ListingPageComponent = props => {
                 </div>
 
               </div>
-            </Modal>
+            </Modal> */}
           </div>
         </div>
       </LayoutSingleColumn>
@@ -699,8 +746,8 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
-  onSendOffer: (listingId, message, proposedPrice, currency) =>
-    dispatch(sendOffer(listingId, message, proposedPrice, currency)),
+  onSendOffer: (listingId, message, offer, currency) =>
+    dispatch(sendOffer(listingId, message, offer, currency)),
 });
 // Note: it is important that the withRouter HOC is outside the
 // connect HOC, otherwise React Router won't rerender any Route

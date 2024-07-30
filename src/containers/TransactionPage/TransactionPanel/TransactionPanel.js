@@ -29,6 +29,7 @@ import PanelHeading from './PanelHeading';
 import css from './TransactionPanel.module.css';
 import { formatMoney } from '../../../util/currency';
 import PriceFilterForm from '../../SearchPage/PriceFilterForm/PriceFilterForm';
+import { getMoneyFromObject } from '../../../util/priceHelpers';
 
 // Helper function to get display names for different roles
 const displayNames = (currentUser, provider, customer, intl) => {
@@ -145,7 +146,7 @@ export class TransactionPanelComponent extends Component {
       orderPanel,
       config,
       onManageDisableScrolling,
-      offerPrice,
+      offer,
     } = this.props;
 
     const isCustomer = transactionRole === 'customer';
@@ -194,25 +195,55 @@ export class TransactionPanelComponent extends Component {
 
     const classes = classNames(rootClassName || css.root, className);
 
-    const pendingOfferInfoMaybe = stateData.showPendingOfferInfo && offerPrice ?
+    const offerInfo = <>
+      <p className={css.offerProposed}>
+        <FormattedMessage id="TransactionPanel.quantity" values={{ value: offer.quantity }} />
+      </p>
+
+      <p className={css.offerProposed}>
+        <FormattedMessage id="TransactionPanel.proposedPrice" values={{ value: formatMoney(intl, getMoneyFromObject(offer.proposedPrice)) }} />
+      </p>
+
+      <p className={css.offerProposed}>
+        <FormattedMessage id="TransactionPanel.proposedPriceTotal" values={{ value: formatMoney(intl, getMoneyFromObject(offer.proposedPriceTotal)) }} />
+      </p>
+
+      <div className={css.line} />
+
+      <p className={css.offerCurrent}>
+        <FormattedMessage id="TransactionPanel.currentPrice" values={{ value: formatMoney(intl, getMoneyFromObject(listing.attributes.price)) }} />
+      </p>
+
+      <p className={css.offerCurrent}>
+        <FormattedMessage id="TransactionPanel.currentPriceTotal" values={{ value: formatMoney(intl, getMoneyFromObject(offer.currentPriceTotal)) }} />
+      </p>
+
+      <div className={css.line} />
+
+      <p className={css.offerCurrent}>
+        <FormattedMessage id="TransactionPanel.shippingCost" values={{ value: formatMoney(intl, getMoneyFromObject(offer.shippingCost)) }} />
+      </p>
+
+      <p className={css.offerTotal}>
+        <FormattedMessage id="TransactionPanel.offerTotal" values={{ value: formatMoney(intl, getMoneyFromObject(offer.offerTotal)) }} />
+      </p>
+    </>
+    const pendingOfferInfoMaybe = stateData.showPendingOfferInfo && offer ?
       <div className={css.pendingOfferWrapper}>
-        <h4>
+        <h4 className={css.offerTotal}>
           <FormattedMessage id="TransactionPanel.pendingOffer" />
         </h4>
-        <p className={css.inquiryPrice}>
-          {formatMoney(intl, offerPrice)}
-        </p>
+        {offerInfo}
       </div>
       : null;
 
-    const acceptedOfferInfoMaybe = stateData.showAcceptedOfferInfo && offerPrice ?
+    const acceptedOfferInfoMaybe = stateData.showAcceptedOfferInfo && offer ?
       <div className={css.pendingOfferWrapper}>
-        <h4>
+        <h4 className={css.offerTotal}>
           <FormattedMessage id="TransactionPanel.acceptedOffer" />
         </h4>
-        <p className={css.inquiryPrice}>
-          {formatMoney(intl, offerPrice)}
-        </p>
+
+        {offerInfo}
       </div>
       : null;
 

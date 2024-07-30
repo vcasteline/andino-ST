@@ -15,7 +15,7 @@ import {
   PrimaryButton,
   H3,
   H6,
- SecondaryButton,
+  SecondaryButton,
 } from '../../../components';
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
@@ -36,7 +36,7 @@ const handleFetchLineItems = ({
   fetchLineItemsInProgress,
   onFetchTransactionLineItems,
   selectedVariants,
-   offerPrice,
+  offer,
 }) => {
   const stockReservationQuantity = Number.parseInt(quantity, 10);
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
@@ -48,7 +48,7 @@ const handleFetchLineItems = ({
     !fetchLineItemsInProgress
   ) {
     onFetchTransactionLineItems({
-      orderData: { stockReservationQuantity, ...deliveryMethodMaybe, selectedVariants, offerPrice },
+      orderData: { stockReservationQuantity, ...deliveryMethodMaybe, selectedVariants, offer },
       listingId,
       isOwnListing,
     });
@@ -146,7 +146,7 @@ const renderForm = formRenderProps => {
     categoryLevel3,
     selectedVariantFields,
     publicData,
-     fromTransactionPage,
+    fromTransactionPage,
     openOfferModal,
     closeOrderModal,
     history,
@@ -174,7 +174,7 @@ const renderForm = formRenderProps => {
       });
     }
 
-    if (selectedVariantFields?.length != 0 ) {
+    if (selectedVariantFields?.length != 0) {
       formApi.change('quantity', totalQuantity);
     }
   }, [totalQuantity]);
@@ -192,7 +192,7 @@ const renderForm = formRenderProps => {
           fetchLineItemsInProgress,
           onFetchTransactionLineItems,
           selectedVariants,
-           counterOfferPrice,
+          counterOfferPrice,
         });
       }, 500); // Ajusta el retraso según tus necesidades (en milisegundos)
     }
@@ -244,7 +244,7 @@ const renderForm = formRenderProps => {
     currentStock > MAX_QUANTITY_FOR_DROPDOWN ? MAX_QUANTITY_FOR_DROPDOWN : currentStock;
   const quantities = hasStock ? [...Array(selectableStock).keys()].map(i => i + 1) : [];
 
- const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+  const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
 
   const submitInProgress = fetchLineItemsInProgress;
   const submitDisabled = !hasStock;
@@ -342,8 +342,8 @@ const renderForm = formRenderProps => {
             <FormattedMessage id="ProductOrderForm.ctaButtonNoStock" />
           )}
         </PrimaryButton>
-        
-         <br />
+
+        <br />
         {!fromTransactionPage ? (
           <>
             <SecondaryButton
@@ -418,10 +418,10 @@ const ProductOrderForm = props => {
     shippingEnabled && !pickupEnabled
       ? { deliveryMethod: 'shipping' }
       : !shippingEnabled && pickupEnabled
-      ? { deliveryMethod: 'pickup' }
-      : !shippingEnabled && !pickupEnabled
-      ? { deliveryMethod: 'none' }
-      : {};
+        ? { deliveryMethod: 'pickup' }
+        : !shippingEnabled && !pickupEnabled
+          ? { deliveryMethod: 'none' }
+          : {};
   const hasMultipleDeliveryMethods = pickupEnabled && shippingEnabled;
   const variants = { selectedVariants: selectedVariants };
   const initialValues = { ...quantityMaybe, ...deliveryMethodMaybe, ...variants };
