@@ -353,7 +353,7 @@ class TopbarComponent extends Component {
             </p>
           </div>
         </Modal>
-        {/* <ModalMissingInformation
+        <ModalMissingInformation
           id="MissingInformationReminder"
           containerClassName={css.missingInformationModal}
           currentUser={currentUser}
@@ -364,7 +364,7 @@ class TopbarComponent extends Component {
           onResendVerificationEmail={onResendVerificationEmail}
           sendVerificationEmailInProgress={sendVerificationEmailInProgress}
           sendVerificationEmailError={sendVerificationEmailError}
-        /> */}
+        />
 
         <GenericError show={showGenericError} />
       </div>

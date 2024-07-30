@@ -2,10 +2,12 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import css from './AzureImageDisplay.module.css';
+import ModalShowImage from '../ModalShowImage/ModalShowImage';
 
 const AzureImageDisplay = (props) => {
-    const { value, className, isRounded } = props;
+    const { value, className, isRounded, onManageDisableScrolling, disableImageModal } = props;
 
+    const [showModalImage, setShowModalImage] = useState(false);
     if (!value) return null;
 
     useEffect(() => {
@@ -26,8 +28,26 @@ const AzureImageDisplay = (props) => {
     const [imageUrl, setImageUrl] = useState();
 
     return (
-        <img className={classes} src={imageUrl} alt="image file"
-            onClick={() => window.open(imageUrl)} />
+        <div className={css.root}>
+            <img className={classes} src={imageUrl} alt="image file"
+                onClick={() => {
+                    if (!disableImageModal)
+                        setShowModalImage(true)
+                }} />
+
+            {!disableImageModal &&
+                <ModalShowImage
+                    imageUrl={imageUrl}
+                    isOpen={showModalImage}
+                    onManageDisableScrolling={onManageDisableScrolling}
+
+                    onClose={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowModalImage(false)
+                    }} />
+            }
+        </div>
     )
 }
 
