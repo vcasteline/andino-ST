@@ -66,6 +66,8 @@ import CounterOfferModal from './CounterOfferModal/CounterOfferModal.js';
 import OfferModal from './OfferModal/OfferModal.js';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { paymentMethods } from '../../ducks/index.js';
+import NegociationOfferModal from '../../components/NegociationOfferModal/NegociationOfferModal.js';
+import { getObjectFromMoney } from '../../util/priceHelpers.js';
 const { Money } = sdkTypes;
 
 // Submit dispute and close the review modal
@@ -296,9 +298,20 @@ export const TransactionPageComponent = props => {
   const onSubmitCounterOffer = values => {
     const transitionName = process.transitions.PROVIDER_OFFER;
 
+    const { currentPriceTotal, quantity, offerTotal, proposedPrice, proposedPriceTotal, shippingCost } = values;
+
+    const offer = {
+      currentPriceTotal: getObjectFromMoney(currentPriceTotal),
+      quantity: parseInt(quantity, 10), //quantity needs to be a number for lineitems 
+      proposedPrice: getObjectFromMoney(proposedPrice),
+      proposedPriceTotal: getObjectFromMoney(proposedPriceTotal),
+      shippingCost: getObjectFromMoney(shippingCost),
+      offerTotal: getObjectFromMoney(offerTotal)
+    }
+
     const params = {
       protectedData: {
-        offerPrice: { amount: values.offerPrice.amount, currency: values.offerPrice.currency }
+        offer
       }
     }
 
@@ -313,9 +326,20 @@ export const TransactionPageComponent = props => {
   const onSubmitOffer = values => {
     const transitionName = process.transitions.CUSTOMER_OFFER;
 
+    const { currentPriceTotal, quantity, offerTotal, proposedPrice, proposedPriceTotal, shippingCost } = values;
+
+    const offer = {
+      currentPriceTotal: getObjectFromMoney(currentPriceTotal),
+      quantity: parseInt(quantity, 10), //quantity needs to be a number for lineitems 
+      proposedPrice: getObjectFromMoney(proposedPrice),
+      proposedPriceTotal: getObjectFromMoney(proposedPriceTotal),
+      shippingCost: getObjectFromMoney(shippingCost),
+      offerTotal: getObjectFromMoney(offerTotal)
+    }
+
     const params = {
       protectedData: {
-        offerPrice: { amount: values.offerPrice.amount, currency: values.offerPrice.currency }
+        offer
       }
     }
 
@@ -592,29 +616,34 @@ export const TransactionPageComponent = props => {
           marketplaceName={config.marketplaceName}
         />
 
-        {/* <OfferModal
-          id="OfferModal"
-          isOpen={isOfferModalOpen}
-          onCloseModal={() => setOfferModalOpen(false)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          onSubmitOffer={onSubmitOffer}
-          transitionInProgress={transitionInProgress}
-          transitionError={transitionError}
-          offerPrice={offerPrice}
-          marketplaceCurrency={config.currency}
-        />
+        {isOfferModalOpen &&
+          <NegociationOfferModal
+            id="OfferModal"
+            isOpen={isOfferModalOpen}
+            onCloseModal={() => setOfferModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onSubmitOffer={onSubmitOffer}
+            sendInquiryInProgress={transitionInProgress}
+            sendInquiryError={transitionError}
+            marketplaceCurrency={config.currency}
+            listing={listing}
+          />
+        }
 
-        <CounterOfferModal
-          id="CounterOfferModal"
-          isOpen={isCounterOfferModalOpen}
-          onCloseModal={() => setCounterOfferModalOpen(false)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          onSubmitCounterOffer={onSubmitCounterOffer}
-          transitionInProgress={transitionInProgress}
-          transitionError={transitionError}
-          offerPrice={offerPrice}
-          marketplaceCurrency={config.currency}
-        /> */}
+        {isCounterOfferModalOpen &&
+          <NegociationOfferModal
+            id="CounterOfferModal"
+            isOpen={isCounterOfferModalOpen}
+            onCloseModal={() => setCounterOfferModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onSubmitOffer={onSubmitCounterOffer}
+            sendInquiryInProgress={transitionInProgress}
+            sendInquiryError={transitionError}
+            marketplaceCurrency={config.currency}
+            listing={listing}
+          />
+        }
+
         {process?.transitions?.DISPUTE ? (
           <DisputeModal
             id="DisputeOrderModal"
