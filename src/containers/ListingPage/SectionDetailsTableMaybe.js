@@ -27,9 +27,9 @@ const SectionDetailsTableMaybe = props => {
                       key={colIndex}
                       style={{
                         padding: '8px',
-                        fontWeight: rowIndex === 0 ? 'bold' : 'normal',
+                        fontWeight: colIndex === 0 ? 'normal' : 'bold',
                         minWidth: '100px',
-                        backgroundColor: rowIndex === 0 ? 'lightGray' : "white",
+                        backgroundColor: colIndex === 0 ? '#EFEFEF' : "white",
                       }}
                     >
                       {cell}
