@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './FileQuantityPrice.css'
-import QuantityPriceBreaks from "../../containers/EditListingPage/EditListingWizard/QuantityPriceBreaks";
-import { indexOf } from "lodash";
+
 
 export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }) => {
     const [listQuantity, setListQuantity] = useState([{}]);
@@ -34,11 +33,8 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
     const joinWords = (word1, word2, setQuantityWord, quantityWord, listQuality, name, values) => {
         let word = word1 + ":" + word2
         let allWord
-        if (listQuality.length !== null) {
-            setQuantityWord(values[name])
-        }
         if (quantityWord === "") {
-            if (listQuality.length !== null) {
+            if (listQuality.length !== 1) {
                 allWord = values[name]
             } else {
                 allWord = word
@@ -57,12 +53,15 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
         name,
         values,
         key,
-        setListQuantity) => {
+        setListQuantity,
+        setQuantityWord) => {
         const indexToRemove = key;
         if (indexToRemove > -1 && indexToRemove < listQuantity.length) {
             listQuantity.splice(indexToRemove, 1);
             setListQuantity(listQuantity)
         }
+        const joinWord = listQuantity.map(unir => unir.quantity + ':' + unir.price)
+        setQuantityWord(joinWord)
         setTimeout(() => {
             const joinWord = listQuantity.map(unir => `${unir.quantity}:${unir.price}`).join(', ');
             values[name] = joinWord
@@ -80,7 +79,6 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
             </div>
             <>
                 {listQuantity.map((index, key) => {
-                    console.log(listQuantity)
                     return (
                         <div key={key}>
                             <hr />
@@ -118,7 +116,8 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
                                             name,
                                             values,
                                             key,
-                                            setListQuantity)}>
+                                            setListQuantity,
+                                            setQuantityWord)}>
                                         <div>-</div>
                                     </div>}
                             </div>
