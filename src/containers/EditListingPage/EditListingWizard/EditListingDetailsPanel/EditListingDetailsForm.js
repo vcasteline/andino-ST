@@ -314,7 +314,13 @@ const AddListingFields = props => {
           field.key == 'quantityPriceBreaks' ||
           field.key == 'minOrderQuantity' ||
           field.key == 'lead_times';
-        if (isTargetCategory && isTargetListingType && !isMandatory) {
+        const isWeightDimensions =
+          field.key == 'weight' ||
+          field.key == 'width' ||
+          field.key == 'length' ||
+          field.key == 'height';
+        if (isWeightDimensions) field.saveConfig.isRequired = false;
+        if (isTargetCategory && isTargetListingType && !isMandatory && !isWeightDimensions) {
           return (
             <div key={field.key} className={css.variantField}>
               <label className={css.variantLabel}>

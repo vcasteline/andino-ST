@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './FileQuantityPrice.css'
 import QuantityPriceBreaks from "../../containers/EditListingPage/EditListingWizard/QuantityPriceBreaks";
+import { indexOf } from "lodash";
 
 export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }) => {
     const [listQuantity, setListQuantity] = useState([{}]);
@@ -9,35 +10,65 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
     const [word2, setWord2] = useState("");
 
     useEffect(() => {
-        // if (values[name] !== undefined) {
-        //     if (values[name] !== "") {
-        //         console.log(values[name])
-        //         if (values[name].indexOf(",") !== -1) {
-        //             const value = values[name].split(",");
-        //             value.map((index, key) => {
-        //                 const separate = index.split(":")
-        //                 if (key === 0) {
-        //                     setListQuantity([{
-        //                         quantity: separate[0],
-        //                         price: separate[1]
-        //                     }])
-        //                 } else {
-        //                     listQuantity.push({
-        //                         quantity: separate[0],
-        //                         price: separate[1]
-        //                     })
-        //                 }
-        //             })
-        //         } else {
-        //             const separate = values[name].split(":")
-        //             setListQuantity({
-        //                 quantity: separate[0],
-        //                 price: separate[1]
-        //             })
-        //         }
-        //     }
-        // }
+        if (values[name] !== null) {
+            if (values[name].indexOf(',') !== -1) {
+                const separate = values[name].split(",")
+                separate.map((index) => {
+                    const separate2 = index.split(":")
+                    listQuantity.push({
+                        quantity: separate2[0],
+                        price: separate2[1]
+                    })
+                })
+                setListQuantity(listQuantity.filter(item => Object.keys(item).length !== 0))
+            } else {
+                const separate = values[name].split(":")
+                setListQuantity([...listQuantity, {
+                    quantity: separate[0],
+                    price: separate[1]
+                }])
+            }
+        }
     }, [])
+
+    const joinWords = (word1, word2, setQuantityWord, quantityWord, listQuality, name, values) => {
+        let word = word1 + ":" + word2
+        let allWord
+        if (listQuality.length !== null) {
+            setQuantityWord(values[name])
+        }
+        if (quantityWord === "") {
+            if (listQuality.length !== null) {
+                allWord = values[name]
+            } else {
+                allWord = word
+            }
+
+        } else {
+            allWord = quantityWord + "," + word
+        }
+        setQuantityWord(allWord)
+        listQuality.push({})
+        values[name] = allWord
+    }
+
+    const deleteWords = (
+        listQuantity,
+        name,
+        values,
+        key,
+        setListQuantity) => {
+        const indexToRemove = key;
+        if (indexToRemove > -1 && indexToRemove < listQuantity.length) {
+            listQuantity.splice(indexToRemove, 1);
+            setListQuantity(listQuantity)
+        }
+        setTimeout(() => {
+            const joinWord = listQuantity.map(unir => `${unir.quantity}:${unir.price}`).join(', ');
+            values[name] = joinWord
+        }, 1000);
+    }
+
 
     return (
         <div className="generalContainer">
@@ -49,6 +80,7 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
             </div>
             <>
                 {listQuantity.map((index, key) => {
+                    console.log(listQuantity)
                     return (
                         <div key={key}>
                             <hr />
@@ -62,24 +94,13 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
                                 <input
                                     type="text"
                                     placeholder="5"
-                                    onChange={e => {
-                                        setWord2(e.target.value)
-                                        joinWors(
-                                            word1,
-                                            word2,
-                                            setQuantityWord,
-                                            quantityWord,
-                                            listQuantity,
-                                            name,
-                                            values)
-                                    }
-                                    }
+                                    onChange={e => setWord2(e.target.value)}
                                     value={index ? index.price : ""}
                                 />
                                 {listQuantity.length === key + 1 ?
                                     <div
                                         className="buttonMore"
-                                        onClick={() => joinWors(
+                                        onClick={() => joinWords(
                                             word1,
                                             word2,
                                             setQuantityWord,
@@ -87,9 +108,19 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
                                             listQuantity,
                                             name,
                                             values)}>
-                                        <span >+</span>
+                                        <div>+</div>
                                     </div>
-                                    : <span style={{ margin: "3.3%" }}></span>}
+                                    :
+                                    <div
+                                        className="buttonLess"
+                                        onClick={() => deleteWords(
+                                            listQuantity,
+                                            name,
+                                            values,
+                                            key,
+                                            setListQuantity)}>
+                                        <div>-</div>
+                                    </div>}
                             </div>
                         </div>
                     )
@@ -97,19 +128,5 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values }
                 }</>
         </div>
     )
-}
-
-const joinWors = (word1, word2, setQuantityWord, quantityWord, listQuality, name, values) => {
-    let word = word1 + ":" + word2
-    let allWord
-    if (quantityWord === "") {
-        allWord = word
-    } else {
-        allWord = quantityWord + "," + word
-    }
-
-    setQuantityWord(allWord)
-    listQuality.push({})
-    values[name] = allWord
 }
 
