@@ -1,0 +1,43 @@
+.containerRedirection {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+    gap: 15px;
+    margin: 2vh 5vh;
+}
+
+.buttonRedirect {
+    border-radius: 20px;
+    padding: 8px 20px;
+    background-color: transparent;
+    color: #efefef;
+    border: var(--colorPrimaryButton) solid 1px;
+    font-size: 13px;
+
+}
+
+.buttonRedirect:hover {
+    background-color: rgba(16, 19, 20, 0.9);
+    color: #efefef;
+    border-radius: 20px;
+    cursor: pointer;
+    padding: 8px 20px;
+    font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+    .buttonRedirect {
+        padding: 8px 26px;
+    }
+
+    .buttonRedirect:hover {
+        padding: 8px 26px;
+        cursor: pointer;
+    }
+
+    .containerRedirection {
+        display: flex;
+        justify-content: center;
+    }
+}
