@@ -23,7 +23,6 @@ const defaultBlockComponents = {
 
 const BlockBuilder = props => {
   const { blocks, sectionId, options, ...otherProps } = props;
-
   // Extract block & field component mappings from props
   // If external mapping has been included for fields
   // E.g. { h1: { component: MyAwesomeHeader } }
@@ -38,19 +37,19 @@ const BlockBuilder = props => {
   // Selection of Block components
   // Combine component-mapping from props together with the default one:
   const components = { ...defaultBlockComponents, ...blockComponents };
-
+  // console.log(props)
   return (
     <>
       {blocks.map((block, index) => {
         const config = components[block.blockType];
         const Block = config?.component;
         const blockId = block.blockId || `${sectionId}-block-${index + 1}`;
-        if(block.blockId == 'my-video'){
+        if (block.blockId == 'my-video') {
           return (
             <VideoHero />
           )
         }
-        else{
+        else {
           if (Block) {
             return (
               <Block
@@ -67,7 +66,7 @@ const BlockBuilder = props => {
             return null;
           }
         }
-       
+
       })}
     </>
   );
