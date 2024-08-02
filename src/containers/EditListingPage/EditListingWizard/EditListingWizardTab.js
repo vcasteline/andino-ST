@@ -210,7 +210,8 @@ const EditListingWizardTab = props => {
       return (
         <EditListingDeliveryPanel {...panelProps(DELIVERY)}
           marketplaceCurrency={config.currency}
-          data={config.listing.listingFields} />
+          data={config.listing.listingFields}
+          config={config} />
       );
     }
     case LOCATION: {

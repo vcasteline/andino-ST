@@ -111,7 +111,6 @@ export const EditListingDeliveryFormComponent = props => (
         [css.hidden]: !displayShipping,
       });
       const currencyConfig = appSettings.getCurrencyFormatting(marketplaceCurrency);
-      // console.log(values)
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FieldCheckbox

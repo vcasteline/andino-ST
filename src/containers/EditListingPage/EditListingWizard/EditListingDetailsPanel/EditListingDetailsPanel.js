@@ -224,6 +224,7 @@ const getInitialValues = (
   const { listingType } = publicData;
   const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
   // Initial values for the form
+  // console.log(nestedCategories)
   return {
     title,
     description,
@@ -262,7 +263,7 @@ const EditListingDetailsPanel = props => {
     errors,
     config,
   } = props;
-
+  console.log(config)
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
