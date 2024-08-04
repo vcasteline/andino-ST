@@ -134,6 +134,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
   }
 };
 
+
 export default listingPageReducer;
 
 // ================ Action creators ================ //
@@ -237,15 +238,20 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
 
   return show
     .then(data => {
-      const listingFields = config?.listing?.listingFields;
-      const sanitizeConfig = { listingFields };
-      dispatch(addMarketplaceEntities(data, sanitizeConfig));
-      return data;
+      if (data && data.data) { // Asegúrate de que data está definido
+        const listingFields = config?.listing?.listingFields;
+        const sanitizeConfig = { listingFields };
+        dispatch(addMarketplaceEntities(data, sanitizeConfig));
+        return data;
+      } else {
+        throw new Error('No data returned from showListing API');
+      }
     })
     .catch(e => {
       dispatch(showListingError(storableError(e)));
     });
 };
+
 
 export const fetchReviews = listingId => (dispatch, getState, sdk) => {
   dispatch(fetchReviewsRequest());
@@ -362,8 +368,12 @@ export const fetchTransactionLineItems = ({ orderData, listingId, isOwnListing }
   dispatch(fetchLineItemsRequest());
   transactionLineItems({ orderData, listingId, isOwnListing })
     .then(response => {
-      const lineItems = response.data;
-      dispatch(fetchLineItemsSuccess(lineItems));
+      if (response && response.data) { // Asegúrate de que response y response.data están definidos
+        const lineItems = response.data;
+        dispatch(fetchLineItemsSuccess(lineItems));
+      } else {
+        throw new Error('No data returned from fetchTransactionLineItems API');
+      }
     })
     .catch(e => {
       dispatch(fetchLineItemsError(storableError(e)));
@@ -373,6 +383,7 @@ export const fetchTransactionLineItems = ({ orderData, listingId, isOwnListing }
       });
     });
 };
+
 
 export const loadData = (params, search, config) => dispatch => {
   const listingId = new UUID(params.id);

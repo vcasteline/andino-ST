@@ -358,72 +358,73 @@ const OrderPanel = props => {
           </span>
         </div>
 
-        {
-          <div>
-            {selectedVariants?.map((variant, index) => (
-              <div key={index} className={css.variantRow}>
-                <div className={css.variantFields}>
-                  {selectedVariantFields?.map(field => (
-                    <div key={field} className={css.variantField}>
-                      <span className={css.variantLabel}>{toTitleCase(field)}:</span>
-                      <span className={css.variantValue}>{toTitleCase(variant[field])}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className={css.variantQuantity}>
-                  <span className={css.variantField}>Quantity:</span>
-                  <span className={css.quantityValue}>{variant?.quantity}</span>
-                </div>
-                <button
-                  className={css.removeVariantButton}
-                  onClick={() => handleRemoveVariant(index)}
-                >
-                  x
-                </button>
+        <div>
+          {selectedVariants?.map((variant, index) => (
+            <div key={index} className={css.variantRow}>
+              <div className={css.variantFields}>
+                {selectedVariantFields?.map(field => (
+                  <div key={field} className={css.variantField}>
+                    <span className={css.variantLabel}>{toTitleCase(field)}:</span>
+                    <span className={css.variantValue}>{toTitleCase(variant[field])}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-            <div>
-              {selectedVariantFields?.map(field => (
-                <div key={field}>
-                  <select
-                    id={`variant-${field}`}
-                    value={currentVariant[field]}
-                    onChange={e => handleVariantChange(field, e.target.value)}
-                  >
-                    <option value="">Select {field}</option>
-                    {publicData[field].map(option => (
+              <div className={css.variantQuantity}>
+                <span className={css.variantField}>Quantity:</span>
+                <span className={css.quantityValue}>{variant?.quantity}</span>
+              </div>
+              <button
+                className={css.removeVariantButton}
+                onClick={() => handleRemoveVariant(index)}
+              >
+                x
+              </button>
+            </div>
+          ))}
+          <div>
+            {selectedVariantFields?.map(field => (
+              <div key={field}>
+                <select
+                  id={`variant-${field}`}
+                  value={currentVariant[field]}
+                  onChange={e => handleVariantChange(field, e.target.value)}
+                >
+                  <option value="">Select {field}</option>
+                  {Array.isArray(publicData[field]) ? (
+                    publicData[field].map(option => (
                       <option key={option} value={option}>
                         {toTitleCase(option)}
                       </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-              {selectedVariantFields?.length !== 0 && 
-              <>
-              <div className={css.inputClose}>
-                <input
-                  className={css.quantityField}
-                  type="number"
-                  min={1}
-                  value={currentVariant?.quantity}
-                  onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
-                  required
-                />
+                    ))
+                  ) : (
+                    <option disabled>No options available</option>
+                  )}
+                </select>
               </div>
-              <Button
-                className={css.addVariantButton}
-                onClick={handleAddVariant}
-                disabled={selectedVariantFields?.some(field => !currentVariant[field])}
-              >
-                Add Variant
-              </Button>
-              </>
-              }
-              
+            ))}
+            {selectedVariantFields?.length !== 0 && 
+            <>
+            <div className={css.inputClose}>
+              <input
+                className={css.quantityField}
+                type="number"
+                min={1}
+                value={currentVariant?.quantity}
+                onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
+                required
+              />
             </div>
+            <Button
+              className={css.addVariantButton}
+              onClick={handleAddVariant}
+              disabled={selectedVariantFields?.some(field => !currentVariant[field])}
+            >
+              Add Variant
+            </Button>
+            </>
+            }
           </div>
-        }
+        </div>
 
         {showPriceMissing ? (
           <PriceMissing />
