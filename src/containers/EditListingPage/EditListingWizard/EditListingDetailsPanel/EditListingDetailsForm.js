@@ -81,6 +81,7 @@ const FieldSelectListingType = props => {
       onListingTypeChange(selectedListingType);
     }
   };
+
   const getListingTypeLabel = listingType => {
     const listingTypeConfig = listingTypes.find(config => config.listingType === listingType);
     return listingTypeConfig ? listingTypeConfig.label : listingType;
