@@ -184,21 +184,21 @@ const setNoAvailabilityForUnbookableListings = processAlias => {
   return isBookingProcessAlias(processAlias)
     ? {}
     : {
-        availabilityPlan: {
-          type: 'availability-plan/time',
-          timezone: 'Etc/UTC',
-          entries: [
-            // Note: "no entries" is the same as seats=0 for every entry.
-            // { dayOfWeek: 'mon', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'tue', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'wed', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'thu', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'fri', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'sat', startTime: '00:00', endTime: '00:00', seats: 0 },
-            // { dayOfWeek: 'sun', startTime: '00:00', endTime: '00:00', seats: 0 },
-          ],
-        },
-      };
+      availabilityPlan: {
+        type: 'availability-plan/time',
+        timezone: 'Etc/UTC',
+        entries: [
+          // Note: "no entries" is the same as seats=0 for every entry.
+          // { dayOfWeek: 'mon', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'tue', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'wed', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'thu', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'fri', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'sat', startTime: '00:00', endTime: '00:00', seats: 0 },
+          // { dayOfWeek: 'sun', startTime: '00:00', endTime: '00:00', seats: 0 },
+        ],
+      },
+    };
 };
 
 /**
@@ -314,6 +314,7 @@ const EditListingDetailsPanel = props => {
 
       {canShowEditListingDetailsForm ? (
         <EditListingDetailsForm
+          published={isPublished}
           className={css.form}
           initialValues={initialValues}
           saveActionMsg={submitButtonText}

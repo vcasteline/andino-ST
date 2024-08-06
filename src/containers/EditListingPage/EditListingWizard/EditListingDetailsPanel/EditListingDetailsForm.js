@@ -252,7 +252,8 @@ const AddListingFields = props => {
     values,
     selectedVariantFields,
     handleVariantFieldChange,
-    getSelectedVariantFields
+    getSelectedVariantFields,
+    published
   } = props;
   const targetCategoryIds = Object.values(selectedCategories);
 
@@ -285,7 +286,7 @@ const AddListingFields = props => {
           />
         );
       }
-      // console.log(namespacedKey)
+      // console.log(props)
 
       pickedFields.push(
         <CustomExtendedDataField
@@ -297,6 +298,7 @@ const AddListingFields = props => {
           })}
           formId={formId}
           values={values}
+          published={published}
         />
       );
     }
@@ -372,6 +374,7 @@ const EditListingDetailsFormComponent = props => (
         fetchErrors,
         listingFieldsConfig,
         values,
+        published
       } = formRenderProps;
       // const { form } = formRenderProps;
       const getSelectedVariantFields = Object.entries(values)
@@ -503,6 +506,7 @@ const EditListingDetailsFormComponent = props => (
               selectedVariantFields={selectedVariantFields}
               handleVariantFieldChange={handleVariantFieldChange}
               getSelectedVariantFields={getSelectedVariantFields}
+              published={published}
             />
           ) : null}
 

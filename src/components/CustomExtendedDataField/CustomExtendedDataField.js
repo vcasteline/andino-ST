@@ -102,6 +102,7 @@ const CustomFieldText = props => {
           label={label}
           placeholder={placeholder}
           values={values}
+          published={props.published}
         />
         :
         <FieldTextInput
