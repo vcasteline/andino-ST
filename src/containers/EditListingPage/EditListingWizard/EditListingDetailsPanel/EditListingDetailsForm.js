@@ -258,22 +258,20 @@ const AddListingFields = props => {
   const targetCategoryIds = Object.values(selectedCategories);
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
-    const { key, schemaType, scope } = fieldConfig || {};
-    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
 
+    const { key, schemaType, scope, saveConfig } = fieldConfig || {};
+    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
     const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
-    const isMandatory =
-      key == 'quantityPriceBreaks' || key == 'minOrderQuantity' || key == 'lead_times';
-    
+    const isMandatory = saveConfig.isRequired;
     if (
       isKnownSchemaType &&
       isProviderScope &&
       isTargetListingType &&
       isTargetCategory &&
-      (selectedVariantFields.includes(fieldConfig.key) || isMandatory)
+      (selectedVariantFields.includes(key) || isMandatory)
     ) {
       if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
         pickedFields.push(
@@ -306,10 +304,7 @@ const AddListingFields = props => {
       {listingFieldsConfig.map(field => {
         const isTargetListingType = isFieldForListingType(listingType, field);
         const isTargetCategory = isFieldForCategory(targetCategoryIds, field);
-        const isMandatory =
-          field.key == 'quantityPriceBreaks' ||
-          field.key == 'minOrderQuantity' ||
-          field.key == 'lead_times';
+        const isMandatory = field.saveConfig?.isRequired;
         if (isTargetCategory && isTargetListingType && !isMandatory) {
           return (
             <div key={field.key} className={css.variantField}>
@@ -364,15 +359,13 @@ const EditListingDetailsFormComponent = props => (
         values,
       } = formRenderProps;
       // const { form } = formRenderProps;
-      const getSelectedVariantFields = Object.entries(values)
-        .filter(([key, value]) => {
-          return (
-            key.startsWith('pub_') &&
-            value !== null &&
-            !['pub_minOrderQuantity', 'pub_lead_times', 'pub_quantityPriceBreaks'].includes(key)
-          );
-        })
-        .map(([key, value]) => key.slice(4));
+      const getSelectedVariantFields = listingFieldsConfig
+      .filter(field => {
+        const isNotRequired = !field.saveConfig?.isRequired;
+        const hasValue = values[`pub_${field.key}`] != null;
+        return isNotRequired && hasValue;
+      })
+      .map(field => field.key);
       const { listingType, transactionProcessAlias, unitType } = values;
       const [allCategoriesChosen, setAllCategoriesChosen] = useState(false);
       const [selectedVariantFields, setSelectedVariantFields] = useState(getSelectedVariantFields);

@@ -298,8 +298,10 @@ const OrderPanel = props => {
     setSelectedVariants(prevVariants => {
       const updatedVariants = [...prevVariants];
       const removedVariant = updatedVariants.splice(index, 1)[0];
-      const newTotalQuantity = totalQuantity - (removedVariant.quantity || 0);
-      setTotalQuantity(newTotalQuantity);
+      setTotalQuantity(prevTotal => {
+        const newTotal = prevTotal - (removedVariant.quantity || 0);
+        return newTotal >= 0 ? newTotal : 0; // Asegurarse de que totalQuantity nunca sea negativo d
+      });
       return updatedVariants;
     });
   };
@@ -320,7 +322,7 @@ const OrderPanel = props => {
       })
     );
   };
-
+  const availableFields = selectedVariantFields?.filter(field => publicData[field]);
   return (
     <div className={classes}>
       <ModalInMobile
@@ -383,7 +385,7 @@ const OrderPanel = props => {
               </div>
             ))}
             <div>
-              {selectedVariantFields?.map(field => (
+              {availableFields?.map(field => (
                 <div key={field}>
                   <select
                     id={`variant-${field}`}
@@ -391,36 +393,40 @@ const OrderPanel = props => {
                     onChange={e => handleVariantChange(field, e.target.value)}
                   >
                     <option value="">Select {field}</option>
-                    {publicData[field].map(option => (
-                      <option key={option} value={option}>
-                        {toTitleCase(option)}
-                      </option>
-                    ))}
+                    {Array.isArray(publicData[field]) &&
+                      publicData[field].map(option => (
+                        <option key={option} value={option}>
+                          {toTitleCase(option)}
+                        </option>
+                      ))}
                   </select>
                 </div>
               ))}
-              {selectedVariantFields?.length !== 0 && 
-              <>
-              <div className={css.inputClose}>
-                <input
-                  className={css.quantityField}
-                  type="number"
-                  min={1}
-                  value={currentVariant?.quantity}
-                  onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
-                  required
-                />
-              </div>
-              <Button
-                className={css.addVariantButton}
-                onClick={handleAddVariant}
-                disabled={selectedVariantFields?.some(field => !currentVariant[field])}
-              >
-                Add Variant
-              </Button>
-              </>
-              }
-              
+              {availableFields?.length !== 0 && (
+                <>
+                  <div className={css.inputClose}>
+                    <input
+                      className={css.quantityField}
+                      type="number"
+                      min={1}
+                      value={currentVariant?.quantity}
+                      onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
+                      required
+                    />
+                  </div>
+                  <Button
+                    className={css.addVariantButton}
+                    onClick={handleAddVariant}
+                    disabled={
+                      selectedVariantFields?.some(field => !currentVariant[field]) ||
+                      !currentVariant?.quantity ||
+                      currentVariant?.quantity <= 0
+                    }
+                  >
+                    Add Variant
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         }
