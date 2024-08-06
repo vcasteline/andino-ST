@@ -15,18 +15,23 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
     const regexDollar = /^\d+(\.\d{0,2})?$/;
 
     useEffect(() => {
-        // console.log(listQuantity.length)
         if (values[name] !== null) {
             if (values[name].indexOf(',') !== -1) {
                 const separate = values[name].split(",")
-                separate.map((index) => {
+                separate.map((index, key) => {
                     const separate2 = index.split(":")
                     listQuantity.push({
+                        id: key,
                         quantity: separate2[0],
                         price: separate2[1]
                     })
                 })
-                setListQuantity(listQuantity.filter(item => Object.keys(item).length !== 0))
+                if (published === true) {
+                    listQuantity.push({})
+                    setListQuantity(listQuantity)
+                }
+                // setListQuantity(listQuantity.filter(item => Object.keys(item).length !== 0))
+                setListQuantity(listQuantity.slice(1))
             } else {
                 const separate = values[name].split(":")
                 setListQuantity([...listQuantity, {
@@ -35,9 +40,11 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                 }])
             }
         }
+        console.table(listQuantity)
+
     }, [])
 
-    const joinWords = (word1, word2, setQuantityWord, quantityWord, listQuality, name, values, setWord1, setWord2) => {
+    const joinWords = (word1, word2, setQuantityWord, quantityWord, listQuality, name, values, setWord1, setWord2, key) => {
         let word = word1 + ":" + word2
         let allWord
         if (quantityWord === "") {
@@ -71,6 +78,7 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
         }
         const joinWord = listQuantity.map(unir => unir.quantity + ':' + unir.price)
         setQuantityWord(joinWord)
+        console.table(listQuantity)
         setTimeout(() => {
             const joinWord = listQuantity.map(unir => `${unir.quantity}:${unir.price}`).join(', ');
             values[name] = joinWord
@@ -86,10 +94,8 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                 separate.map((index) => {
                     const separate2 = index.split(":")
                     const first2 = separate2[0].split("-")
-                    console.log(first2)
-
                     if (inputValue >= first2[0] && inputValue <= first2[1]) {
-                        setError2("Rango erroneo")
+                        setError2("invalid rank")
                     } else {
                         setError2("")
                     }
@@ -98,7 +104,7 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                 const separate = values[name].split(":")
                 const first = separate[0].split("-")
                 if (inputValue >= first[0] && inputValue <= first[1]) {
-                    setError2("Rango erroneo")
+                    setError2("invalid rank")
                 } else {
                     setError2("")
                 }
@@ -112,12 +118,12 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
         }
     };
 
-    const handleChangeDollar = (e) => {
+    const handleChangeDollar = (e, key) => {
         const inputValue = e.target.value;
+        console.log(listQuantity)
         if (regexDollar.test(inputValue) || inputValue === '') {
             setWord2(inputValue);
             setError('');
-            // console.log(inputValue)
         } else {
             setError('Enter a valid number.');
         }
@@ -139,15 +145,18 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                             <hr />
                             <div className="containerQ">
                                 <input
+                                    disabled={published && key === listQuantity.length - 1 ? false : true}
                                     type="text"
                                     placeholder="1-100"
-                                    onChange={handleChangeRange}
+                                    onChange={e => handleChangeRange(e, key)}
                                     value={index ? index.quantity : ""}
                                 />
                                 <input
+                                    disabled={published && key === listQuantity.length - 1 ? false : true}
+
                                     type="text"
                                     placeholder="5"
-                                    onChange={handleChangeDollar}
+                                    onChange={e => handleChangeDollar(e, key)}
                                     value={index ? index.price : value}
                                 />
                                 {listQuantity.length === key + 1 ?
@@ -164,7 +173,8 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                                                     name,
                                                     values,
                                                     setWord1,
-                                                    setWord2)
+                                                    setWord2,
+                                                    key)
                                             }
                                         }}>
                                         <div>+</div>
