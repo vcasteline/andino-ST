@@ -40,7 +40,7 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                 }])
             }
         }
-        console.table(listQuantity)
+        // console.table(listQuantity)
 
     }, [])
 
@@ -78,7 +78,7 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
         }
         const joinWord = listQuantity.map(unir => unir.quantity + ':' + unir.price)
         setQuantityWord(joinWord)
-        console.table(listQuantity)
+        // console.table(listQuantity)
         setTimeout(() => {
             const joinWord = listQuantity.map(unir => `${unir.quantity}:${unir.price}`).join(', ');
             values[name] = joinWord
