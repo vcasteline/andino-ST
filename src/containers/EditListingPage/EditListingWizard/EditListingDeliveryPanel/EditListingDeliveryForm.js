@@ -262,9 +262,9 @@ export const EditListingDeliveryFormComponent = props => (
               key={shippingEnabled ? 'additionalItemsValidation' : 'noAdditionalItemsValidation'}
             />
 
-            <FieldWeightDimensions
+            {/* <FieldWeightDimensions
               data={data}
-              values={values} />
+              values={values} /> */}
           </div>
 
           <Button

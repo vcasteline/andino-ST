@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import './FieldWeightDimensions.css'
 
-export const FieldWeightDimensions = ({ data, values }) => {
+export const FieldWeightDimensions = ({ values }) => {
     const [value, setValue] = useState('');
     const [error, setError] = useState('');
-    // console.log(values)
+    console.log(values)
 
     const handleChange = (e, type) => {
         const inputValue = e.target.value;
@@ -31,36 +31,37 @@ export const FieldWeightDimensions = ({ data, values }) => {
 
     return (
         <>
-            <label></label>
-            <div className="containerWi">
-                <div>
-                    <label>Weight</label>
-                    <input
-                        onChange={(e) => handleChange(e, "weight")}
-                        placeholder={data[6].key + " (lb)"}
-                        value={values.pub_weight} />
-                </div>
-                <i class="fas fa-box-open" style={{ fontSize: "7vh" }}></i>
-                <div>
-                    <label>Dimensions</label>
-                    <div className="containerDimensions">
+            <div style={{ marginBottom: "3vh" }}>
+                <div className="containerWi">
+                    <div>
+                        <label>Weight</label>
                         <input
-                            onChange={(e) => handleChange(e, "length")}
-                            placeholder={data[5].key + " (in)"}
-                            value={values.pub_length} /><span>X</span>
-                        <input
-                            onChange={(e) => handleChange(e, "width")}
-                            placeholder={data[3].key + " (in)"}
-                            value={values.pub_width} /><span>X</span>
-                        <input
-                            onChange={(e) => handleChange(e, "height")}
-                            placeholder={data[4].key + " (in)"}
-                            value={values.pub_height !== null ? values.pub_height : ""} />
+                            onChange={(e) => handleChange(e, "weight")}
+                            placeholder={"Weight (lb)"}
+                            value={values.pub_weight} />
+                    </div>
+                    <i class="fas fa-box-open" style={{ fontSize: "7vh" }}></i>
+                    <div>
+                        <label>Dimensions</label>
+                        <div className="containerDimensions">
+                            <input
+                                onChange={(e) => handleChange(e, "length")}
+                                placeholder={"Length (in)"}
+                                value={values.pub_length} /><span>X</span>
+                            <input
+                                onChange={(e) => handleChange(e, "width")}
+                                placeholder={"Width (in)"}
+                                value={values.pub_width} /><span>X</span>
+                            <input
+                                onChange={(e) => handleChange(e, "height")}
+                                placeholder={"Height (in)"}
+                                value={values.pub_height !== null ? values.pub_height : ""} />
 
+                        </div>
                     </div>
                 </div>
+                {error && <span style={{ color: 'red' }}>{error}</span>}
             </div>
-            {error && <span style={{ color: 'red' }}>{error}</span>}
         </>
     )
 }

@@ -292,6 +292,7 @@ const AddListingFields = props => {
             id: 'EditListingDetailsForm.defaultRequiredMessage',
           })}
           formId={formId}
+          values={values}
         />
       );
     }

@@ -90,9 +90,9 @@ const CustomFieldText = props => {
 
   return (
     <>
-      {/* {label === "Width" && 
-      <FieldWeightDimensions />} */}
-      {label === "Width" || "Height" || "Length" && "Weight" ? <p>{ }</p>
+      {label === "Width" &&
+        <FieldWeightDimensions values={props.values} />}
+      {(label === "Width") || (label === "Height") || (label === "Length") || (label === "Weight") ? <></>
         :
         <FieldTextInput
           className={css.customField}
