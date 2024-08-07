@@ -13,7 +13,7 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
     const isButtonDisabled = word1 === '' || word2 === '';
     const regex = /^\d+(-\d+|>=|>|)?$/;;
     const regexDollar = /^\d+(\.\d{0,2})?$/;
-
+    console.warn(published)
     useEffect(() => {
         if (values[name] !== null) {
             if (values[name].indexOf(',') !== -1) {
@@ -144,21 +144,40 @@ export const FileQuantityPrice = ({ id, name, type, label, placeholder, values, 
                         <div key={key}>
                             <hr />
                             <div className="containerQ">
-                                <input
-                                    disabled={published && key === listQuantity.length - 1 ? false : true}
-                                    type="text"
-                                    placeholder="1-100"
-                                    onChange={e => handleChangeRange(e, key)}
-                                    value={index ? index.quantity : ""}
-                                />
-                                <input
-                                    disabled={published && key === listQuantity.length - 1 ? false : true}
+                                {published !== null ?
+                                    <>
+                                        <input
+                                            disabled={published && key === listQuantity.length - 1 ? false : true}
+                                            type="text"
+                                            placeholder="1-100"
+                                            onChange={e => handleChangeRange(e, key)}
+                                            value={index ? index.quantity : ""}
+                                        />
+                                        <input
+                                            disabled={published && key === listQuantity.length - 1 ? false : true}
 
-                                    type="text"
-                                    placeholder="5"
-                                    onChange={e => handleChangeDollar(e, key)}
-                                    value={index ? index.price : value}
-                                />
+                                            type="text"
+                                            placeholder="5"
+                                            onChange={e => handleChangeDollar(e, key)}
+                                            value={index ? index.price : value}
+                                        /></>
+                                    : <>
+                                        <input
+                                            disabled={key === listQuantity.length - 1 ? false : true}
+                                            type="text"
+                                            placeholder="1-100"
+                                            onChange={e => handleChangeRange(e, key)}
+                                            value={index ? index.quantity : ""}
+                                        />
+                                        <input
+                                            disabled={key === listQuantity.length - 1 ? false : true}
+
+                                            type="text"
+                                            placeholder="5"
+                                            onChange={e => handleChangeDollar(e, key)}
+                                            value={index ? index.price : value}
+                                        /></>
+                                }
                                 {listQuantity.length === key + 1 ?
                                     <div
                                         className={word1 && word2 ? "buttonMore" : "buttonMoreDis"}
