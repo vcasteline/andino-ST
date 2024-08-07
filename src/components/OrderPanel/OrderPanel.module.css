@@ -417,3 +417,22 @@
     padding: 0;
   }
 }
+.stickyContainer {
+  position: sticky;
+  top: 10%; /* Adjust as needed */
+  width: 100%; /* Ensure it occupies full width */
+  padding-top: 20px;
+}
+
+/* Asegúrate de que no haya margen o padding que afecte la posición fija */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden; /* Evita el desplazamiento horizontal */
+}
+
+/* Ajusta el contenido principal para que no se superponga con el panel fijo */
+.mainContent {
+  padding-bottom: 80px; /* Ajusta según la altura del openOrderForm */
+}
