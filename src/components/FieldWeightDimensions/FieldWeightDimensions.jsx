@@ -4,7 +4,7 @@ import './FieldWeightDimensions.css'
 export const FieldWeightDimensions = ({ data, values }) => {
     const [value, setValue] = useState('');
     const [error, setError] = useState('');
-    console.log(values)
+    // console.log(values)
 
     const handleChange = (e, type) => {
         const inputValue = e.target.value;
@@ -32,7 +32,7 @@ export const FieldWeightDimensions = ({ data, values }) => {
     return (
         <>
             <label></label>
-            <div className="container">
+            <div className="containerWi">
                 <div>
                     <label>Weight</label>
                     <input

@@ -63,6 +63,37 @@ import {
  * @param {Object} listingFieldConfigs an extended data configurtions for listing fields.
  * @returns Array of picked extended data fields from submitted data.
  */
+const pickListingFieldsData = (
+  data,
+  targetScope,
+  targetListingType,
+  targetCategories,
+  listingFieldConfigs
+) => {
+  const targetCategoryIds = Object.values(targetCategories);
+
+  return listingFieldConfigs.reduce((fields, fieldConfig) => {
+    const { key, scope = 'public', schemaType } = fieldConfig || {};
+    const namespacePrefix = scope === 'public' ? `pub_` : `priv_`;
+    const namespacedKey = `${namespacePrefix}${key}`;
+
+    const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
+    const isTargetScope = scope === targetScope;
+    const isTargetListingType = isFieldForListingType(targetListingType, fieldConfig);
+    const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
+
+    if (isKnownSchemaType && isTargetScope && isTargetListingType && isTargetCategory) {
+      const fieldValue = data[namespacedKey] || null;
+      return { ...fields, [key]: fieldValue };
+    } else if (isKnownSchemaType && isTargetScope) {
+      // Note: this clears extra custom fields
+      // These might exists if provider swaps between listing types before saving the draft listing.
+      return { ...fields, [key]: null };
+    }
+    return fields;
+  }, {});
+};
+
 const { Money } = sdkTypes;
 
 const initialValuesForListingFields = (
@@ -227,8 +258,9 @@ const EditListingDeliveryPanel = props => {
               shippingPriceInSubunitsOneItem,
               shippingPriceInSubunitsAdditionalItems,
               deliveryOptions,
+              ...rest
             } = values;
-            console.log(values)
+            console.log(rest)
             const shippingEnabled = deliveryOptions.includes('shipping');
             const pickupEnabled = deliveryOptions.includes('pickup');
             const address = location?.selectedPlace?.address || null;
@@ -248,17 +280,29 @@ const EditListingDeliveryPanel = props => {
                 }
                 : {};
 
+            // const nestedCategories = pickCategoryFields(rest, state.categoryKey, 1, state.listingCategories);
+
+            // const publicListingFields = pickListingFieldsData(
+            //   rest,
+            //   'public',
+            //   listingType,
+            //   nestedCategories,
+            //   listingFields
+            // );
+
             // New values for listing attributes
             const updateValues = {
               title: title.trim(),
               description,
               geolocation: origin,
-              publicData: {
-                pickupEnabled,
-                ...pickupDataMaybe,
-                shippingEnabled,
-                ...shippingDataMaybe,
-              },
+              // publicData: {
+              //   listingType,
+              //   transactionProcessAlias,
+              //   unitType,
+              //   selectedVariantFields,
+              //   ...cleanedNestedCategories,
+              //   ...publicListingFields,
+              // },
             };
 
             // Save the initialValues to state
@@ -271,7 +315,8 @@ const EditListingDeliveryPanel = props => {
                 shippingPriceInSubunitsOneItem,
                 shippingPriceInSubunitsAdditionalItems,
                 deliveryOptions,
-                config
+                config,
+                rest
               },
             });
             onSubmit(updateValues);

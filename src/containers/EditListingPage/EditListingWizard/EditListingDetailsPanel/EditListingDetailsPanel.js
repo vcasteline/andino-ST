@@ -263,7 +263,7 @@ const EditListingDetailsPanel = props => {
     errors,
     config,
   } = props;
-  console.log(config)
+  // console.log(config)
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
@@ -294,7 +294,7 @@ const EditListingDetailsPanel = props => {
   const canShowEditListingDetailsForm =
     hasListingTypesSet && (!hasExistingListingType || hasValidExistingListingType);
   const isPublished = listing?.id && state !== LISTING_STATE_DRAFT;
-  // console.log(initialValues)
+  // console.log(transactionProcessAlias)
   return (
     <div className={classes}>
       <H3 as="h1">
@@ -326,7 +326,7 @@ const EditListingDetailsPanel = props => {
               selectedVariantFields,
               ...rest
             } = values;
-            // console.log(rest)
+            // console.log(values)
             const nestedCategories = pickCategoryFields(rest, categoryKey, 1, listingCategories);
             // Remove old categories by explicitly saving null for them.
             const cleanedNestedCategories = {
