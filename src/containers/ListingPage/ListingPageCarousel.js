@@ -9,6 +9,7 @@ import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 // Utils
 import { FormattedMessage, intlShape, useIntl } from '../../util/reactIntl';
+import { createResourceLocatorString, findRouteByRouteName } from '../../util/routes';
 import {
   LISTING_STATE_PENDING_APPROVAL,
   LISTING_STATE_CLOSED,
@@ -51,6 +52,8 @@ import {
   NamedRedirect,
   OrderPanel,
   LayoutSingleColumn,
+  Modal,
+  PrimaryButton,
 } from '../../components';
 
 // Related components and modules
@@ -63,6 +66,7 @@ import {
   setInitialValues,
   fetchTimeSlots,
   fetchTransactionLineItems,
+  sendOffer
 } from './ListingPage.duck';
 
 import {
@@ -86,6 +90,10 @@ import CustomListingFields from './CustomListingFields';
 
 import css from './ListingPage.module.css';
 import QuantityPriceBreaks from '../EditListingPage/EditListingWizard/QuantityPriceBreaks.js';
+import SectionDetailsTableMaybe from './SectionDetailsTableMaybe.js';
+import SectionCertificationsMaybe from './SectionCertificationsMaybe.js';
+import NegociationOfferModal from '../../components/NegociationOfferModal/NegociationOfferModal.js';
+import { getObjectFromMoney } from '../../util/priceHelpers.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -98,6 +106,8 @@ export const ListingPageComponent = props => {
     props.inquiryModalOpenForListingId === props.params.id
   );
 
+  const [negociationOfferModalOpen, setNegociationOfferModalOpen] = useState(false);
+  const [offerValue, setOfferValue] = useState();
   const {
     isAuthenticated,
     currentUser,
@@ -115,6 +125,7 @@ export const ListingPageComponent = props => {
     sendInquiryError,
     monthlyTimeSlots,
     onFetchTimeSlots,
+    listingConfig: listingConfigProp,
     onFetchTransactionLineItems,
     lineItems,
     fetchLineItemsInProgress,
@@ -125,9 +136,10 @@ export const ListingPageComponent = props => {
     onInitializeCardPaymentData,
     config,
     routeConfiguration,
+    onSendOffer,
   } = props;
 
-  const listingConfig = config.listing;
+  const listingConfig = listingConfigProp || config.listing;
   const listingId = new UUID(rawParams.id);
   const isPendingApprovalVariant = rawParams.variant === LISTING_PAGE_PENDING_APPROVAL_VARIANT;
   const isDraftVariant = rawParams.variant === LISTING_PAGE_DRAFT_VARIANT;
@@ -148,6 +160,10 @@ export const ListingPageComponent = props => {
     currentListing.id && currentListing.attributes.state !== LISTING_STATE_PENDING_APPROVAL;
 
   const pendingIsApproved = isPendingApprovalVariant && isApproved;
+
+  const shippingCost = currentListing.attributes.publicData?.shippingPriceInSubunitsOneItem || 0;
+
+  const processAlias = currentListing.attributes.publicData?.transactionProcessAlias || null;
 
   // If a /pending-approval URL is shared, the UI requires
   // authentication and attempts to fetch the listing from own
@@ -282,17 +298,27 @@ export const ListingPageComponent = props => {
   const productURL = `${config.marketplaceRootURL}${location.pathname}${location.search}${location.hash}`;
   const schemaPriceMaybe = price
     ? {
-        price: intl.formatNumber(convertMoneyToNumber(price), {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-        priceCurrency: price.currency,
-      }
+      price: intl.formatNumber(convertMoneyToNumber(price), {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+      priceCurrency: price.currency,
+    }
     : {};
   const currentStock = currentListing.currentStock?.attributes?.quantity || 0;
   const schemaAvailability =
     currentStock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
 
+  const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
+
+
+  const openOfferModal = () => {
+    setNegociationOfferModalOpen(true);
+    //this.setState({
+    //  negociationOfferModalOpen: true,
+    //});
+
+  };
   return (
     <Page
       title={schemaTitle}
@@ -355,6 +381,10 @@ export const ListingPageComponent = props => {
               listingConfig={listingConfig}
               intl={intl}
             />
+            <SectionDetailsTableMaybe
+              publicData={publicData}
+              intl={intl}
+            />
 
             {listingConfig.listingFields.reduce((pickedElements, config) => {
               const { key, enumOptions, includeForListingTypes, scope = 'public' } = config;
@@ -365,8 +395,7 @@ export const ListingPageComponent = props => {
               const value =
                 scope === 'public' ? publicData[key] : scope === 'metadata' ? metadata[key] : null;
               const hasValue = value != null;
-
-              const nonEmptyFields = pickedElements.filter(p => p?.props?.selectedOptions?.length !== 0);
+              const nonEmptyFields = pickedElements.filter((p) => (p?.props?.selectedOptions?.length !== 0))
               if (isTargetListingType && config.schemaType === SCHEMA_TYPE_MULTI_ENUM) {
                 return [
                   ...nonEmptyFields,
@@ -394,6 +423,9 @@ export const ListingPageComponent = props => {
               }
               return nonEmptyFields;
             }, [])}
+
+            <SectionCertificationsMaybe
+              currentAuthor={currentAuthor} onManageDisableScrolling={onManageDisableScrolling} />
 
             <SectionMapMaybe
               geolocation={geolocation}
@@ -452,14 +484,132 @@ export const ListingPageComponent = props => {
               marketplaceCurrency={config.currency}
               dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
               marketplaceName={config.marketplaceName}
+              openOfferModal={openOfferModal}
             />
+
+            {/* Make an offer modal */}
+            {negociationOfferModalOpen &&
+              <NegociationOfferModal
+                id="NegociationOfferModal"
+                isOpen={negociationOfferModalOpen}
+                onCloseModal={() => setNegociationOfferModalOpen(false)}
+                onManageDisableScrolling={onManageDisableScrolling}
+                onSubmitOffer={(values) => {
+                  console.log(values)
+                  const { currentPriceTotal, quantity, offerTotal, proposedPrice, proposedPriceTotal, shippingCost } = values;
+
+                  const offer = {
+                    currentPriceTotal: getObjectFromMoney(currentPriceTotal),
+                    quantity: parseInt(quantity, 10), //quantity needs to be a number for lineitems 
+                    proposedPrice: getObjectFromMoney(proposedPrice),
+                    proposedPriceTotal: getObjectFromMoney(proposedPriceTotal),
+                    shippingCost: getObjectFromMoney(shippingCost),
+                    offerTotal: getObjectFromMoney(offerTotal)
+                  }
+
+                  onSendOffer(listingId, processAlias, offer, config.currency)
+                    .then(txId => {
+                      setNegociationOfferModalOpen(false);
+
+                      // Redirect to OrderDetailsPage
+                      history.push(
+                        createResourceLocatorString(
+                          'OrderDetailsPage',
+                          routeConfiguration,
+                          { id: txId.uuid },
+                          {}
+                        )
+                      );
+                    })
+                    .catch((e) => {
+                      // Ignore, error handling in duck file
+                      console.log(e);
+                    });
+                }}
+                sendInquiryInProgress={sendInquiryInProgress}
+                sendInquiryError={sendInquiryError}
+                marketplaceCurrency={config.currency}
+                listing={currentListing}
+              />
+            }
+
+            {/* <Modal
+              isOpen={negociationOfferModalOpen}
+              onClose={() => {
+                setNegociationOfferModalOpen(false);
+              }}
+              onManageDisableScrolling={onManageDisableScrolling}
+              large={true}
+            >
+              <div className={css.offerMWrapper}>
+                <div className={css.offerMLeftSection}>
+
+                  <p className={css.offerMPrice}>
+                    <FormattedMessage id="ListingPageCarousel.offerModal.listingPrice" values={{ price: formattedPrice }} />
+                  </p>
+
+                  <div className={css.offerMForm}>
+                    <p style={{ textAlign: 'center' }}>
+                      <FormattedMessage id="ListingPageCarousel.offerModal.yourOffer" />
+                      <br />
+                      <span className={css.smallPrint}>
+                        <FormattedMessage id="ListingPageCarousel.offerModal.wellAdd" values={{ value: shippingCost / 100 }} />
+                      </span>
+                    </p>
+                    <input
+                      type="number"
+                      placeholder="50"
+                      className={css.offerModalField}
+                      min={1}
+                      value={offerValue}
+                      onChange={e => {
+                        return setOfferValue(e.target.value);
+                      }}
+                    />
+
+                    <p className={css.infoText}>
+                      <FormattedMessage id="ListingPageCarousel.offerModal.info" />
+                    </p>
+
+                    <PrimaryButton
+                      type="button"
+                      className={css.submitOfferButton}
+                      disabled={!offerValue && offerValue < 1}
+                      onClick={() => {
+                        return onSendOffer(listingId, processAlias, Number(offerValue * 100), config.currency)
+                          .then(txId => {
+                            setNegociationOfferModalOpen(false);
+
+                            //const routes = routeConfiguration(); // is not a function!
+                            // Redirect to OrderDetailsPage
+                            history.push(
+                              createResourceLocatorString(
+                                'OrderDetailsPage',
+                                routeConfiguration,
+                                { id: txId.uuid },
+                                {}
+                              )
+                            );
+                          })
+                          .catch((e) => {
+                            // Ignore, error handling in duck file
+                            console.log(e);
+                          });
+                      }}
+                    >
+                      <FormattedMessage id="ListingPageCarousel.offerModal.submitOffer" />
+                    </PrimaryButton>
+                  </div>
+                </div>
+
+              </div>
+            </Modal> */}
           </div>
         </div>
       </LayoutSingleColumn>
     </Page>
   );
 };
-
 ListingPageComponent.defaultProps = {
   currentUser: null,
   inquiryModalOpenForListingId: null,
@@ -468,10 +618,10 @@ ListingPageComponent.defaultProps = {
   fetchReviewsError: null,
   monthlyTimeSlots: null,
   sendInquiryError: null,
+  listingConfig: null,
   lineItems: null,
   fetchLineItemsError: null,
 };
-
 ListingPageComponent.propTypes = {
   // from useHistory
   history: shape({
@@ -504,10 +654,20 @@ ListingPageComponent.propTypes = {
   reviews: arrayOf(propTypes.review),
   fetchReviewsError: propTypes.error,
   monthlyTimeSlots: object,
+  // monthlyTimeSlots could be something like:
+  // monthlyTimeSlots: {
+  //   '2019-11': {
+  //     timeSlots: [],
+  //     fetchTimeSlotsInProgress: false,
+  //     fetchTimeSlotsError: null,
+  //   }
+  // }
   sendInquiryInProgress: bool.isRequired,
   sendInquiryError: propTypes.error,
   onSendInquiry: func.isRequired,
+  onSendOffer: func.isRequired,
   onInitializeCardPaymentData: func.isRequired,
+  listingConfig: object,
   onFetchTransactionLineItems: func.isRequired,
   lineItems: array,
   fetchLineItemsInProgress: bool.isRequired,
@@ -576,7 +736,6 @@ const mapStateToProps = state => {
     sendInquiryError,
   };
 };
-
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
@@ -587,8 +746,9 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+  onSendOffer: (listingId, message, offer, currency) =>
+    dispatch(sendOffer(listingId, message, offer, currency)),
 });
-
 // Note: it is important that the withRouter HOC is outside the
 // connect HOC, otherwise React Router won't rerender any Route
 // components since connect implements a shouldComponentUpdate
@@ -601,5 +761,4 @@ const ListingPage = compose(
     mapDispatchToProps
   )
 )(EnhancedListingPage);
-
 export default ListingPage;

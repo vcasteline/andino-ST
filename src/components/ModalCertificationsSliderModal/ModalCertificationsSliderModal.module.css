@@ -1,0 +1,76 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {}
+
+.container {}
+
+.modalContainer {
+  composes: marketplaceModalInMobileBaseStyles from global;
+  height: 60vh;
+  width: 90vw;
+  margin: 10px;
+  background-color: white;
+  /* background-color: var(--colorGrey50); */
+
+
+  @media (--viewportMedium) {
+    margin: 10vw;
+  }
+}
+
+
+.sliderWrapper {
+  display: flex;
+  flex-direction: column;
+  margin: 40px;
+  margin-top: 80px;
+}
+
+.certificateContainer {
+  display: flex !important;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+  }
+}
+
+
+.detailLabel {
+  font-weight: var(--fontWeightSemiBold);
+  letter-spacing: -0.09px;
+  margin: 0;
+  padding: 0;
+}
+
+.detailInfo {
+  font-weight: 300;
+  letter-spacing: -0.09px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.certificateInfo {
+  display: flex;
+  flex-direction: column;
+  min-height: 70px;
+  width: 80vw;
+  overflow: hidden;
+  gap: 6px;
+
+
+  @media (--viewportMedium) {
+    width: 40vw;
+  }
+}
+
+.imageContainer {
+  height: 50vh;
+  width: 80vw;
+
+  @media (--viewportMedium) {
+    width: 40vw;
+  }
+}

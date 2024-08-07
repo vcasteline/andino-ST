@@ -23,6 +23,16 @@
     margin-bottom: 0;
   }
 }
+/* .variantRow{
+  border-color: #CDCDCD;
+  border-width: 1px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 8px;
+  border-style: solid;
+  border-radius: 20px;
+  margin-bottom: 5px;
+} */
 
 .variantRow {
   display: flex;
@@ -56,6 +66,9 @@
 }
 
 .variantQuantity {
+  /* display: flex;
+  align-items: center;
+  justify-content: flex-start; */
   margin-right: 20px;
 }
 
@@ -66,6 +79,7 @@
 
 .quantityValue {
   color: #555;
+  /* font-weight: bold; */
 }
 
 .removeVariantButton {
@@ -85,39 +99,37 @@
   right: 10px;
 }
 
-.sizeVariants {
+/* .removeVariantButton:hover {
+  background-color: red;
+  color: #f0f0f0;
+} */
+.sizeVariants{
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
-
-.variant {
+.variant{
   margin-right: 20px;
 }
-
-.variantField {
+.variantField{
   margin-top: 10px;
   height: 32px;
   font-size: smaller;
   padding-top: 0;
 }
-
-.variantField option {
+.variantField option{
   font-size: smaller;
 }
-
-.quantityField {
+.quantityField{
   margin-top: 10px;
   margin-bottom: 18px;
   width: 160px;
   height: 40px;
 }
-
-.inputClose {
+.inputClose{
   display: flex;
 }
-
 .colorButton {
   padding: 8px 16px;
   border: 1px solid #ccc;
@@ -125,16 +137,22 @@
   background-color: #fff;
   cursor: pointer;
 }
+.removeVariantButton {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 15px;
+}
 
 .selectedColorButton {
   border-color: #000;
   background-color: #f0f0f0;
 }
-
-.addVariantButton {
+.addVariantButton{
   width: 50%;
 }
-
 .modalHeading {
   margin-top: 89px;
   margin-bottom: 0px;
@@ -157,7 +175,6 @@
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
-
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 5px;
@@ -332,7 +349,6 @@
     padding: 0;
   }
 }
-
 .priceContainerInCTA {
   flex-direction: column;
   align-items: center;
@@ -347,7 +363,6 @@
 
   margin-top: 0;
   margin-bottom: 0px;
-
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 0;
@@ -394,7 +409,6 @@
     padding: 0;
   }
 }
-
 .errorSidebar {
   color: var(--colorFail);
   padding: 0 24px;

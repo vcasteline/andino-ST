@@ -52,6 +52,7 @@ import {
   H2,
   FieldTextInput,
   Button,
+  SecondaryButton,
 } from '../../components';
 
 import css from './OrderPanel.module.css';
@@ -193,6 +194,9 @@ const OrderPanel = props => {
     fetchLineItemsInProgress,
     fetchLineItemsError,
     payoutDetailsWarning,
+    fromTransactionPage,
+    openOfferModal,
+    offer
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -280,6 +284,7 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
+
   const [selectedVariants, setSelectedVariants] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [currentVariant, setCurrentVariant] = useState(
@@ -289,7 +294,7 @@ const OrderPanel = props => {
   );
 
   function toTitleCase(str) {
-    return str?.replace(/\w\S*/g, function(txt) {
+    return str?.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
@@ -344,6 +349,7 @@ const OrderPanel = props => {
           key={'quantityPriceBreaks-break'}
           quantityPriceBreaks={quantityPriceBreaks}
         />
+
         <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>
@@ -399,28 +405,28 @@ const OrderPanel = props => {
                   </select>
                 </div>
               ))}
-              {selectedVariantFields?.length !== 0 && 
-              <>
-              <div className={css.inputClose}>
-                <input
-                  className={css.quantityField}
-                  type="number"
-                  min={1}
-                  value={currentVariant?.quantity}
-                  onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
-                  required
-                />
-              </div>
-              <Button
-                className={css.addVariantButton}
-                onClick={handleAddVariant}
-                disabled={selectedVariantFields?.some(field => !currentVariant[field])}
-              >
-                Add Variant
-              </Button>
-              </>
+              {selectedVariantFields?.length !== 0 &&
+                <>
+                  <div className={css.inputClose}>
+                    <input
+                      className={css.quantityField}
+                      type="number"
+                      min={1}
+                      value={currentVariant?.quantity}
+                      onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
+                      required
+                    />
+                  </div>
+                  <Button
+                    className={css.addVariantButton}
+                    onClick={handleAddVariant}
+                    disabled={selectedVariantFields?.some(field => !currentVariant[field])}
+                  >
+                    Add Variant
+                  </Button>
+                </>
               }
-              
+
             </div>
           </div>
         }
@@ -504,6 +510,12 @@ const OrderPanel = props => {
             categoryLevel3={categoryLevel3}
             selectedVariantFields={selectedVariantFields}
             publicData={publicData}
+            closeOrderModal={closeOrderModal}
+            history={history}
+            location={location}
+            fromTransactionPage={fromTransactionPage}
+            openOfferModal={openOfferModal}
+            offer={offer}
           />
         ) : showInquiryForm ? (
           <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
@@ -528,27 +540,52 @@ const OrderPanel = props => {
             <FormattedMessage id="OrderPanel.closedListingButtonText" />
           </div>
         ) : (
-          <PrimaryButton
-            onClick={handleSubmit(
-              isOwnListing,
-              isClosed,
-              showInquiryForm,
-              onSubmit,
-              history,
-              location
-            )}
-            disabled={isOutOfStock}
-          >
-            {isBooking ? (
-              <FormattedMessage id="OrderPanel.ctaButtonMessageBooking" />
-            ) : isOutOfStock ? (
-              <FormattedMessage id="OrderPanel.ctaButtonMessageNoStock" />
-            ) : isPurchase ? (
-              <FormattedMessage id="OrderPanel.ctaButtonMessagePurchase" />
-            ) : (
-              <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
-            )}
-          </PrimaryButton>
+          <div style={{ width: '100%' }}>
+            <PrimaryButton
+              onClick={handleSubmit(
+                isOwnListing,
+                isClosed,
+                showInquiryForm,
+                onSubmit,
+                history,
+                location
+              )}
+              disabled={isOutOfStock}
+            >
+              {isBooking ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageBooking" />
+              ) : isOutOfStock ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageNoStock" />
+              ) : isPurchase ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessagePurchase" />
+              ) : (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
+              )}
+            </PrimaryButton>
+
+            <br />
+            <SecondaryButton
+              onClick={handleSubmit(
+                isOwnListing,
+                isClosed,
+                showInquiryForm,
+                onSubmit,
+                history,
+                location
+              )}
+              disabled={isOutOfStock}
+            >
+              {isBooking ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageBooking" />
+              ) : isOutOfStock ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageNoStock" />
+              ) : isPurchase ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMakeOffer" />
+              ) : (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
+              )}
+            </SecondaryButton>
+          </div>
         )}
       </div>
     </div>

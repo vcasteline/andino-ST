@@ -7,14 +7,20 @@ import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities } from '../../util/data';
 import { findNextBoundary, getStartOf, monthIdString } from '../../util/dates';
+import { initiatePrivileged, transitionPrivileged } from '../../util/api';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
 } from '../../util/urlHelpers';
 import { getProcess, isBookingProcessAlias } from '../../transactions/transaction';
 import { fetchCurrentUser, fetchCurrentUserHasOrdersSuccess } from '../../ducks/user.duck';
+import { TRANSITION_REQUEST } from '../TransactionPage/TransactionPage.duck';
+import { moneySubUnitAmountAtLeast } from '../../util/validators';
 
-const { UUID } = sdkTypes;
+//TODO import proper transitions
+import { transitions } from '../../transactions/transactionProcessPurchase';
+
+const { UUID, Money } = sdkTypes;
 
 // ================ Action types ================ //
 
@@ -323,6 +329,44 @@ export const sendInquiry = (listing, message) => (dispatch, getState, sdk) => {
         dispatch(fetchCurrentUserHasOrdersSuccess(true));
         return transactionId;
       });
+    })
+    .catch(e => {
+      dispatch(sendInquiryError(storableError(e)));
+      throw e;
+    });
+};
+
+export const sendOffer = (listingId, processAlias, offer, currency) => (dispatch, getState, sdk) => {
+  dispatch(sendInquiryRequest());
+
+  const queryParams = {
+    include: ['booking', 'provider'],
+    expand: true,
+  };
+
+  const bodyParams = {
+    transition: 'transition/request',
+    processAlias: processAlias,
+    params: {
+      listingId,
+      stockReservationQuantity: offer.quantity,
+      protectedData: {
+        offer
+      }
+    },
+  };
+
+  const orderData = {
+    deliverMethod: 'shipping',
+  };
+
+  return initiatePrivileged({ isSpeculative: false, orderData, bodyParams, queryParams })
+    .then(response => {
+      const transactionId = response.data.data.id;
+
+      dispatch(sendInquirySuccess());
+      dispatch(fetchCurrentUserHasOrdersSuccess(true));
+      return transactionId;
     })
     .catch(e => {
       dispatch(sendInquiryError(storableError(e)));
