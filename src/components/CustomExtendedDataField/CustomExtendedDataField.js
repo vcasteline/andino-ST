@@ -14,6 +14,7 @@ import { required, nonEmptyArray, validateInteger } from '../../util/validators'
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '..';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
+import { FieldWeightDimensions } from '../FieldWeightDimensions/FieldWeightDimensions';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
@@ -88,15 +89,22 @@ const CustomFieldText = props => {
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
   return (
-    <FieldTextInput
-      className={css.customField}
-      id={formId ? `${formId}.${name}` : name}
-      name={name}
-      type="textarea"
-      label={label}
-      placeholder={placeholder}
-      {...validateMaybe}
-    />
+    <>
+      {/* {label === "Width" && 
+      <FieldWeightDimensions />} */}
+      {label === "Width" || "Height" || "Length" && "Weight" ? <p>{ }</p>
+        :
+        <FieldTextInput
+          className={css.customField}
+          id={formId ? `${formId}.${name}` : name}
+          name={name}
+          type="textarea"
+          label={label}
+          placeholder={placeholder}
+          {...validateMaybe}
+        />
+      }
+    </>
   );
 };
 
@@ -182,14 +190,14 @@ const CustomExtendedDataField = props => {
   return schemaType === SCHEMA_TYPE_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldEnum, props)
     : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
-    ? renderFieldComponent(CustomFieldMultiEnum, props)
-    : schemaType === SCHEMA_TYPE_TEXT
-    ? renderFieldComponent(CustomFieldText, props)
-    : schemaType === SCHEMA_TYPE_LONG
-    ? renderFieldComponent(CustomFieldLong, props)
-    : schemaType === SCHEMA_TYPE_BOOLEAN
-    ? renderFieldComponent(CustomFieldBoolean, props)
-    : null;
+      ? renderFieldComponent(CustomFieldMultiEnum, props)
+      : schemaType === SCHEMA_TYPE_TEXT
+        ? renderFieldComponent(CustomFieldText, props)
+        : schemaType === SCHEMA_TYPE_LONG
+          ? renderFieldComponent(CustomFieldLong, props)
+          : schemaType === SCHEMA_TYPE_BOOLEAN
+            ? renderFieldComponent(CustomFieldBoolean, props)
+            : null;
 };
 
 export default CustomExtendedDataField;

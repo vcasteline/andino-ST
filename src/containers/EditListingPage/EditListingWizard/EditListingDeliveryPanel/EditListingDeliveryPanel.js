@@ -227,7 +227,11 @@ const EditListingDeliveryPanel = props => {
   const listingType = listing?.attributes?.publicData?.listingType;
   const listingTypeConfig = listingTypes.find(conf => conf.listingType === listingType);
   const hasStockInUse = listingTypeConfig.stockType === STOCK_MULTIPLE_ITEMS;
-
+  const listingCategories = config.categoryConfiguration.categories;
+  const categoryKey = config.categoryConfiguration.key;
+  const { publicData } = listing?.attributes || {};
+  const listingFields = config.listing.listingFields;
+  const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
   // console.log()
   return (
     <div className={classes}>
@@ -280,29 +284,27 @@ const EditListingDeliveryPanel = props => {
                 }
                 : {};
 
-            // const nestedCategories = pickCategoryFields(rest, state.categoryKey, 1, state.listingCategories);
-
-            // const publicListingFields = pickListingFieldsData(
-            //   rest,
-            //   'public',
-            //   listingType,
-            //   nestedCategories,
-            //   listingFields
-            // );
+            const publicListingFields = pickListingFieldsData(
+              rest,
+              'public',
+              listingType,
+              nestedCategories,
+              listingFields
+            );
 
             // New values for listing attributes
             const updateValues = {
               title: title.trim(),
               description,
               geolocation: origin,
-              // publicData: {
-              //   listingType,
-              //   transactionProcessAlias,
-              //   unitType,
-              //   selectedVariantFields,
-              //   ...cleanedNestedCategories,
-              //   ...publicListingFields,
-              // },
+              publicData: {
+                listingType,
+                transactionProcessAlias,
+                unitType,
+                selectedVariantFields,
+                ...cleanedNestedCategories,
+                ...publicListingFields,
+              },
             };
 
             // Save the initialValues to state

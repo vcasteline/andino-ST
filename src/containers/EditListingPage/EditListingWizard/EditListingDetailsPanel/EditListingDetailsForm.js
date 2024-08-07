@@ -360,13 +360,15 @@ const EditListingDetailsFormComponent = props => (
         values,
       } = formRenderProps;
       // const { form } = formRenderProps;
-      const getSelectedVariantFields = listingFieldsConfig
-        .filter(field => {
-          const isNotRequired = !field.saveConfig?.isRequired;
-          const hasValue = values[`pub_${field.key}`] != null;
-          return isNotRequired && hasValue;
+      const getSelectedVariantFields = Object.entries(values)
+        .filter(([key, value]) => {
+          return (
+            key.startsWith('pub_') &&
+            value !== null &&
+            !['pub_minOrderQuantity', 'pub_lead_times', 'pub_quantityPriceBreaks'].includes(key)
+          );
         })
-        .map(field => field.key);
+        .map(([key, value]) => key.slice(4));
       const { listingType, transactionProcessAlias, unitType } = values;
       const [allCategoriesChosen, setAllCategoriesChosen] = useState(false);
       const [selectedVariantFields, setSelectedVariantFields] = useState(getSelectedVariantFields);
