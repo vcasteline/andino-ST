@@ -328,213 +328,213 @@ const OrderPanel = props => {
   const availableFields = selectedVariantFields?.filter(field => publicData[field]);
   return (
     <>
-    
 
-    <div className={css.stickyContainer}>
-      <ModalInMobile
-        containerClassName={css.modalContainer}
-        id="OrderFormInModal"
-        isModalOpenOnMobile={isOrderOpen}
-        onClose={() => closeOrderModal(history, location)}
-        showAsModalMaxWidth={MODAL_BREAKPOINT}
-        onManageDisableScrolling={onManageDisableScrolling}
-        usePortal
-        
-      >
-        <div className={css.modalHeading}>
-          <H1 className={css.heading}>{title}</H1>
-        </div>
 
-        <div className={css.orderHeading}>
-          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
-          {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
-        </div>
-        <QuantityPriceBreaks
-          key={'quantityPriceBreaks-break'}
-          quantityPriceBreaks={quantityPriceBreaks}
-        />
-        <div className={css.author}>
-          <AvatarSmall user={author} className={css.providerAvatar} />
-          <span className={css.providerNameLinked}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
-          </span>
-          <span className={css.providerNamePlain}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
-          </span>
-          <span className={css.linkSeparator}>&nbsp;•&nbsp;</span>
-          <span>
-            <InlineTextButton onClick={onContactUser}>Chat</InlineTextButton>
-          </span>
-        </div>
+      <div className={css.stickyContainer}>
+        <ModalInMobile
+          containerClassName={css.modalContainer}
+          id="OrderFormInModal"
+          isModalOpenOnMobile={isOrderOpen}
+          onClose={() => closeOrderModal(history, location)}
+          showAsModalMaxWidth={MODAL_BREAKPOINT}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
 
-        {
-          <div>
-            {selectedVariants?.map((variant, index) => (
-              <div key={index} className={css.variantRow}>
-                <div className={css.variantFields}>
-                  {selectedVariantFields?.map(field => (
-                    <div key={field} className={css.variantField}>
-                      <span className={css.variantLabel}>{toTitleCase(field)}:</span>
-                      <span className={css.variantValue}>{toTitleCase(variant[field])}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className={css.variantQuantity}>
-                  <span className={css.variantField}>Quantity:</span>
-                  <span className={css.quantityValue}>{variant?.quantity}</span>
-                </div>
-                <button
-                  className={css.removeVariantButton}
-                  onClick={() => handleRemoveVariant(index)}
-                >
-                  x
-                </button>
-              </div>
-            ))}
+        >
+          <div className={css.modalHeading}>
+            <H1 className={css.heading}>{title}</H1>
+          </div>
+
+          <div className={css.orderHeading}>
+            {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+            {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
+          </div>
+          <QuantityPriceBreaks
+            key={'quantityPriceBreaks-break'}
+            quantityPriceBreaks={quantityPriceBreaks}
+          />
+          <div className={css.author}>
+            <AvatarSmall user={author} className={css.providerAvatar} />
+            <span className={css.providerNameLinked}>
+              <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
+            </span>
+            <span className={css.providerNamePlain}>
+              <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
+            </span>
+            <span className={css.linkSeparator}>&nbsp;•&nbsp;</span>
+            <span>
+              <InlineTextButton onClick={onContactUser}>Chat</InlineTextButton>
+            </span>
+          </div>
+
+          {
             <div>
-              {availableFields?.map(field => (
-                <div key={field}>
-                  <select
-                    id={`variant-${field}`}
-                    value={currentVariant[field]}
-                    onChange={e => handleVariantChange(field, e.target.value)}
+              {selectedVariants?.map((variant, index) => (
+                <div key={index} className={css.variantRow}>
+                  <div className={css.variantFields}>
+                    {selectedVariantFields?.map(field => (
+                      <div key={field} className={css.variantField}>
+                        <span className={css.variantLabel}>{toTitleCase(field)}:</span>
+                        <span className={css.variantValue}>{toTitleCase(variant[field])}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className={css.variantQuantity}>
+                    <span className={css.variantField}>Quantity:</span>
+                    <span className={css.quantityValue}>{variant?.quantity}</span>
+                  </div>
+                  <button
+                    className={css.removeVariantButton}
+                    onClick={() => handleRemoveVariant(index)}
                   >
-                    <option value="">Select {field}</option>
-                    {Array.isArray(publicData[field]) &&
-                      publicData[field].map(option => (
-                        <option key={option} value={option}>
-                          {toTitleCase(option)}
-                        </option>
-                      ))}
-                  </select>
+                    x
+                  </button>
                 </div>
               ))}
-              {availableFields?.length !== 0 && (
-                <>
-                  <div className={css.inputClose}>
-                    <input
-                      className={css.quantityField}
-                      type="number"
-                      min={1}
-                      value={currentVariant?.quantity}
-                      onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
-                      required
-                    />
+              <div>
+                {availableFields?.map(field => (
+                  <div key={field}>
+                    <select
+                      id={`variant-${field}`}
+                      value={currentVariant[field]}
+                      onChange={e => handleVariantChange(field, e.target.value)}
+                    >
+                      <option value="">Select {field}</option>
+                      {Array.isArray(publicData[field]) &&
+                        publicData[field].map(option => (
+                          <option key={option} value={option}>
+                            {toTitleCase(option)}
+                          </option>
+                        ))}
+                    </select>
                   </div>
-                  <Button
-                    className={css.addVariantButton}
-                    onClick={handleAddVariant}
-                    disabled={
-                      selectedVariantFields?.some(field => !currentVariant[field]) ||
-                      !currentVariant?.quantity ||
-                      currentVariant?.quantity <= 0
-                    }
-                  >
-                    Add Variant
-                  </Button>
-                </>
-              )}
+                ))}
+                {availableFields?.length !== 0 && (
+                  <>
+                    <div className={css.inputClose}>
+                      <input
+                        className={css.quantityField}
+                        type="number"
+                        min={1}
+                        value={currentVariant?.quantity}
+                        onChange={e => handleVariantChange('quantity', parseInt(e.target.value))}
+                        required
+                      />
+                    </div>
+                    <Button
+                      className={css.addVariantButton}
+                      onClick={handleAddVariant}
+                      disabled={
+                        selectedVariantFields?.some(field => !currentVariant[field]) ||
+                        !currentVariant?.quantity ||
+                        currentVariant?.quantity <= 0
+                      }
+                    >
+                      Add Variant
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        }
+          }
 
-        {showPriceMissing ? (
-          <PriceMissing />
-        ) : showInvalidCurrency ? (
-          <InvalidCurrency />
-        ) : showBookingTimeForm ? (
-          <BookingTimeForm
-            className={css.bookingForm}
-            formId="OrderPanelBookingTimeForm"
-            lineItemUnitType={lineItemUnitType}
-            onSubmit={onSubmit}
-            price={price}
-            marketplaceCurrency={marketplaceCurrency}
-            dayCountAvailableForBooking={dayCountAvailableForBooking}
-            listingId={listing.id}
-            isOwnListing={isOwnListing}
-            monthlyTimeSlots={monthlyTimeSlots}
-            onFetchTimeSlots={onFetchTimeSlots}
-            startDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
-            endDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
-            timeZone={timeZone}
-            marketplaceName={marketplaceName}
-            onFetchTransactionLineItems={onFetchTransactionLineItems}
-            lineItems={lineItems}
-            fetchLineItemsInProgress={fetchLineItemsInProgress}
-            fetchLineItemsError={fetchLineItemsError}
-            payoutDetailsWarning={payoutDetailsWarning}
-          />
-        ) : showBookingDatesForm ? (
-          <BookingDatesForm
-            className={css.bookingForm}
-            formId="OrderPanelBookingDatesForm"
-            lineItemUnitType={lineItemUnitType}
-            onSubmit={onSubmit}
-            price={price}
-            marketplaceCurrency={marketplaceCurrency}
-            dayCountAvailableForBooking={dayCountAvailableForBooking}
-            listingId={listing.id}
-            isOwnListing={isOwnListing}
-            monthlyTimeSlots={monthlyTimeSlots}
-            onFetchTimeSlots={onFetchTimeSlots}
-            timeZone={timeZone}
-            marketplaceName={marketplaceName}
-            onFetchTransactionLineItems={onFetchTransactionLineItems}
-            lineItems={lineItems}
-            fetchLineItemsInProgress={fetchLineItemsInProgress}
-            fetchLineItemsError={fetchLineItemsError}
-            payoutDetailsWarning={payoutDetailsWarning}
-          />
-        ) : showProductOrderForm ? (
-          <ProductOrderForm
-            formId="OrderPanelProductOrderForm"
-            onSubmit={onSubmit}
-            price={price}
-            marketplaceCurrency={marketplaceCurrency}
-            currentStock={currentStock}
-            allowOrdersOfMultipleItems={allowOrdersOfMultipleItems}
-            pickupEnabled={pickupEnabled && displayPickup}
-            shippingEnabled={shippingEnabled && displayShipping}
-            displayDeliveryMethod={displayPickup || displayShipping}
-            listingId={listing.id}
-            isOwnListing={isOwnListing}
-            marketplaceName={marketplaceName}
-            onFetchTransactionLineItems={onFetchTransactionLineItems}
-            onContactUser={onContactUser}
-            lineItems={lineItems}
-            fetchLineItemsInProgress={fetchLineItemsInProgress}
-            fetchLineItemsError={fetchLineItemsError}
-            payoutDetailsWarning={payoutDetailsWarning}
-            minOrderQuantity={minOrderQuantity}
-            totalQuantity={totalQuantity}
-            listingType={listingType}
-            selectedVariants={selectedVariants}
-            sampleLink={sample_link}
-            maxOrderQuantity={maxOrderQuantity}
-            categoryLevel1={categoryLevel1}
-            categoryLevel2={categoryLevel2}
-            categoryLevel3={categoryLevel3}
-            selectedVariantFields={selectedVariantFields}
-            publicData={publicData}
-            closeOrderModal={closeOrderModal}
-            history={history}
-            location={location}
-            fromTransactionPage={fromTransactionPage}
-            openOfferModal={openOfferModal}
-            offer={offer}
-          />
-        ) : showInquiryForm ? (
-          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
-        ) : !isKnownProcess ? (
-          <p className={css.errorSidebar}>
-            <FormattedMessage id="OrderPanel.unknownTransactionProcess" />
-          </p>
-        ) : null}
-      </ModalInMobile>
+          {showPriceMissing ? (
+            <PriceMissing />
+          ) : showInvalidCurrency ? (
+            <InvalidCurrency />
+          ) : showBookingTimeForm ? (
+            <BookingTimeForm
+              className={css.bookingForm}
+              formId="OrderPanelBookingTimeForm"
+              lineItemUnitType={lineItemUnitType}
+              onSubmit={onSubmit}
+              price={price}
+              marketplaceCurrency={marketplaceCurrency}
+              dayCountAvailableForBooking={dayCountAvailableForBooking}
+              listingId={listing.id}
+              isOwnListing={isOwnListing}
+              monthlyTimeSlots={monthlyTimeSlots}
+              onFetchTimeSlots={onFetchTimeSlots}
+              startDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
+              endDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
+              timeZone={timeZone}
+              marketplaceName={marketplaceName}
+              onFetchTransactionLineItems={onFetchTransactionLineItems}
+              lineItems={lineItems}
+              fetchLineItemsInProgress={fetchLineItemsInProgress}
+              fetchLineItemsError={fetchLineItemsError}
+              payoutDetailsWarning={payoutDetailsWarning}
+            />
+          ) : showBookingDatesForm ? (
+            <BookingDatesForm
+              className={css.bookingForm}
+              formId="OrderPanelBookingDatesForm"
+              lineItemUnitType={lineItemUnitType}
+              onSubmit={onSubmit}
+              price={price}
+              marketplaceCurrency={marketplaceCurrency}
+              dayCountAvailableForBooking={dayCountAvailableForBooking}
+              listingId={listing.id}
+              isOwnListing={isOwnListing}
+              monthlyTimeSlots={monthlyTimeSlots}
+              onFetchTimeSlots={onFetchTimeSlots}
+              timeZone={timeZone}
+              marketplaceName={marketplaceName}
+              onFetchTransactionLineItems={onFetchTransactionLineItems}
+              lineItems={lineItems}
+              fetchLineItemsInProgress={fetchLineItemsInProgress}
+              fetchLineItemsError={fetchLineItemsError}
+              payoutDetailsWarning={payoutDetailsWarning}
+            />
+          ) : showProductOrderForm ? (
+            <ProductOrderForm
+              formId="OrderPanelProductOrderForm"
+              onSubmit={onSubmit}
+              price={price}
+              marketplaceCurrency={marketplaceCurrency}
+              currentStock={currentStock}
+              allowOrdersOfMultipleItems={allowOrdersOfMultipleItems}
+              pickupEnabled={pickupEnabled && displayPickup}
+              shippingEnabled={shippingEnabled && displayShipping}
+              displayDeliveryMethod={displayPickup || displayShipping}
+              listingId={listing.id}
+              isOwnListing={isOwnListing}
+              marketplaceName={marketplaceName}
+              onFetchTransactionLineItems={onFetchTransactionLineItems}
+              onContactUser={onContactUser}
+              lineItems={lineItems}
+              fetchLineItemsInProgress={fetchLineItemsInProgress}
+              fetchLineItemsError={fetchLineItemsError}
+              payoutDetailsWarning={payoutDetailsWarning}
+              minOrderQuantity={minOrderQuantity}
+              totalQuantity={totalQuantity}
+              listingType={listingType}
+              selectedVariants={selectedVariants}
+              sampleLink={sample_link}
+              maxOrderQuantity={maxOrderQuantity}
+              categoryLevel1={categoryLevel1}
+              categoryLevel2={categoryLevel2}
+              categoryLevel3={categoryLevel3}
+              selectedVariantFields={selectedVariantFields}
+              publicData={publicData}
+              closeOrderModal={closeOrderModal}
+              history={history}
+              location={location}
+              fromTransactionPage={fromTransactionPage}
+              openOfferModal={openOfferModal}
+              offer={offer}
+            />
+          ) : showInquiryForm ? (
+            <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
+          ) : !isKnownProcess ? (
+            <p className={css.errorSidebar}>
+              <FormattedMessage id="OrderPanel.unknownTransactionProcess" />
+            </p>
+          ) : null}
+        </ModalInMobile>
 
-    </div>
-    <div className={css.openOrderForm}>
+      </div>
+      <div className={css.openOrderForm}>
         <PriceMaybe
           price={price}
           publicData={publicData}
@@ -549,27 +549,52 @@ const OrderPanel = props => {
             <FormattedMessage id="OrderPanel.closedListingButtonText" />
           </div>
         ) : (
-          <PrimaryButton
-            onClick={handleSubmit(
-              isOwnListing,
-              isClosed,
-              showInquiryForm,
-              onSubmit,
-              history,
-              location
-            )}
-            disabled={isOutOfStock}
-          >
-            {isBooking ? (
-              <FormattedMessage id="OrderPanel.ctaButtonMessageBooking" />
-            ) : isOutOfStock ? (
-              <FormattedMessage id="OrderPanel.ctaButtonMessageNoStock" />
-            ) : isPurchase ? (
-              <FormattedMessage id="OrderPanel.ctaButtonMessagePurchase" />
-            ) : (
-              <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
-            )}
-          </PrimaryButton>
+          <div style={{ width: '100%' }}>
+            <PrimaryButton
+              onClick={handleSubmit(
+                isOwnListing,
+                isClosed,
+                showInquiryForm,
+                onSubmit,
+                history,
+                location
+              )}
+              disabled={isOutOfStock}
+            >
+              {isBooking ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageBooking" />
+              ) : isOutOfStock ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageNoStock" />
+              ) : isPurchase ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessagePurchase" />
+              ) : (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
+              )}
+            </PrimaryButton>
+
+            <br />
+            <SecondaryButton
+              onClick={handleSubmit(
+                isOwnListing,
+                isClosed,
+                showInquiryForm,
+                onSubmit,
+                history,
+                location
+              )}
+              disabled={isOutOfStock}
+            >
+              {isBooking ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageBooking" />
+              ) : isOutOfStock ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageNoStock" />
+              ) : isPurchase ? (
+                <FormattedMessage id="OrderPanel.ctaButtonMakeOffer" />
+              ) : (
+                <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
+              )}
+            </SecondaryButton>
+          </div>
         )}
       </div>
     </>

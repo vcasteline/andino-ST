@@ -1,8 +1,9 @@
 import React from 'react';
-import Field, { hasDataInFields } from '../../Field'; // Asegúrate de que esta importación esté correcta
+import PropTypes from 'prop-types'; // Asegúrate de importar `PropTypes`
+import Field, { hasDataInFields } from '../../Field';
 import BlockBuilder from '../../BlockBuilder';
 import SectionContainer from '../SectionContainer';
-import {VideoHero} from '../../../LandingPage/VideoHero';
+import { VideoHero } from '../../../LandingPage/VideoHero';
 import classNames from 'classnames';
 import css from './SectionFeatures.module.css';
 
@@ -65,15 +66,17 @@ const SectionFeatures = props => {
   );
 };
 
-const propTypeOption = shape({
-  fieldComponents: shape({ component: node, pickValidProps: func }),
+const propTypeOption = PropTypes.shape({
+  fieldComponents: PropTypes.shape({
+    component: PropTypes.node,
+    pickValidProps: PropTypes.func,
+  }),
 });
 
 SectionFeatures.defaultProps = {
   className: null,
   rootClassName: null,
   defaultClasses: null,
-  textClassName: null,
   title: null,
   description: null,
   appearance: null,
@@ -84,21 +87,22 @@ SectionFeatures.defaultProps = {
 };
 
 SectionFeatures.propTypes = {
-  sectionId: string.isRequired,
-  className: string,
-  rootClassName: string,
-  defaultClasses: shape({
-    sectionDetails: string,
-    title: string,
-    description: string,
-    ctaButton: string,
+  sectionId: PropTypes.string.isRequired,
+  className: PropTypes.string,
+  rootClassName: PropTypes.string,
+  defaultClasses: PropTypes.shape({
+    sectionDetails: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    ctaButton: PropTypes.string,
   }),
-  title: object,
-  description: object,
-  appearance: object,
-  callToAction: object,
-  blocks: arrayOf(object),
-  isInsideContainer: bool,
+  title: PropTypes.object,
+  description: PropTypes.object,
+  appearance: PropTypes.object,
+  callToAction: PropTypes.object,
+  blocks: PropTypes.arrayOf(PropTypes.object),
+  isInsideContainer: PropTypes.bool,
   options: propTypeOption,
 };
+
 export default SectionFeatures;
