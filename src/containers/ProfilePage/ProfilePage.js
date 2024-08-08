@@ -18,7 +18,7 @@ import { withViewport } from '../../util/uiHelpers';
 import { pickCustomFieldProps } from '../../util/fieldHelpers';
 import { richText } from '../../util/richText';
 
-import { isScrollingDisabled } from '../../ducks/ui.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import {
   Heading,
@@ -41,6 +41,8 @@ import css from './ProfilePage.module.css';
 import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
+import AzureImageDisplay from '../../components/AzureImageDisplay/AzureImageDisplay';
+import { transformToEmbedUrl } from '../../util/transformToEmbedUrl';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
@@ -192,9 +194,12 @@ export const MainContent = props => {
     metadata,
     userFieldConfig,
     intl,
+    onManageDisableScrolling,
   } = props;
 
   const hasListings = listings.length > 0;
+  const certifications = publicData?.certifications;
+
   const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
   const hasBio = !!bio;
   const bioWithLinks = richText(bio, {
@@ -214,18 +219,83 @@ export const MainContent = props => {
       </p>
     );
   }
+
+  const options = { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' };
+  const formatDate = date => new Intl.DateTimeFormat('en-US', options).format(new Date(date));
+
+  const videoUrl = publicData?.videoUrl;
+
   return (
     <div>
       <H2 as="h1" className={css.desktopHeading}>
         <FormattedMessage id="ProfilePage.desktopHeading" values={{ name: displayName }} />
       </H2>
       {hasBio ? <p className={css.bio}>{bioWithLinks}</p> : null}
+
+      {videoUrl &&
+        <iframe
+          style={{ borderRadius: "var(--borderRadiusFull)" }}
+          width="100%"
+          height={400}
+          src={transformToEmbedUrl(videoUrl)}
+          title="video"
+          frameBorder={0}
+          allowFullScreen
+        />
+      }
       <CustomUserFields
         publicData={publicData}
         metadata={metadata}
         userFieldConfig={userFieldConfig}
         intl={intl}
       />
+
+      {certifications &&
+        <div className={css.listingsContainer}>
+          <H4 as="h2" className={css.listingsTitle}>
+            <FormattedMessage id="ProfilePage.certificationsTitle" values={{ count: certifications.length }} />
+          </H4>
+
+          <div className={css.certificatesContainer}>
+            {certifications?.map((certification, index) => (
+              <div key={index} className={css.certificateContainer}>
+
+                <div className={css.certificateInfo}>
+                  <span className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.certificationName" />
+                    <span className={css.detailInfo}>
+                      {certification.name}
+                    </span>
+                  </span>
+
+                  <span className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.certificationDate" />
+                    <span className={css.detailInfo}>
+                      {formatDate(certification.date)}
+                    </span>
+                  </span>
+
+                  <span className={css.detailLabel}>
+                    <FormattedMessage id="ProfilePage.description" />
+                    <span className={css.detailInfo}>
+                      {certification.description}
+                    </span>
+                  </span>
+
+                </div>
+
+                <AzureImageDisplay
+                  className={css.image}
+                  value={certification.image}
+                  onManageDisableScrolling={onManageDisableScrolling} />
+
+              </div>
+            ))}
+          </div>
+
+        </div>
+      }
+
       {hasListings ? (
         <div className={listingsContainerClasses}>
           <H4 as="h2" className={css.listingsTitle}>
@@ -251,10 +321,10 @@ export const MainContent = props => {
 
 export const ProfilePageComponent = props => {
   const config = useConfiguration();
-  const { scrollingDisabled, currentUser, userShowError, user, intl, ...rest } = props;
+  const { scrollingDisabled, currentUser, userShowError, user, intl, onManageDisableScrolling, ...rest } = props;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const profileUser = ensureUser(user);
-  const companyName = profileUser.attributes.profile.publicData.companyName;
+  const companyName = profileUser?.attributes?.profile?.publicData?.companyName;
   const isCurrentUser =
     ensuredCurrentUser.id && profileUser.id && ensuredCurrentUser.id.uuid === profileUser.id.uuid;
   const { bio, displayName, publicData, metadata } = profileUser?.attributes?.profile || {};
@@ -292,6 +362,7 @@ export const ProfilePageComponent = props => {
           userFieldConfig={userFields}
           intl={intl}
           displayName={displayedName}
+          onManageDisableScrolling={onManageDisableScrolling}
           {...rest}
         />
       </LayoutSideNavigation>
@@ -353,8 +424,13 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => ({
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+});
+
 const ProfilePage = compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withViewport,
   injectIntl
 )(ProfilePageComponent);

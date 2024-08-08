@@ -19,11 +19,12 @@ import {
   FieldSelect,
   FieldTextInput,
   Heading,
-  CustomExtendedDataField,
-  FieldCheckboxGroup,
+  CustomExtendedDataField
 } from '../../../../components';
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
+import { FieldArray } from 'react-final-form-arrays';
+import FieldTable from '../../../../components/FieldTable/FieldTable';
 
 const TITLE_MAX_LENGTH = 60;
 
@@ -254,27 +255,26 @@ const AddListingFields = props => {
     handleVariantFieldChange,
     getSelectedVariantFields
   } = props;
-
   const targetCategoryIds = Object.values(selectedCategories);
-
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
-
-    const { key, schemaType, scope, saveConfig } = fieldConfig || {};
+    const { key, schemaType, scope } = fieldConfig || {};
     const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
+
     const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
-    const isMandatory = saveConfig.isRequired;
+    const isMandatory =
+      key == 'quantityPriceBreaks' || key == 'minOrderQuantity' || key == 'lead_times';
+
     if (
       isKnownSchemaType &&
       isProviderScope &&
       isTargetListingType &&
       isTargetCategory &&
-      (selectedVariantFields.includes(key) || isMandatory)
+      (selectedVariantFields.includes(fieldConfig.key) || isMandatory)
     ) {
       if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
-        // console.log(values)
         pickedFields.push(
           <QuantityPriceBreaks
             key={`${namespacedKey}-breaks`}
@@ -292,11 +292,9 @@ const AddListingFields = props => {
             id: 'EditListingDetailsForm.defaultRequiredMessage',
           })}
           formId={formId}
-          values={values}
         />
       );
     }
-
     return pickedFields;
   }, []);
 
@@ -306,7 +304,10 @@ const AddListingFields = props => {
       {listingFieldsConfig.map(field => {
         const isTargetListingType = isFieldForListingType(listingType, field);
         const isTargetCategory = isFieldForCategory(targetCategoryIds, field);
-        const isMandatory = field.saveConfig?.isRequired;
+        const isMandatory =
+          field.key == 'quantityPriceBreaks' ||
+          field.key == 'minOrderQuantity' ||
+          field.key == 'lead_times';
         if (isTargetCategory && isTargetListingType && !isMandatory) {
           return (
             <div key={field.key} className={css.variantField}>
@@ -416,6 +417,7 @@ const EditListingDetailsFormComponent = props => (
       const submitDisabled =
         invalid || disabled || submitInProgress || !hasMandatoryListingTypeData;
 
+      console.log(values)
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <ErrorMessage fetchErrors={fetchErrors} />
@@ -462,21 +464,29 @@ const EditListingDetailsFormComponent = props => (
           ) : null}
 
           {showDescription ? (
-            <FieldTextInput
-              id={`${formId}description`}
-              name="description"
-              className={css.description}
-              type="textarea"
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.description' })}
-              placeholder={intl.formatMessage({
-                id: 'EditListingDetailsForm.descriptionPlaceholder',
-              })}
-              validate={required(
-                intl.formatMessage({
-                  id: 'EditListingDetailsForm.descriptionRequired',
-                })
-              )}
-            />
+            <>
+              <FieldTextInput
+                id={`${formId}description`}
+                name="description"
+                className={css.description}
+                type="textarea"
+                label={intl.formatMessage({ id: 'EditListingDetailsForm.description' })}
+                placeholder={intl.formatMessage({
+                  id: 'EditListingDetailsForm.descriptionPlaceholder',
+                })}
+                validate={required(
+                  intl.formatMessage({
+                    id: 'EditListingDetailsForm.descriptionRequired',
+                  })
+                )}
+              />
+
+              <div className={css.tableContainer}>
+                <FieldArray name="descriptionTable">
+                  {({ fields }) => <FieldTable fields={fields} />}
+                </FieldArray>
+              </div>
+            </>
           ) : null}
 
           {showListingFields ? (

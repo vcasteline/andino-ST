@@ -28,6 +28,14 @@ const UserNav = props => {
       },
     },
     {
+      text: <FormattedMessage id="UserNav.profileCertifications" />,
+      selected: currentPage === 'ProfileCertificationsPage',
+      disabled: false,
+      linkProps: {
+        name: 'ProfileCertificationsPage',
+      },
+    },
+    {
       text: <FormattedMessage id="UserNav.accountSettings" />,
       selected: ACCOUNT_SETTINGS_PAGES.includes(currentPage),
       disabled: false,

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { bool, func, object, number, string } from 'prop-types';
 import classNames from 'classnames';
-import { BrowserRouter as Router, Route, Switch, useLocation } from 'react-router-dom';
 
 import { FormattedMessage, intlShape } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
@@ -89,6 +88,15 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout }) => {
             <FormattedMessage id="TopbarDesktop.profileSettingsLink" />
           </NamedLink>
         </MenuItem>
+        <MenuItem key="ProfileCertificationsPage">
+          <NamedLink
+            className={classNames(css.menuLink, currentPageClass('ProfileCertificationsPage'))}
+            name="ProfileCertificationsPage"
+          >
+            <span className={css.menuItemBorder} />
+            <FormattedMessage id="TopbarDesktop.profileCertificationsLink" />
+          </NamedLink>
+        </MenuItem>
         <MenuItem key="AccountSettingsPage">
           <NamedLink
             className={classNames(css.menuLink, currentPageClass('AccountSettingsPage'))}
@@ -151,7 +159,6 @@ const TopbarDesktop = props => {
 
   const signupLinkMaybe = isAuthenticatedOrJustHydrated ? null : <SignupLink />;
   const loginLinkMaybe = isAuthenticatedOrJustHydrated ? null : <LoginLink />;
-  const location = useLocation();
 
   return (
     <nav className={classes}>
@@ -161,29 +168,25 @@ const TopbarDesktop = props => {
         alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
         linkToExternalSite={config?.topbar?.logoLink}
       />
-      {location.search !== "" ?
-        <TopbarSearchForm
-          className={classNames(css.searchLink, { [css.takeAvailableSpace]: giveSpaceForSearch })}
-          desktopInputRoot={css.topbarSearchWithLeftPadding}
-          onSubmit={onSearchSubmit}
-          initialValues={initialSearchFormValues}
-          appConfig={config}
-        /> :
-        <></>
-      }
-      <div style={{ display: "flex", flexWrap: "nowrap" }}>
-        <CustomLinksMenu
-          currentPage={currentPage}
-          customLinks={customLinks}
-          intl={intl}
-          hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
-        />
+      <TopbarSearchForm
+        className={classNames(css.searchLink, { [css.takeAvailableSpace]: giveSpaceForSearch })}
+        desktopInputRoot={css.topbarSearchWithLeftPadding}
+        onSubmit={onSearchSubmit}
+        initialValues={initialSearchFormValues}
+        appConfig={config}
+      />
 
-        {inboxLinkMaybe}
-        {profileMenuMaybe}
-        {signupLinkMaybe}
-        {loginLinkMaybe}
-      </div>
+      <CustomLinksMenu
+        currentPage={currentPage}
+        customLinks={customLinks}
+        intl={intl}
+        hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
+      />
+
+      {inboxLinkMaybe}
+      {profileMenuMaybe}
+      {signupLinkMaybe}
+      {loginLinkMaybe}
     </nav>
   );
 };

@@ -303,10 +303,8 @@ const OrderPanel = props => {
     setSelectedVariants(prevVariants => {
       const updatedVariants = [...prevVariants];
       const removedVariant = updatedVariants.splice(index, 1)[0];
-      setTotalQuantity(prevTotal => {
-        const newTotal = prevTotal - (removedVariant.quantity || 0);
-        return newTotal >= 0 ? newTotal : 0; // Asegurarse de que totalQuantity nunca sea negativo d
-      });
+      const newTotalQuantity = totalQuantity - (removedVariant.quantity || 0);
+      setTotalQuantity(newTotalQuantity);
       return updatedVariants;
     });
   };
@@ -519,6 +517,12 @@ const OrderPanel = props => {
             categoryLevel3={categoryLevel3}
             selectedVariantFields={selectedVariantFields}
             publicData={publicData}
+            closeOrderModal={closeOrderModal}
+            history={history}
+            location={location}
+            fromTransactionPage={fromTransactionPage}
+            openOfferModal={openOfferModal}
+            offer={offer}
           />
         ) : showInquiryForm ? (
           <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />

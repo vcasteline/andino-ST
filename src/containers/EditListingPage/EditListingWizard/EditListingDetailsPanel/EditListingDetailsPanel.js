@@ -144,6 +144,7 @@ const initialValuesForListingFields = (
   listingFieldConfigs
 ) => {
   const targetCategoryIds = Object.values(targetCategories);
+
   return listingFieldConfigs.reduce((fields, fieldConfig) => {
     const { key, scope = 'public', schemaType, enumOptions } = fieldConfig || {};
     const namespacePrefix = scope === 'public' ? `pub_` : `priv_`;
@@ -221,13 +222,14 @@ const getInitialValues = (
   categoryKey
 ) => {
   const { description, title, publicData, privateData } = props?.listing?.attributes || {};
-  const { listingType } = publicData;
+  const { listingType, descriptionTable } = publicData;
+
   const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
   // Initial values for the form
-  // console.log(nestedCategories)
   return {
     title,
     description,
+    descriptionTable,
     ...nestedCategories,
     // Transaction type info: listingType, transactionProcessAlias, unitType
     ...getTransactionInfo(listingTypes, existingListingTypeInfo),
@@ -263,7 +265,7 @@ const EditListingDetailsPanel = props => {
     errors,
     config,
   } = props;
-  // console.log(config)
+
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
@@ -294,7 +296,7 @@ const EditListingDetailsPanel = props => {
   const canShowEditListingDetailsForm =
     hasListingTypesSet && (!hasExistingListingType || hasValidExistingListingType);
   const isPublished = listing?.id && state !== LISTING_STATE_DRAFT;
-  // console.log(transactionProcessAlias)
+
   return (
     <div className={classes}>
       <H3 as="h1">
@@ -324,9 +326,10 @@ const EditListingDetailsPanel = props => {
               transactionProcessAlias,
               unitType,
               selectedVariantFields,
+              descriptionTable,
               ...rest
             } = values;
-            // console.log(values)
+
             const nestedCategories = pickCategoryFields(rest, categoryKey, 1, listingCategories);
             // Remove old categories by explicitly saving null for them.
             const cleanedNestedCategories = {
@@ -354,6 +357,7 @@ const EditListingDetailsPanel = props => {
               publicData: {
                 listingType,
                 transactionProcessAlias,
+                descriptionTable,
                 unitType,
                 selectedVariantFields,
                 ...cleanedNestedCategories,

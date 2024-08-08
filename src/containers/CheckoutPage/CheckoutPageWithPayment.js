@@ -50,8 +50,8 @@ const paymentFlow = (selectedPaymentMethod, saveAfterOnetimePayment) => {
   return selectedPaymentMethod === 'defaultCard'
     ? USE_SAVED_CARD
     : saveAfterOnetimePayment
-    ? PAY_AND_SAVE_FOR_LATER_USE
-    : ONETIME_PAYMENT;
+      ? PAY_AND_SAVE_FOR_LATER_USE
+      : ONETIME_PAYMENT;
 };
 
 /**
@@ -72,6 +72,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
   const deliveryMethod = pageData.orderData?.deliveryMethod;
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
   const selectedVariants = pageData.orderData?.selectedVariants;
+  const offer = pageData.orderData?.offer ? pageData.orderData?.offer : null;
 
   const { listingType, unitType } = pageData?.listing?.attributes?.publicData || {};
   const protectedDataMaybe = {
@@ -79,7 +80,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
       ...getTransactionTypeData(listingType, unitType, config),
       ...deliveryMethodMaybe,
       ...shippingDetails,
-      selectedVariants,
+      selectedVariants
     },
   };
 
@@ -87,6 +88,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
   // which is either initiate-transition or initiate-transition-after-enquiry
   const orderParams = {
     listingId: pageData?.listing?.id,
+    offer,
     ...deliveryMethodMaybe,
     ...quantityMaybe,
     ...bookingDatesMaybe(pageData.orderData?.bookingDates),
@@ -117,9 +119,15 @@ const fetchSpeculatedTransactionIfNeeded = (orderParams, pageData, fetchSpeculat
     const isInquiryInPaymentProcess =
       tx?.attributes?.lastTransition === process.transitions.INQUIRE;
 
-    const requestTransition = isInquiryInPaymentProcess
-      ? process.transitions.REQUEST_PAYMENT_AFTER_INQUIRY
-      : process.transitions.REQUEST_PAYMENT;
+    let requestTransition;
+
+    if (pageData?.orderData?.offer) {
+      requestTransition = process.transitions.REQUEST_PAYMENT_AFTER_OFFER;
+    } else {
+      requestTransition = isInquiryInPaymentProcess
+        ? process.transitions.REQUEST_PAYMENT_AFTER_INQUIRY
+        : process.transitions.REQUEST_PAYMENT;
+    }
     const isPrivileged = process.isPrivileged(requestTransition);
 
     fetchSpeculatedTransaction(
@@ -241,8 +249,8 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
     selectedPaymentFlow === USE_SAVED_CARD && hasDefaultPaymentMethodSaved
       ? { paymentMethod: stripePaymentMethodId }
       : selectedPaymentFlow === PAY_AND_SAVE_FOR_LATER_USE
-      ? { setupPaymentMethodForSaving: true }
-      : {};
+        ? { setupPaymentMethodForSaving: true }
+        : {};
 
   // These are the order parameters for the first payment-related transition
   // which is either initiate-transition or initiate-transition-after-enquiry

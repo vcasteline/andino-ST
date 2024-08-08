@@ -41,6 +41,7 @@
   @media (--viewportMedium) {
     margin: 32px 24px 0 24px;
   }
+
   @media (--viewportLarge) {
     margin: 32px 0 0 0;
   }
@@ -52,7 +53,8 @@
   display: none;
   width: 100%;
   position: relative;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorGrey100);
+  /* Loading BG color */
 
   @media (--viewportLarge) {
     display: block;
@@ -87,6 +89,7 @@
     margin-top: -32px;
     padding: 2px 0;
   }
+
   @media (--viewportLarge) {
     margin-left: 48px;
     width: unset;
@@ -97,7 +100,8 @@
 /* Passed-in props for DetailCardImage subcomponent */
 .imageWrapperMobile {
   position: relative;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorGrey100);
+  /* Loading BG color */
 
   @media (--viewportLarge) {
     display: none;
@@ -129,6 +133,7 @@
     margin-top: 120px;
   }
 }
+
 .avatarDesktop {
   @media (--viewportLarge) {
     display: flex;
@@ -185,6 +190,7 @@
 .inquiryPrice {
   composes: p from global;
   font-weight: var(--fontWeightBold);
+  font-size: 26px;
 }
 
 .transactionInfoMessage {
@@ -213,10 +219,12 @@
     margin-top: 40px;
     padding: 4px 0 4px 0;
   }
+
   @media (--viewportLarge) {
     display: none;
   }
 }
+
 .deliveryInfoSection {
   order: 1;
 }
@@ -238,7 +246,8 @@
 .stickySection {
   @media (--viewportLarge) {
     position: sticky;
-    top: -200px; /* This is a hack to showcase how the component would look when the image isn't sticky */
+    top: -200px;
+    /* This is a hack to showcase how the component would look when the image isn't sticky */
     width: 409px;
     z-index: 1;
   }
@@ -260,6 +269,46 @@
     display: block;
     margin: 24px 48px 32px 48px;
   }
+}
+
+.pendingOfferWrapper {
+  margin: 24px 24px 24px 24px;
+  background-color: var(--colorWhite);
+  border: 1px solid var(--colorGrey100);
+  border-radius: 2px;
+  padding: 10px 24px 10px 24px;
+
+  @media (--viewportLarge) {
+    margin: 0;
+  }
+}
+
+.offerProposed {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+}
+
+.offerCurrent {
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--colorGrey100);
+  height: 1px;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.offerTotal {
+  font-size: 20px;
+  font-weight: 800;
 }
 
 .detailCardTitle {
@@ -434,6 +483,7 @@
     padding: 7px 0 1px 0;
     margin: 40px 24px 0 24px;
   }
+
   @media (--viewportLarge) {
     margin: 40px 0 0 0;
   }
@@ -448,6 +498,7 @@
     margin: 49px 24px 0 24px;
     border-top: 0;
   }
+
   @media (--viewportLarge) {
     margin: 48px 0 0 0;
   }
@@ -463,6 +514,7 @@
     margin: 49px 24px 0 24px;
     border-top: 0;
   }
+
   @media (--viewportLarge) {
     margin: 47px 0 0 0;
   }
@@ -498,6 +550,7 @@
   width: 100%;
   display: flex;
   flex-direction: row;
+  gap: 4px;
 
   @media (--viewportLarge) {
     flex-direction: column;
@@ -524,6 +577,7 @@
     margin: 0 0 10px 0;
     padding: 1px 0 7px 0;
   }
+
   @media (--viewportLarge) {
     margin: 0;
   }
@@ -542,9 +596,11 @@
     display: none;
   }
 }
+
 .mobileActionButtonSpacer {
   width: 100%;
   height: 120px;
+
   @media (--viewportLarge) {
     display: none;
   }
@@ -583,6 +639,7 @@
   @media (--viewportMedium) {
     margin: 0;
   }
+
   @media (--viewportLarge) {
     padding: 0px 75px;
     margin-top: 16px;

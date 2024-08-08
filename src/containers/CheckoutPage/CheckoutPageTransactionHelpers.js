@@ -1,9 +1,10 @@
 // Import contexts and util modules
-import { findRouteByRouteName } from '../../util/routes';
+import { findRouteByRouteName, pathByRouteName } from '../../util/routes';
 import { ensureStripeCustomer, ensureTransaction } from '../../util/data';
 import { minutesBetween } from '../../util/dates';
 import { formatMoney } from '../../util/currency';
 import { storeData } from './CheckoutPageSessionHelpers';
+import { createSlug } from '../../util/urlHelpers';
 
 /**
  * Extract relevant transaction type data from listing type
@@ -212,7 +213,12 @@ export const processCheckoutWithPayment = (orderParams, extraPaymentParams) => {
     const requestTransition =
       storedTx?.attributes?.lastTransition === process.transitions.INQUIRE
         ? process.transitions.REQUEST_PAYMENT_AFTER_INQUIRY
-        : process.transitions.REQUEST_PAYMENT;
+        : storedTx?.attributes?.lastTransition === process.transitions.PROVIDER_ACCEPT ?
+          process.transitions.REQUEST_PAYMENT_AFTER_OFFER
+          : storedTx?.attributes?.lastTransition === process.transitions.CUSTOMER_ACCEPT ?
+            process.transitions.REQUEST_PAYMENT_AFTER_COUNTER_OFFER
+            : process.transitions.REQUEST_PAYMENT;
+
     const isPrivileged = process.isPrivileged(requestTransition);
 
     // If paymentIntent exists, order has been initiated previously.

@@ -25,6 +25,7 @@ import {
 } from '../../../components';
 
 import css from './ProfileSettingsForm.module.css';
+import { transformToEmbedUrl } from '../../../util/transformToEmbedUrl';
 
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // Show spinner so that browser has time to load img srcset
@@ -120,6 +121,13 @@ class ProfileSettingsFormComponent extends Component {
           });
           const companyPlaceholder = intl.formatMessage({
             id: 'ProfileSettingsForm.companyPlaceholder',
+          });
+
+          const videoLabel = intl.formatMessage({
+            id: 'ProfileSettingsForm.videoLabel',
+          });
+          const videoPlaceholder = intl.formatMessage({
+            id: 'ProfileSettingsForm.videoPlaceholder',
           });
 
           const uploadingOverlay =
@@ -333,6 +341,35 @@ class ProfileSettingsFormComponent extends Component {
                   <FormattedMessage id="ProfileSettingsForm.bioInfo" values={{ marketplaceName }} />
                 </p>
               </div>
+
+              <div className={classNames(css.sectionContainer)}>
+
+                <FieldTextInput
+                  id="videoUrl"
+                  name="videoUrl"
+                  className={css.videoUrl}
+                  type="text"
+                  label={videoLabel}
+                  placeholder={videoPlaceholder}
+                />
+
+                {values.videoUrl ?
+                  <iframe
+                    style={{ borderRadius: "var(--borderRadiusFull)", marginTop: "20px" }}
+                    width="100%"
+                    height={400}
+                    src={transformToEmbedUrl(values.videoUrl)}
+                    title="video"
+                    frameBorder={0}
+                    allowFullScreen
+                  />
+                  :
+                  <div className={css.videoPlaceholder}>
+                    {/* <img src={playButton} /> */}
+                  </div>
+                }
+              </div>
+
               <div className={classNames(css.sectionContainer, css.lastSection)}>
                 {userFieldProps.map(fieldProps => (
                   <CustomExtendedDataField {...fieldProps} formId={formId} />

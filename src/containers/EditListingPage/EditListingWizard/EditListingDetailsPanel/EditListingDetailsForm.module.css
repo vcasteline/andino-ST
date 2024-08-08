@@ -20,6 +20,7 @@
 .error {
   color: var(--colorFail);
 }
+
 .variantField {
   margin-bottom: 0px;
 }
@@ -41,6 +42,7 @@
   height: 18px;
   cursor: pointer;
 }
+
 .formMargins {
   margin-bottom: 24px;
 
@@ -56,6 +58,14 @@
 .description {
   composes: formMargins;
   flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.tableContainer {
+  border-radius: 6px;
+  border: 1px solid #d8dce6;
+  outline: none;
+  padding: 6px;
 }
 
 .listingTypeSelect {
@@ -69,6 +79,7 @@
 .selectedLabel {
   composes: label from global;
 }
+
 .selectedValue {
   margin-top: 0;
   margin-bottom: 6px;

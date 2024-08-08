@@ -65,4 +65,40 @@ const SectionFeatures = props => {
   );
 };
 
+const propTypeOption = shape({
+  fieldComponents: shape({ component: node, pickValidProps: func }),
+});
+
+SectionFeatures.defaultProps = {
+  className: null,
+  rootClassName: null,
+  defaultClasses: null,
+  textClassName: null,
+  title: null,
+  description: null,
+  appearance: null,
+  callToAction: null,
+  blocks: [],
+  isInsideContainer: false,
+  options: null,
+};
+
+SectionFeatures.propTypes = {
+  sectionId: string.isRequired,
+  className: string,
+  rootClassName: string,
+  defaultClasses: shape({
+    sectionDetails: string,
+    title: string,
+    description: string,
+    ctaButton: string,
+  }),
+  title: object,
+  description: object,
+  appearance: object,
+  callToAction: object,
+  blocks: arrayOf(object),
+  isInsideContainer: bool,
+  options: propTypeOption,
+};
 export default SectionFeatures;
