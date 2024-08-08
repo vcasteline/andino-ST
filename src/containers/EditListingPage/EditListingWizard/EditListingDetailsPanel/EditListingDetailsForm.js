@@ -254,28 +254,27 @@ const AddListingFields = props => {
     handleVariantFieldChange,
     getSelectedVariantFields
   } = props;
-  
+
   const targetCategoryIds = Object.values(selectedCategories);
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
-    const { key, schemaType, scope } = fieldConfig || {};
-    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
 
+    const { key, schemaType, scope, saveConfig } = fieldConfig || {};
+    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
     const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
-    const isMandatory =
-      key == 'quantityPriceBreaks' || key == 'minOrderQuantity' || key == 'lead_times';
-    
+    const isMandatory = saveConfig.isRequired;
     if (
       isKnownSchemaType &&
       isProviderScope &&
       isTargetListingType &&
       isTargetCategory &&
-      (selectedVariantFields.includes(fieldConfig.key) || isMandatory)
+      (selectedVariantFields.includes(key) || isMandatory)
     ) {
       if (key === 'quantityPriceBreaks' && values && values[namespacedKey]) {
+        // console.log(values)
         pickedFields.push(
           <QuantityPriceBreaks
             key={`${namespacedKey}-breaks`}
@@ -293,6 +292,7 @@ const AddListingFields = props => {
             id: 'EditListingDetailsForm.defaultRequiredMessage',
           })}
           formId={formId}
+          values={values}
         />
       );
     }
@@ -306,10 +306,7 @@ const AddListingFields = props => {
       {listingFieldsConfig.map(field => {
         const isTargetListingType = isFieldForListingType(listingType, field);
         const isTargetCategory = isFieldForCategory(targetCategoryIds, field);
-        const isMandatory =
-          field.key == 'quantityPriceBreaks' ||
-          field.key == 'minOrderQuantity' ||
-          field.key == 'lead_times';
+        const isMandatory = field.saveConfig?.isRequired;
         if (isTargetCategory && isTargetListingType && !isMandatory) {
           return (
             <div key={field.key} className={css.variantField}>

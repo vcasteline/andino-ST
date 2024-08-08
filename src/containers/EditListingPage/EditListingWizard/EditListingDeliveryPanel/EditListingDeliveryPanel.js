@@ -62,9 +62,9 @@ const getInitialValues = props => {
     building,
     location: locationFieldsPresent
       ? {
-          search: address,
-          selectedPlace: { address, origin: geolocation },
-        }
+        search: address,
+        selectedPlace: { address, origin: geolocation },
+      }
       : { search: undefined, selectedPlace: undefined },
     deliveryOptions,
     shippingPriceInSubunitsOneItem: shippingOneItemAsMoney,
@@ -138,12 +138,12 @@ const EditListingDeliveryPanel = props => {
             const shippingDataMaybe =
               shippingEnabled && shippingPriceInSubunitsOneItem != null
                 ? {
-                    // Note: we only save the "amount" because currency should not differ from listing's price.
-                    // Money is always dealt in subunits (e.g. cents) to avoid float calculations.
-                    shippingPriceInSubunitsOneItem: shippingPriceInSubunitsOneItem.amount,
-                    shippingPriceInSubunitsAdditionalItems:
-                      shippingPriceInSubunitsAdditionalItems?.amount,
-                  }
+                  // Note: we only save the "amount" because currency should not differ from listing's price.
+                  // Money is always dealt in subunits (e.g. cents) to avoid float calculations.
+                  shippingPriceInSubunitsOneItem: shippingPriceInSubunitsOneItem.amount,
+                  shippingPriceInSubunitsAdditionalItems:
+                    shippingPriceInSubunitsAdditionalItems?.amount,
+                }
                 : {};
 
             // New values for listing attributes

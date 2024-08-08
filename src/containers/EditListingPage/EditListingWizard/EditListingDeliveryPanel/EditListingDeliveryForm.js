@@ -28,6 +28,7 @@ import {
 
 // Import modules from this directory
 import css from './EditListingDeliveryForm.module.css';
+import { FieldWeightDimensions } from '../../../../components/FieldWeightDimensions/FieldWeightDimensions';
 
 const identity = v => v;
 
@@ -54,6 +55,7 @@ export const EditListingDeliveryFormComponent = props => (
         updateInProgress,
         fetchErrors,
         values,
+        data
       } = formRenderProps;
 
       // This is a bug fix for Final Form.
@@ -69,7 +71,7 @@ export const EditListingDeliveryFormComponent = props => (
       const { pauseValidation, resumeValidation } = form;
       pauseValidation(false);
       useEffect(() => resumeValidation(), [values]);
-
+      // console.log(props)
       const displayShipping = displayDeliveryShipping(listingTypeConfig);
       const displayPickup = displayDeliveryPickup(listingTypeConfig);
       const displayMultipleDelivery = displayShipping && displayPickup;
@@ -109,7 +111,6 @@ export const EditListingDeliveryFormComponent = props => (
         [css.hidden]: !displayShipping,
       });
       const currencyConfig = appSettings.getCurrencyFormatting(marketplaceCurrency);
-
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FieldCheckbox
@@ -151,10 +152,10 @@ export const EditListingDeliveryFormComponent = props => (
               validate={
                 pickupEnabled
                   ? composeValidators(
-                      autocompleteSearchRequired(addressRequiredMessage),
-                      autocompletePlaceSelected(addressNotRecognizedMessage)
-                    )
-                  : () => {}
+                    autocompleteSearchRequired(addressRequiredMessage),
+                    autocompletePlaceSelected(addressNotRecognizedMessage)
+                  )
+                  : () => { }
               }
               hideErrorMessage={!pickupEnabled}
               // Whatever parameters are being used to calculate
@@ -210,10 +211,10 @@ export const EditListingDeliveryFormComponent = props => (
               validate={
                 shippingEnabled
                   ? required(
-                      intl.formatMessage({
-                        id: 'EditListingDeliveryForm.shippingOneItemRequired',
-                      })
-                    )
+                    intl.formatMessage({
+                      id: 'EditListingDeliveryForm.shippingOneItemRequired',
+                    })
+                  )
                   : null
               }
               hideErrorMessage={!shippingEnabled}
@@ -226,41 +227,44 @@ export const EditListingDeliveryFormComponent = props => (
               key={shippingEnabled ? 'oneItemValidation' : 'noOneItemValidation'}
             />
 
-              <FieldCurrencyInput
-                id={
-                  formId
-                    ? `${formId}.shippingPriceInSubunitsAdditionalItems`
-                    : 'shippingPriceInSubunitsAdditionalItems'
-                }
-                name="shippingPriceInSubunitsAdditionalItems"
-                className={css.input}
-                label={intl.formatMessage({
-                  id: 'EditListingDeliveryForm.shippingAdditionalItemsLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'EditListingDeliveryForm.shippingAdditionalItemsPlaceholder',
-                })}
-                currencyConfig={currencyConfig}
-                disabled={!shippingEnabled}
-                validate={
-                  shippingEnabled
-                    ? required(
-                        intl.formatMessage({
-                          id: 'EditListingDeliveryForm.shippingAdditionalItemsRequired',
-                        })
-                      )
-                    : null
-                }
-                hideErrorMessage={!shippingEnabled}
-                // Whatever parameters are being used to calculate
-                // the validation function need to be combined in such
-                // a way that, when they change, this key prop
-                // changes, thus reregistering this field (and its
-                // validation function) with Final Form.
-                // See example: https://codesandbox.io/s/changing-field-level-validators-zc8ei
-                key={shippingEnabled ? 'additionalItemsValidation' : 'noAdditionalItemsValidation'}
-              />
+            <FieldCurrencyInput
+              id={
+                formId
+                  ? `${formId}.shippingPriceInSubunitsAdditionalItems`
+                  : 'shippingPriceInSubunitsAdditionalItems'
+              }
+              name="shippingPriceInSubunitsAdditionalItems"
+              className={css.input}
+              label={intl.formatMessage({
+                id: 'EditListingDeliveryForm.shippingAdditionalItemsLabel',
+              })}
+              placeholder={intl.formatMessage({
+                id: 'EditListingDeliveryForm.shippingAdditionalItemsPlaceholder',
+              })}
+              currencyConfig={currencyConfig}
+              disabled={!shippingEnabled}
+              validate={
+                shippingEnabled
+                  ? required(
+                    intl.formatMessage({
+                      id: 'EditListingDeliveryForm.shippingAdditionalItemsRequired',
+                    })
+                  )
+                  : null
+              }
+              hideErrorMessage={!shippingEnabled}
+              // Whatever parameters are being used to calculate
+              // the validation function need to be combined in such
+              // a way that, when they change, this key prop
+              // changes, thus reregistering this field (and its
+              // validation function) with Final Form.
+              // See example: https://codesandbox.io/s/changing-field-level-validators-zc8ei
+              key={shippingEnabled ? 'additionalItemsValidation' : 'noAdditionalItemsValidation'}
+            />
 
+            {/* <FieldWeightDimensions
+              data={data}
+              values={values} /> */}
           </div>
 
           <Button
